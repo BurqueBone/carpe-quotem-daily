@@ -4,14 +4,28 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Bell, Clock, Smartphone } from "lucide-react";
+import { Bell, Clock, Hash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const Settings = () => {
-  const [frequency, setFrequency] = useState("daily");
-  const [time, setTime] = useState("09:00");
+  const [period, setPeriod] = useState("day");
+  const [quantity, setQuantity] = useState("1");
   const [enabled, setEnabled] = useState(true);
   const { toast } = useToast();
+
+  const getMaxQuantity = (selectedPeriod: string) => {
+    switch (selectedPeriod) {
+      case "day": return 3;
+      case "week": return 21;
+      case "month": return 90;
+      default: return 1;
+    }
+  };
+
+  const getQuantityOptions = (selectedPeriod: string) => {
+    const max = getMaxQuantity(selectedPeriod);
+    return Array.from({ length: max }, (_, i) => (i + 1).toString());
+  };
 
   const handleSave = () => {
     toast({
@@ -52,38 +66,43 @@ const Settings = () => {
                 <div className="space-y-3">
                   <Label className="text-base font-medium flex items-center gap-2">
                     <Clock className="w-4 h-4" />
-                    Frequency
+                    Time Period
                   </Label>
-                  <Select value={frequency} onValueChange={setFrequency}>
+                  <Select value={period} onValueChange={(value) => {
+                    setPeriod(value);
+                    setQuantity("1"); // Reset quantity when period changes
+                  }}>
                     <SelectTrigger className="bg-background border-border/50">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="daily">Daily</SelectItem>
-                      <SelectItem value="weekly">Weekly</SelectItem>
-                      <SelectItem value="twice-daily">Twice Daily</SelectItem>
-                      <SelectItem value="custom">Custom</SelectItem>
+                      <SelectItem value="day">Per Day</SelectItem>
+                      <SelectItem value="week">Per Week</SelectItem>
+                      <SelectItem value="month">Per Month</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
                 <div className="space-y-3">
                   <Label className="text-base font-medium flex items-center gap-2">
-                    <Smartphone className="w-4 h-4" />
-                    Preferred Time
+                    <Hash className="w-4 h-4" />
+                    Number of Notifications
                   </Label>
-                  <Select value={time} onValueChange={setTime}>
+                  <Select value={quantity} onValueChange={setQuantity}>
                     <SelectTrigger className="bg-background border-border/50">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="07:00">7:00 AM - Morning Reflection</SelectItem>
-                      <SelectItem value="09:00">9:00 AM - Start the Day</SelectItem>
-                      <SelectItem value="12:00">12:00 PM - Midday Pause</SelectItem>
-                      <SelectItem value="18:00">6:00 PM - Evening Contemplation</SelectItem>
-                      <SelectItem value="21:00">9:00 PM - Night Reflection</SelectItem>
+                      {getQuantityOptions(period).map((num) => (
+                        <SelectItem key={num} value={num}>
+                          {num} {period === "day" ? "per day" : period === "week" ? "per week" : "per month"}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-muted-foreground">
+                    We recommend once a day to start. Alerts are sent at random intervals.
+                  </p>
                 </div>
               </>
             )}
