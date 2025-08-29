@@ -1,5 +1,5 @@
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, Settings, Zap } from "lucide-react";
+import { Heart, Zap } from "lucide-react";
 
 interface NavigationTabsProps {
   activeTab: string;
@@ -9,7 +9,7 @@ interface NavigationTabsProps {
 const NavigationTabs = ({ activeTab, onTabChange }: NavigationTabsProps) => {
   return (
     <Tabs value={activeTab} onValueChange={onTabChange} className="w-full">
-      <TabsList className="grid w-full grid-cols-3 bg-gradient-subtle border border-border/50 shadow-card">
+      <TabsList className="grid w-full grid-cols-2 bg-gradient-subtle border border-border/50 shadow-card">
         <TabsTrigger 
           value="home" 
           className="flex items-center gap-2 data-[state=active]:bg-gradient-warm data-[state=active]:text-white data-[state=active]:shadow-glow transition-spring"
@@ -23,13 +23,6 @@ const NavigationTabs = ({ activeTab, onTabChange }: NavigationTabsProps) => {
         >
           <Zap className="w-4 h-4" />
           <span className="hidden sm:inline">Carpe Diem</span>
-        </TabsTrigger>
-        <TabsTrigger 
-          value="settings"
-          className="flex items-center gap-2 data-[state=active]:bg-gradient-warm data-[state=active]:text-white data-[state=active]:shadow-glow transition-spring"
-        >
-          <Settings className="w-4 h-4" />
-          <span className="hidden sm:inline">Settings</span>
         </TabsTrigger>
       </TabsList>
     </Tabs>

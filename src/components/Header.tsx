@@ -23,17 +23,16 @@ const Header = () => {
 
         <div className="flex items-center gap-4">
           {user ? (
-            <div className="flex items-center gap-3">
+            <Link to="/profile">
               <Button
                 variant="ghost"
                 size="icon"
                 className="rounded-full"
-                onClick={handleSignOut}
-                title="Account"
+                title="Profile"
               >
                 <User className="h-5 w-5" />
               </Button>
-            </div>
+            </Link>
           ) : (
             <Link to="/auth">
               <Button variant="outline">Login</Button>

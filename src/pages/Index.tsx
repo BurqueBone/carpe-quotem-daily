@@ -3,7 +3,7 @@ import { TabsContent } from "@/components/ui/tabs";
 import NavigationTabs from "@/components/NavigationTabs";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
-import Settings from "./Settings";
+
 import CarpeDiem from "./CarpeDiem";
 
 const Index = () => {
@@ -48,7 +48,6 @@ const Index = () => {
             )}
             
             {activeTab === "carpe-diem" && <CarpeDiem />}
-            {activeTab === "settings" && <Settings />}
           </div>
         </div>
       </div>
