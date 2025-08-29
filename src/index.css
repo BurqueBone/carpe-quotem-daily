@@ -8,28 +8,28 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Warm golden hour palette */
-    --background: 35 20% 98%;
+    /* Sunday4K brand palette */
+    --background: 15 25% 98%;
     --foreground: 20 14% 12%;
 
-    --card: 35 25% 96%;
+    --card: 15 20% 96%;
     --card-foreground: 20 14% 12%;
 
-    --popover: 35 25% 96%;
+    --popover: 15 20% 96%;
     --popover-foreground: 20 14% 12%;
 
-    --primary: 25 80% 55%;
+    --primary: 249 75% 75%; /* #9381ff */
     --primary-foreground: 0 0% 98%;
-    --primary-glow: 35 90% 70%;
+    --primary-glow: 249 85% 85%;
 
-    --secondary: 30 40% 88%;
+    --secondary: 25 100% 87%; /* #FFD8BE */
     --secondary-foreground: 20 14% 12%;
 
-    --muted: 30 30% 92%;
+    --muted: 249 30% 92%;
     --muted-foreground: 25 8% 45%;
 
-    --accent: 15 85% 65%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 249 60% 85%; /* #B8B8FF */
+    --accent-foreground: 20 14% 12%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
@@ -39,9 +39,9 @@ All colors MUST be HSL.
     --ring: 25 80% 55%;
 
     /* Custom design tokens */
-    --gradient-warm: linear-gradient(135deg, hsl(25 80% 55%) 0%, hsl(15 85% 65%) 50%, hsl(280 60% 45%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(35 25% 96%) 0%, hsl(30 20% 94%) 100%);
-    --gradient-hero: linear-gradient(135deg, hsl(25 90% 60%) 0%, hsl(280 70% 50%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(249 75% 75%) 0%, hsl(25 100% 87%) 50%, hsl(249 60% 85%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(15 20% 96%) 0%, hsl(15 15% 94%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(249 75% 75%) 0%, hsl(25 100% 87%) 100%);
     
     --shadow-warm: 0 10px 30px -10px hsl(25 80% 55% / 0.3);
     --shadow-glow: 0 0 40px hsl(35 90% 70% / 0.2);

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { TabsContent } from "@/components/ui/tabs";
 import NavigationTabs from "@/components/NavigationTabs";
 import QuoteCard from "@/components/QuoteCard";
+import Header from "@/components/Header";
 import Settings from "./Settings";
 import CarpeDiem from "./CarpeDiem";
 
@@ -17,11 +18,9 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
+      <Header />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
         <header className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-warm bg-clip-text text-transparent mb-3">
-            Sunday4K
-          </h1>
           <p className="text-lg text-muted-foreground max-w-md mx-auto">
             Gentle reminders about life's preciousness, inspiring you to live each day with purpose
           </p>
