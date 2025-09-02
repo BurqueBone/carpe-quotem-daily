@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Zap, ArrowRight } from "lucide-react";
+import { Zap, ArrowRight, Flower2 } from "lucide-react";
 import NavigationTabs from "@/components/NavigationTabs";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
@@ -26,7 +26,7 @@ const Index = () => {
                   <div className="absolute inset-0 bg-gradient-subtle opacity-30"></div>
                   <div className="relative z-10">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
-                      <span className="text-2xl">⏰</span>
+                      <Flower2 className="w-8 h-8 text-white" />
                     </div>
                     <h2 className="text-3xl font-bold text-white mb-4">Welcome to Sunday4k</h2>
                     <p className="text-white/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6">
