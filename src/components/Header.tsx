@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { User } from 'lucide-react';
 import { useAuth } from '@/components/AuthContext';
 import logo from '@/assets/sunday4k-logo.png';
+import newLogo from '@/assets/new-logo.png';
 
 const Header = () => {
   const { user, signOut } = useAuth();
@@ -19,6 +20,7 @@ const Header = () => {
           <h1 className="text-2xl font-bold bg-gradient-warm bg-clip-text text-transparent">
             Sunday4K
           </h1>
+          <img src={newLogo} alt="Sunday4K New Logo" className="w-10 h-10" />
         </Link>
 
         <div className="flex items-center gap-4">
