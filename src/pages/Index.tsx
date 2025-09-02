@@ -35,11 +35,8 @@ const Index = () => {
                       but to inspire you to live fully and purposefully.
                     </p>
                     <Link to="/auth" className="block bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 hover:bg-white/20 transition-smooth cursor-pointer border border-white/20 hover:border-white/30">
-                      <p className="text-white font-medium mb-2">Ready to start your journey?</p>
-                      <p className="text-white/80 text-sm mb-3">
-                        Sign in to customize your notification settings and receive personalized daily reminders 
-                        that will help you make each day meaningful.
-                      </p>
+                      
+                      
                       <div className="flex items-center justify-center gap-2 text-white font-semibold">
                         <ArrowRight className="w-4 h-4" />
                         Start Your Inspiration
