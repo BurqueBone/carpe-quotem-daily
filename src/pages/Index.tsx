@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { Zap, ArrowRight } from "lucide-react";
 import NavigationTabs from "@/components/NavigationTabs";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
@@ -44,6 +46,35 @@ const Index = () => {
                     <div className="text-white/80 font-medium">
                       ✨ Transform awareness into action ✨
                     </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-secondary/20 to-accent/20 rounded-2xl p-6 border border-secondary/30 shadow-card hover:shadow-warm transition-smooth">
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg">
+                      <Zap className="w-8 h-8 text-white" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-foreground">Carpe Diem Resources</h3>
+                    <p className="text-muted-foreground leading-relaxed">
+                      Discover a curated collection of resources across 12 life categories—from Physical and Mental wellness 
+                      to Career, Creative, and Spiritual growth. Each resource is carefully selected to help you seize the day 
+                      and make meaningful progress in every area of your life.
+                    </p>
+                    <div className="flex items-center justify-center gap-2 text-primary font-medium">
+                      <span>12 Categories</span>
+                      <span>•</span>
+                      <span>100+ Resources</span>
+                      <span>•</span>
+                      <span>Lifetime Access</span>
+                    </div>
+                    <Link 
+                      to="/carpe-diem" 
+                      className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth"
+                    >
+                      <Zap className="w-4 h-4" />
+                      Explore Resources
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
                   </div>
                 </div>
               </div>}
