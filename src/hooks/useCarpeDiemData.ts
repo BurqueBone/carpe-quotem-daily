@@ -36,22 +36,6 @@ const iconMap: Record<string, any> = {
   'Globe': Globe,
 };
 
-interface DatabaseCategory {
-  id: string;
-  title: string;
-  icon_name: string;
-  description: string;
-}
-
-interface DatabaseResource {
-  id: string;
-  category_id: string;
-  title: string;
-  description: string;
-  url: string;
-  type: 'article' | 'book' | 'app' | 'course' | 'video';
-}
-
 export const useCarpeDiemData = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +47,7 @@ export const useCarpeDiemData = () => {
         setLoading(true);
         
         // Fetch categories
-        const { data: categoriesData, error: categoriesError } = await supabase
+        const { data: categoriesData, error: categoriesError } = await (supabase as any)
           .from('categories')
           .select('*')
           .order('title');
@@ -72,10 +56,11 @@ export const useCarpeDiemData = () => {
           throw categoriesError;
         }
 
-        // Fetch resources
-        const { data: resourcesData, error: resourcesError } = await supabase
+        // Fetch published resources only
+        const { data: resourcesData, error: resourcesError } = await (supabase as any)
           .from('resources')
           .select('*')
+          .eq('ispublished', true)
           .order('title');
 
         if (resourcesError) {
@@ -83,29 +68,28 @@ export const useCarpeDiemData = () => {
         }
 
         // Group resources by category
-        const resourcesByCategory = resourcesData?.reduce((acc, resource) => {
-          const resourceData = resource as DatabaseResource;
-          if (!acc[resourceData.category_id]) {
-            acc[resourceData.category_id] = [];
+        const resourcesByCategory = resourcesData.reduce((acc: Record<string, Resource[]>, resource: any) => {
+          if (!acc[resource.category_id]) {
+            acc[resource.category_id] = [];
           }
-          acc[resourceData.category_id].push({
-            id: resourceData.id,
-            title: resourceData.title,
-            description: resourceData.description,
-            url: resourceData.url,
-            type: resourceData.type as 'article' | 'book' | 'app' | 'course' | 'video',
+          acc[resource.category_id].push({
+            id: resource.id,
+            title: resource.title,
+            description: resource.description,
+            url: resource.url,
+            type: resource.type as 'article' | 'book' | 'app' | 'course' | 'video',
           });
           return acc;
-        }, {} as Record<string, Resource[]>) || {};
+        }, {});
 
         // Combine categories with their resources
-        const categoriesWithResources: Category[] = categoriesData?.map((category: DatabaseCategory) => ({
+        const categoriesWithResources: Category[] = categoriesData.map((category: any) => ({
           id: category.id,
           title: category.title,
           icon: iconMap[category.icon_name] || Globe,
           description: category.description,
           resources: resourcesByCategory[category.id] || [],
-        })) || [];
+        }));
 
         setCategories(categoriesWithResources);
         setError(null);
