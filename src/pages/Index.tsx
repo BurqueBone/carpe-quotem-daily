@@ -42,9 +42,6 @@ const Index = () => {
                         Start Your Inspiration
                       </div>
                     </Link>
-                    <div className="text-white/80 font-medium">
-                      ✨ Transform awareness into action ✨
-                    </div>
                   </div>
                 </div>
 
@@ -59,6 +56,9 @@ const Index = () => {
                       to Career, Creative, and Spiritual growth. Each resource is carefully selected to help you seize the day 
                       and make meaningful progress in every area of your life.
                     </p>
+                    <div className="text-primary/80 font-medium mb-2">
+                      ✨ Transform awareness into action ✨
+                    </div>
                     <div className="flex items-center justify-center gap-2 text-primary font-medium">
                       <span>12 Categories</span>
                       <span>•</span>
