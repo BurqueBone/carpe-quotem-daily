@@ -13,9 +13,7 @@ const Index = () => {
   return <div className="min-h-screen bg-gradient-subtle">
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-6xl">
-        <header className="text-center mb-8">
-          <p className="text-lg text-muted-foreground max-w-md mx-auto">There are approximately 4,000 Sundays in a lifetime. Make them count.</p>
-        </header>
+        
 
         <div className="space-y-6">
           <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
@@ -36,10 +34,7 @@ const Index = () => {
                       Sunday4k sends you uplifting daily reminders about life's meaning and mortality—not to create fear, 
                       but to inspire you to live fully and purposefully.
                     </p>
-                    <Link 
-                      to="/auth" 
-                      className="block bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 hover:bg-white/20 transition-smooth cursor-pointer border border-white/20 hover:border-white/30"
-                    >
+                    <Link to="/auth" className="block bg-white/10 backdrop-blur-sm rounded-xl p-4 mb-6 hover:bg-white/20 transition-smooth cursor-pointer border border-white/20 hover:border-white/30">
                       <p className="text-white font-medium mb-2">Ready to start your journey?</p>
                       <p className="text-white/80 text-sm mb-3">
                         Sign in to customize your notification settings and receive personalized daily reminders 
@@ -74,10 +69,7 @@ const Index = () => {
                       <span>•</span>
                       <span>Lifetime Access</span>
                     </div>
-                    <Link 
-                      to="/carpe-diem" 
-                      className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth"
-                    >
+                    <Link to="/carpe-diem" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
                       <Zap className="w-4 h-4" />
                       Explore Resources
                       <ArrowRight className="w-4 h-4" />
