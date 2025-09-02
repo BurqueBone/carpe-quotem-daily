@@ -29,11 +29,7 @@ const Index = () => {
                       <Flower2 className="w-8 h-8 text-white" />
                     </div>
                     <h2 className="text-3xl font-bold text-white mb-4">Welcome to Sunday4k</h2>
-                    <p className="text-white/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6">
-                      Life is precious and finite. With approximately 4,000 Sundays in a lifetime, every moment counts. 
-                      Sunday4k sends you uplifting daily reminders about life's meaning and mortality—not to create fear, 
-                      but to inspire you to live fully and purposefully.
-                    </p>
+                    <p className="text-white/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6">Life is precious and finite. With approximately 4,000 Sundays in a lifetime, every moment counts. Sunday4k sends you uplifting daily reminders about life's meaning and mortality not to create fear, but to inspire you to live fully and purposefully.</p>
                     <Link to="/auth" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
                       
                       
