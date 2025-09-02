@@ -4,6 +4,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, RefreshCw, Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Header from "@/components/Header";
 
 const CarpeDiem = () => {
   const { categories, loading, error } = useCarpeDiemData();
@@ -13,7 +14,10 @@ const CarpeDiem = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="min-h-screen bg-gradient-subtle">
+      <Header />
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        <div className="space-y-8">
       <div className="text-center space-y-4">
         <div className="w-20 h-20 rounded-full bg-gradient-warm flex items-center justify-center shadow-glow mx-auto">
           <Zap className="w-10 h-10 text-white" />
@@ -85,6 +89,8 @@ const CarpeDiem = () => {
             Pick one resource from any category above and take action today. 
             Small steps compound into extraordinary transformations.
           </p>
+        </div>
+      </div>
         </div>
       </div>
     </div>
