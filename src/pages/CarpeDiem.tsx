@@ -1,8 +1,17 @@
 import CategoryCard from "@/components/CategoryCard";
-import { carpeDiemCategories } from "@/data/carpeDiemResources";
-import { Zap, ArrowRight } from "lucide-react";
+import { useCarpeDiemData } from "@/hooks/useCarpeDiemData";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle, RefreshCw, Zap, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const CarpeDiem = () => {
+  const { categories, loading, error } = useCarpeDiemData();
+
+  const handleRetry = () => {
+    window.location.reload();
+  };
+
   return (
     <div className="space-y-8">
       <div className="text-center space-y-4">
@@ -18,17 +27,50 @@ const CarpeDiem = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-        {carpeDiemCategories.map((category, index) => (
-          <CategoryCard
-            key={index}
-            title={category.title}
-            icon={<category.icon className="w-5 h-5" />}
-            description={category.description}
-            resources={category.resources}
-          />
-        ))}
-      </div>
+      {error && (
+        <Alert variant="destructive" className="mb-8">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription className="flex items-center justify-between">
+            <span>Failed to load resources: {error}</span>
+            <Button variant="outline" size="sm" onClick={handleRetry}>
+              <RefreshCw className="h-4 w-4 mr-2" />
+              Retry
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {Array.from({ length: 12 }).map((_, index) => (
+            <div key={index} className="p-6 rounded-lg border bg-card">
+              <div className="flex items-center gap-3 mb-4">
+                <Skeleton className="h-6 w-6" />
+                <Skeleton className="h-6 w-32" />
+              </div>
+              <Skeleton className="h-4 w-full mb-3" />
+              <Skeleton className="h-4 w-3/4 mb-4" />
+              <div className="space-y-2">
+                <Skeleton className="h-3 w-full" />
+                <Skeleton className="h-3 w-full" />  
+                <Skeleton className="h-3 w-2/3" />
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          {categories.map((category) => (
+            <CategoryCard
+              key={category.id}
+              title={category.title}
+              icon={<category.icon className="w-5 h-5" />}
+              description={category.description}
+              resources={category.resources}
+            />
+          ))}
+        </div>
+      )}
 
       <div className="bg-gradient-subtle rounded-xl p-8 border border-border/50 shadow-card text-center">
         <div className="space-y-4">
