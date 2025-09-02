@@ -3,10 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Bell, User, LogOut } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Bell, User, LogOut, Mail, Lock } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Navigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 
 const Profile = () => {
@@ -16,6 +19,13 @@ const Profile = () => {
   const [period, setPeriod] = useState("day");
   const [quantity, setQuantity] = useState("1");
   const [enabled, setEnabled] = useState(true);
+  
+  // Account settings state
+  const [newEmail, setNewEmail] = useState("");
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // Redirect if not logged in
   if (!user) {
@@ -45,6 +55,94 @@ const Profile = () => {
 
   const handleSignOut = async () => {
     await signOut();
+  };
+
+  const handleEmailUpdate = async () => {
+    if (!newEmail.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a new email address.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        email: newEmail,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Email update initiated",
+        description: "Please check your new email address for a confirmation link.",
+      });
+      setNewEmail("");
+    } catch (error: any) {
+      toast({
+        title: "Error updating email",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  const handlePasswordUpdate = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast({
+        title: "Error",
+        description: "Please fill in all password fields.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "New passwords do not match.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (newPassword.length < 6) {
+      toast({
+        title: "Error",
+        description: "Password must be at least 6 characters long.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUpdating(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: newPassword,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Password updated",
+        description: "Your password has been successfully updated.",
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      toast({
+        title: "Error updating password",
+        description: error.message,
+        variant: "destructive",
+      });
+    } finally {
+      setIsUpdating(false);
+    }
   };
 
   return (
@@ -137,6 +235,105 @@ const Profile = () => {
               <Button onClick={handleSave} className="w-full">
                 Save Settings
               </Button>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50 shadow-card bg-gradient-subtle">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <User className="h-5 w-5 text-primary" />
+                <CardTitle>Account Settings</CardTitle>
+              </div>
+              <CardDescription>
+                Update your email address and password
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Email Update Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <Mail className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-medium text-foreground">Change Email</h3>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="current-email">Current Email</Label>
+                  <Input
+                    id="current-email"
+                    type="email"
+                    value={user?.email || ""}
+                    disabled
+                    className="bg-muted"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-email">New Email</Label>
+                  <Input
+                    id="new-email"
+                    type="email"
+                    placeholder="Enter new email address"
+                    value={newEmail}
+                    onChange={(e) => setNewEmail(e.target.value)}
+                  />
+                </div>
+                <Button 
+                  onClick={handleEmailUpdate} 
+                  disabled={isUpdating || !newEmail.trim()}
+                  className="w-full"
+                >
+                  {isUpdating ? "Updating..." : "Update Email"}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  You'll need to confirm your new email address before the change takes effect.
+                </p>
+              </div>
+
+              {/* Password Update Section */}
+              <div className="space-y-4 border-t pt-6">
+                <div className="flex items-center gap-2">
+                  <Lock className="h-4 w-4 text-primary" />
+                  <h3 className="text-sm font-medium text-foreground">Change Password</h3>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="current-password">Current Password</Label>
+                  <Input
+                    id="current-password"
+                    type="password"
+                    placeholder="Enter current password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <Input
+                    id="new-password"
+                    type="password"
+                    placeholder="Enter new password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <Input
+                    id="confirm-password"
+                    type="password"
+                    placeholder="Confirm new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
+                </div>
+                <Button 
+                  onClick={handlePasswordUpdate} 
+                  disabled={isUpdating || !currentPassword || !newPassword || !confirmPassword}
+                  className="w-full"
+                >
+                  {isUpdating ? "Updating..." : "Update Password"}
+                </Button>
+                <p className="text-xs text-muted-foreground">
+                  Password must be at least 6 characters long.
+                </p>
+              </div>
             </CardContent>
           </Card>
 
