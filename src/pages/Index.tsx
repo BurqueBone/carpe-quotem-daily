@@ -1,20 +1,14 @@
 import { useState } from "react";
-import { TabsContent } from "@/components/ui/tabs";
 import NavigationTabs from "@/components/NavigationTabs";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
-
-import CarpeDiem from "./CarpeDiem";
+import { getTodayQuote } from "@/data/dailyQuotes";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home");
 
-  // Today's inspirational quote
-  const todayQuote = {
-    quote: "The purpose of life is not to be happy. It is to be useful, to be honorable, to be compassionate, to have it make some difference that you have lived and lived well.",
-    author: "Ralph Waldo Emerson",
-    source: "Essays and Lectures"
-  };
+  // Get today's inspirational quote (changes daily)
+  const todayQuote = getTodayQuote();
 
   return (
     <div className="min-h-screen bg-gradient-subtle">
@@ -46,8 +40,6 @@ const Index = () => {
                 </div>
               </div>
             )}
-            
-            {activeTab === "carpe-diem" && <CarpeDiem />}
           </div>
         </div>
       </div>

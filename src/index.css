@@ -39,8 +39,8 @@ All colors MUST be HSL.
     --ring: 25 80% 55%;
 
     /* Custom design tokens */
-    --gradient-warm: linear-gradient(135deg, hsl(249 75% 75%) 0%, hsl(25 100% 87%) 50%, hsl(249 60% 85%) 100%);
-    --gradient-subtle: linear-gradient(180deg, hsl(15 20% 96%) 0%, hsl(15 15% 94%) 100%);
+    --gradient-warm: linear-gradient(135deg, hsl(249 75% 75%) 0%, hsl(25 100% 87%) 100%);
+    --gradient-subtle: linear-gradient(180deg, hsl(249 75% 75% / 0.1) 0%, hsl(25 100% 87% / 0.1) 100%);
     --gradient-hero: linear-gradient(135deg, hsl(249 75% 75%) 0%, hsl(25 100% 87%) 100%);
     
     --shadow-warm: 0 10px 30px -10px hsl(25 80% 55% / 0.3);

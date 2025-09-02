@@ -22,6 +22,11 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-4">
+          <Link to="/carpe-diem">
+            <Button variant="ghost" className="text-foreground hover:text-primary">
+              Carpe Diem
+            </Button>
+          </Link>
           {user ? (
             <Link to="/profile">
               <Button
