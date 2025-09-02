@@ -41,12 +41,44 @@ export type Database = {
         }
         Relationships: []
       }
+      quotes: {
+        Row: {
+          author: string
+          created_at: string
+          id: string
+          is_published: boolean
+          quote: string
+          source: string | null
+          updated_at: string
+        }
+        Insert: {
+          author: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          quote: string
+          source?: string | null
+          updated_at?: string
+        }
+        Update: {
+          author?: string
+          created_at?: string
+          id?: string
+          is_published?: boolean
+          quote?: string
+          source?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       resources: {
         Row: {
           category_id: string
           created_at: string
           description: string
           id: string
+          ispublished: boolean | null
+          s4k_favorite: boolean | null
           title: string
           type: string
           updated_at: string
@@ -57,6 +89,8 @@ export type Database = {
           created_at?: string
           description: string
           id?: string
+          ispublished?: boolean | null
+          s4k_favorite?: boolean | null
           title: string
           type: string
           updated_at?: string
@@ -67,6 +101,8 @@ export type Database = {
           created_at?: string
           description?: string
           id?: string
+          ispublished?: boolean | null
+          s4k_favorite?: boolean | null
           title?: string
           type?: string
           updated_at?: string
