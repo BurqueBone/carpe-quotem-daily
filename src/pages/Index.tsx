@@ -34,7 +34,7 @@ const Index = () => {
                       Sunday4k sends you uplifting daily reminders about life's meaning and mortality—not to create fear, 
                       but to inspire you to live fully and purposefully.
                     </p>
-                    <Link to="/auth" className="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl p-6 border border-secondary/30 shadow-card hover:shadow-warm transition-smooth">
+                    <Link to="/auth" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
                       
                       
                       <div className="flex items-center justify-center gap-2 text-white font-semibold">
