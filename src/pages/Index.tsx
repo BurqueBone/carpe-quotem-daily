@@ -51,11 +51,7 @@ const Index = () => {
                       <Zap className="w-8 h-8 text-white" />
                     </div>
                     <h3 className="text-2xl font-bold text-foreground">Carpe Diem Resources</h3>
-                    <p className="text-muted-foreground leading-relaxed">
-                      Discover a curated collection of resources across 12 life categories—from Physical and Mental wellness 
-                      to Career, Creative, and Spiritual growth. Each resource is carefully selected to help you seize the day 
-                      and make meaningful progress in every area of your life.
-                    </p>
+                    <p className="text-muted-foreground leading-relaxed">Discover a curated collection of resources across 12 life categories from Physical and Mental wellness to Career, Creative, and Spiritual growth. Each resource is carefully selected to help you seize the day and make meaningful progress in every area of your life.</p>
                     <div className="text-primary/80 font-medium mb-2">
                       ✨ Transform awareness into action ✨
                     </div>
