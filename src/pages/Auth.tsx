@@ -8,6 +8,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/components/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const Auth = () => {
   const [isSignUp, setIsSignUp] = useState(false);
@@ -59,9 +60,9 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
-      <div className="flex items-center justify-center p-4" style={{ minHeight: 'calc(100vh - 80px)' }}>
+      <div className="flex items-center justify-center p-4 flex-1" style={{ minHeight: 'calc(100vh - 80px)' }}>
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl bg-gradient-warm bg-clip-text text-transparent">
@@ -122,6 +123,7 @@ const Auth = () => {
         </CardContent>
       </Card>
       </div>
+      <Footer />
     </div>
   );
 };

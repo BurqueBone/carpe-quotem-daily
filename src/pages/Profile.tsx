@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const Profile = () => {
   const { user, signOut } = useAuth();
@@ -146,9 +147,9 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="container mx-auto px-4 py-8 max-w-2xl flex-1">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center gap-3">
             <User className="h-8 w-8 text-primary" />
@@ -351,6 +352,7 @@ const Profile = () => {
           </Card>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };

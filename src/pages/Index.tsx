@@ -4,15 +4,16 @@ import { Zap, ArrowRight, Flower2 } from "lucide-react";
 import NavigationTabs from "@/components/NavigationTabs";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { getTodayQuote } from "@/data/dailyQuotes";
 const Index = () => {
   const [activeTab, setActiveTab] = useState("home");
 
   // Get today's inspirational quote (changes daily)
   const todayQuote = getTodayQuote();
-  return <div className="min-h-screen bg-gradient-subtle">
+  return <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
         
 
         <div className="space-y-6">
@@ -73,6 +74,7 @@ const Index = () => {
           </div>
         </div>
       </div>
+      <Footer />
     </div>;
 };
 export default Index;

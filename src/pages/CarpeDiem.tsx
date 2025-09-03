@@ -5,6 +5,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, RefreshCw, Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 const CarpeDiem = () => {
   const { categories, loading, error } = useCarpeDiemData();
@@ -14,9 +15,9 @@ const CarpeDiem = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
+      <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
         <div className="space-y-8">
       <div className="text-center space-y-4">
         <div className="w-20 h-20 rounded-full bg-gradient-warm flex items-center justify-center shadow-glow mx-auto">
@@ -93,6 +94,7 @@ const CarpeDiem = () => {
       </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 };
