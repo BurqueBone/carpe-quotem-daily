@@ -5,3 +5,6 @@ project_id = "aywuwyqscrtavulqijxm"
 
 [functions.daily-quote]
 verify_jwt = false
+
+[functions.sync-hubspot]
+verify_jwt = true

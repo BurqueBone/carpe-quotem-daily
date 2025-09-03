@@ -12,6 +12,7 @@ import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { HubSpotSync } from "@/components/HubSpotSync";
 
 const Profile = () => {
   const { user, signOut } = useAuth();
@@ -337,6 +338,10 @@ const Profile = () => {
               </div>
             </CardContent>
           </Card>
+
+          <div className="flex justify-center">
+            <HubSpotSync />
+          </div>
 
           <Card className="border-border/50 shadow-card bg-gradient-subtle">
             <CardHeader>
