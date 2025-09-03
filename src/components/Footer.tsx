@@ -91,7 +91,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Sunday4K. All rights reserved. Life is precious—make it count.
+            © {new Date().getFullYear()} Sunday4K. All rights reserved. Seize your every day.
           </p>
         </div>
       </div>
