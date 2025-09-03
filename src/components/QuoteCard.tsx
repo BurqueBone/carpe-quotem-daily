@@ -1,13 +1,15 @@
 import { Card } from "@/components/ui/card";
-import { Clock, Heart } from "lucide-react";
+import { Clock, Heart, Eye } from "lucide-react";
 
 interface QuoteCardProps {
   quote: string;
   author: string;
   source?: string;
+  displayCount?: number;
+  lastDisplayedAt?: string;
 }
 
-const QuoteCard = ({ quote, author, source }: QuoteCardProps) => {
+const QuoteCard = ({ quote, author, source, displayCount, lastDisplayedAt }: QuoteCardProps) => {
   return (
     <Card className="p-8 bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
       <div className="text-center space-y-6">
@@ -28,10 +30,23 @@ const QuoteCard = ({ quote, author, source }: QuoteCardProps) => {
           )}
         </div>
         
-        <div className="flex items-center justify-center gap-2 text-muted-foreground text-sm">
-          <Clock className="w-4 h-4" />
-          <span>Today's reminder</span>
+        <div className="flex items-center justify-center gap-4 text-muted-foreground text-sm">
+          <div className="flex items-center gap-2">
+            <Clock className="w-4 h-4" />
+            <span>Today's reminder</span>
+          </div>
+          {displayCount && (
+            <div className="flex items-center gap-2">
+              <Eye className="w-4 h-4" />
+              <span>Viewed {displayCount} times</span>
+            </div>
+          )}
         </div>
+        {lastDisplayedAt && (
+          <div className="text-xs text-muted-foreground/70 text-center">
+            Last shown: {new Date(lastDisplayedAt).toLocaleDateString()}
+          </div>
+        )}
       </div>
     </Card>
   );

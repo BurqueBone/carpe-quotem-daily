@@ -1,1 +1,7 @@
 project_id = "aywuwyqscrtavulqijxm"
+
+[project]
+project_id = "aywuwyqscrtavulqijxm"
+
+[functions.daily-quote]
+verify_jwt = false
