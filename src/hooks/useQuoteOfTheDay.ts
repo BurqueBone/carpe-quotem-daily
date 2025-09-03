@@ -20,14 +20,23 @@ export const useQuoteOfTheDay = () => {
       setLoading(true);
       setError(null);
 
-      const { data, error } = await supabase.functions.invoke('daily-quote');
+      const { data, error } = await supabase
+        .rpc('get_random_quote_and_track')
+        .single();
       
       if (error) throw error;
 
-      if (data.success && data.quote) {
-        setQuote(data.quote);
+      if (data) {
+        setQuote({
+          id: data.id,
+          quote: data.quote,
+          author: data.author,
+          source: data.source,
+          display_count: data.display_count,
+          last_displayed_at: data.last_displayed_at
+        });
       } else {
-        throw new Error(data.error || 'Failed to fetch quote');
+        throw new Error('No quote found');
       }
     } catch (err) {
       console.error('Error fetching quote:', err);
