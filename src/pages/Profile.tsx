@@ -35,10 +35,10 @@ const Profile = () => {
 
   const getMaxQuantity = (selectedPeriod: string): number => {
     switch (selectedPeriod) {
-      case "day": return 3;
-      case "week": return 21;
-      case "month": return 90;
-      default: return 3;
+      case "day": return 1;
+      case "week": return 7;
+      case "month": return 30;
+      default: return 1;
     }
   };
 

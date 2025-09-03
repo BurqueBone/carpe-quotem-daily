@@ -17,9 +17,9 @@ const Settings = () => {
 
   const getMaxQuantity = (selectedPeriod: string) => {
     switch (selectedPeriod) {
-      case "day": return 3;
-      case "week": return 21;
-      case "month": return 90;
+      case "day": return 1;
+      case "week": return 7;
+      case "month": return 30;
       default: return 1;
     }
   };
