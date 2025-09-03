@@ -21,8 +21,8 @@ const Index = () => {
           
           <div className="tab-content">
             {activeTab === "home" && <div className="space-y-6">
-                <div className="bg-gradient-to-br from-foreground/5 to-muted/10 rounded-2xl p-6 border border-border shadow-card text-center">
-                  <p className="text-2xl font-bold text-foreground">You will die one day.</p>
+                <div className="bg-gradient-warm rounded-2xl p-6 border border-primary/20 shadow-glow text-center">
+                  <p className="text-2xl font-bold text-white">You will die one day.</p>
                 </div>
                 <QuoteCard {...todayQuote} />
                 
