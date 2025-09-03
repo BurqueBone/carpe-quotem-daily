@@ -45,8 +45,10 @@ export type Database = {
         Row: {
           author: string
           created_at: string
+          display_count: number | null
           id: string
           is_published: boolean
+          last_displayed_at: string | null
           quote: string
           source: string | null
           updated_at: string
@@ -54,8 +56,10 @@ export type Database = {
         Insert: {
           author: string
           created_at?: string
+          display_count?: number | null
           id?: string
           is_published?: boolean
+          last_displayed_at?: string | null
           quote: string
           source?: string | null
           updated_at?: string
@@ -63,8 +67,10 @@ export type Database = {
         Update: {
           author?: string
           created_at?: string
+          display_count?: number | null
           id?: string
           is_published?: boolean
+          last_displayed_at?: string | null
           quote?: string
           source?: string | null
           updated_at?: string
@@ -123,7 +129,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_random_quote_and_track: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          author: string
+          display_count: number
+          id: string
+          last_displayed_at: string
+          quote: string
+          source: string
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
