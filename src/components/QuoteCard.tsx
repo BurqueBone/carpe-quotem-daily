@@ -22,13 +22,13 @@ const QuoteCard = ({
           </div>
         </div>
         
-        <blockquote className="text-xl md:text-2xl font-medium leading-relaxed text-white">
+        <blockquote className="text-xl md:text-2xl font-medium leading-relaxed text-foreground">
           "{quote}"
         </blockquote>
         
         <div className="space-y-2">
           <p className="text-lg font-semibold text-primary">— {author}</p>
-          {source && <p className="text-sm text-muted-foreground italic">{source}</p>}
+          {source && <p className="text-sm italic text-white">{source}</p>}
         </div>
         
       </div>
