@@ -14,7 +14,7 @@ const QuoteCard = ({
   displayCount,
   lastDisplayedAt
 }: QuoteCardProps) => {
-  return <Card className="p-8 bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
+  return <Card className="bg-gradient-warm rounded-2xl p-6 border border-primary/20 shadow-glow hover:shadow-xl transition-smooth text-center">
       <div className="text-center space-y-6">
         <div className="flex justify-center">
           <div className="w-16 h-16 rounded-full bg-gradient-warm flex items-center justify-center shadow-glow">
