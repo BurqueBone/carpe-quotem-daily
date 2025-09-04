@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sunday4k Email Template</title>
+    <style>
+        /* Reset and base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #F8F7FF;
+        }
+        
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 20px rgba(147, 129, 255, 0.1);
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #9381ff 0%, #B8B8FF 100%);
+            padding: 40px 30px;
+            text-align: center;
+            border-radius: 8px 8px 0 0;
+        }
+        
+        .logo {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .tagline {
+            color: #F8F7FF;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        /* Main content */
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .greeting {
+            font-size: 24px;
+            color: #9381ff;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        
+        .quote-section {
+            background: linear-gradient(135deg, #F8F7FF 0%, #FFEEDD 100%);
+            padding: 30px;
+            border-radius: 12px;
+            margin: 30px 0;
+            border-left: 4px solid #9381ff;
+        }
+        
+        .quote {
+            font-size: 20px;
+            font-style: italic;
+            color: #333333;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .author {
+            font-size: 16px;
+            color: #9381ff;
+            font-weight: 600;
+            text-align: right;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #555555;
+            margin: 25px 0;
+            line-height: 1.7;
+        }
+        
+        /* CTA Button */
+        .cta-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #9381ff 0%, #B8B8FF 100%);
+            color: #ffffff;
+            text-decoration: none;
+            padding: 16px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(147, 129, 255, 0.3);
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(147, 129, 255, 0.4);
+        }
+        
+        /* Resources section */
+        .resources {
+            background-color: #FFEEDD;
+            padding: 25px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+        
+        .resources h3 {
+            color: #9381ff;
+            font-size: 18px;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        .resource-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #555555;
+        }
+        
+        .resource-icon {
+            width: 16px;
+            height: 16px;
+            background-color: #9381ff;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        /* Footer */
+        .footer {
+            background: linear-gradient(135deg, #FFD8BE 0%, #FFEEDD 100%);
+            padding: 30px;
+            text-align: center;
+            border-radius: 0 0 8px 8px;
+        }
+        
+        .footer-text {
+            color: #666666;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .social-links {
+            margin: 20px 0;
+        }
+        
+        .social-link {
+            display: inline-block;
+            margin: 0 10px;
+            color: #9381ff;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .unsubscribe {
+            font-size: 12px;
+            color: #888888;
+            margin-top: 20px;
+        }
+        
+        .unsubscribe a {
+            color: #9381ff;
+            text-decoration: none;
+        }
+        
+        /* Mobile responsiveness */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .header, .content, .footer {
+                padding: 25px 20px;
+            }
+            
+            .logo {
+                font-size: 28px;
+            }
+            
+            .greeting {
+                font-size: 22px;
+            }
+            
+            .quote {
+                font-size: 18px;
+            }
+            
+            .quote-section {
+                padding: 20px;
+            }
+            
+            .cta-button {
+                display: block;
+                width: 100%;
+                padding: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">Sunday4k</div>
+            <div class="tagline">Daily inspiration for a meaningful life</div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <div class="greeting">Hello {{contact.firstname}},</div>
+            
+            <div class="message">
+                Here's your daily reminder that life is precious and every moment counts. 
+                Let this quote inspire you to make today meaningful.
+            </div>
+            
+            <!-- Daily Quote Section -->
+            <div class="quote-section">
+                <div class="quote">
+                    "{{custom.daily_quote}}"
+                </div>
+                <div class="author">
+                    — {{custom.quote_author}}
+                </div>
+            </div>
+            
+            <div class="message">
+                Remember, you have the power to create positive change in your life and the lives of others. 
+                Take a moment today to reflect on what truly matters to you.
+            </div>
+            
+            <!-- CTA Section -->
+            <div class="cta-section">
+                <a href="{{custom.app_url}}" class="cta-button">
+                    Explore More Resources
+                </a>
+            </div>
+            
+            <!-- Resources Section -->
+            <div class="resources">
+                <h3>Today's Focus Areas</h3>
+                <div class="resource-item">
+                    <div class="resource-icon"></div>
+                    <span>Physical: Take a mindful walk in nature</span>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"></div>
+                    <span>Mental: Practice 5 minutes of meditation</span>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"></div>
+                    <span>Emotional: Express gratitude to someone special</span>
+                </div>
+                <div class="resource-item">
+                    <div class="resource-icon"></div>
+                    <span>Social: Connect meaningfully with a friend</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-text">
+                Sunday4k - Inspiring positive action and reflection since 2025
+            </div>
+            
+            <div class="social-links">
+                <a href="{{custom.website_url}}" class="social-link">Visit Website</a>
+                <a href="{{custom.support_email}}" class="social-link">Contact Us</a>
+            </div>
+            
+            <div class="unsubscribe">
+                You're receiving this because you subscribed to Sunday4k daily inspiration.<br>
+                <a href="{{unsubscribe_link}}">Unsubscribe</a> | 
+                <a href="{{custom.preference_center}}">Update Preferences</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

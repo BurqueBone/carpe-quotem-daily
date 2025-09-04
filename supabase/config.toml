@@ -10,4 +10,7 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.import-quotes]
+verify_jwt = false
+
+[functions.send-hubspot-email]
 verify_jwt = true

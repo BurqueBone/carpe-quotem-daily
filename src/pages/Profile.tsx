@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { HubSpotSync } from "@/components/HubSpotSync";
+import { EmailTemplateManager } from "@/components/EmailTemplateManager";
 
 const Profile = () => {
   const { user, signOut } = useAuth();
@@ -356,6 +357,8 @@ const Profile = () => {
             </CardContent>
           </Card>
         </div>
+
+        <EmailTemplateManager />
       </div>
       <Footer />
     </div>
