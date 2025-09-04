@@ -30,8 +30,8 @@ const Index = () => {
                   <p className="text-2xl font-bold text-white">You will die one day.</p>
                 </div>
                 
-                <div className="relative text-center space-y-6 bg-gradient-warm p-8 shadow-glow border-2 border-primary/20 overflow-hidden rounded-none bg-transparent">
-                  <div className="absolute inset-0 bg-[#ffd8be] rounded-none"></div>
+                <div className="relative text-center space-y-6 bg-gradient-warm rounded-2xl p-8 shadow-glow border-2 border-primary/20 overflow-hidden">
+                  <div className="absolute inset-0 bg-card/30"></div>
                   <div className="relative z-10">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
                       <Flower2 className="w-8 h-8 text-white" />
@@ -41,7 +41,7 @@ const Index = () => {
                     <Link to="/auth" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
                       
                       
-                      <div className="flex items-center justify-center gap-2 text-white font-semibold">
+                      <div className="flex items-center justify-center gap-2 font-semibold text-black">
                         <ArrowRight className="w-4 h-4" />
                         Start Your Inspiration
                       </div>
