@@ -31,7 +31,7 @@ const Index = () => {
                 </div>
                 
                 <div className="p-8 bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
-                  <div className="absolute inset-0 bg-card/30"></div>
+                  
                   <div className="relative z-10">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
                       <Flower2 className="w-8 h-8 text-white" />
