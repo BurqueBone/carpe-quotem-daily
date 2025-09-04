@@ -31,17 +31,6 @@ const QuoteCard = ({
           {source && <p className="text-sm text-muted-foreground italic">{source}</p>}
         </div>
         
-        <div className="flex items-center justify-center gap-4 text-muted-foreground text-sm">
-          <div className="flex items-center gap-2">
-            <Clock className="w-4 h-4" />
-            <span>Today's reminder</span>
-          </div>
-          {displayCount && <div className="flex items-center gap-2">
-              
-              
-            </div>}
-        </div>
-        {lastDisplayedAt}
       </div>
     </Card>;
 };
