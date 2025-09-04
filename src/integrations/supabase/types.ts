@@ -46,6 +46,7 @@ export type Database = {
           author: string
           created_at: string
           display_count: number | null
+          display_queue: string
           id: string
           is_published: boolean
           last_displayed_at: string | null
@@ -57,6 +58,7 @@ export type Database = {
           author: string
           created_at?: string
           display_count?: number | null
+          display_queue: string
           id?: string
           is_published?: boolean
           last_displayed_at?: string | null
@@ -68,6 +70,7 @@ export type Database = {
           author?: string
           created_at?: string
           display_count?: number | null
+          display_queue?: string
           id?: string
           is_published?: boolean
           last_displayed_at?: string | null
