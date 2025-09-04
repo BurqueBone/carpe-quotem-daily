@@ -30,7 +30,7 @@ const Index = () => {
                   <p className="text-2xl font-bold text-white">You will die one day.</p>
                 </div>
                 
-                <div className="relative text-center space-y-6 bg-gradient-warm rounded-2xl p-8 shadow-glow border-2 border-primary/20 overflow-hidden">
+                <div className="p-8 bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
                   <div className="absolute inset-0 bg-card/30"></div>
                   <div className="relative z-10">
                     <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
