@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -6,6 +6,8 @@ import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { Bell, Clock, Hash } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/components/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -13,7 +15,10 @@ const Settings = () => {
   const [period, setPeriod] = useState("day");
   const [quantity, setQuantity] = useState("1");
   const [enabled, setEnabled] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+  const { user } = useAuth();
 
   const getMaxQuantity = (selectedPeriod: string) => {
     switch (selectedPeriod) {
@@ -29,11 +34,76 @@ const Settings = () => {
     return Array.from({ length: max }, (_, i) => (i + 1).toString());
   };
 
-  const handleSave = () => {
-    toast({
-      title: "Settings saved!",
-      description: "Your notification preferences have been updated.",
-    });
+  // Load user settings on mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      if (!user) return;
+      
+      setLoading(true);
+      try {
+        const { data, error } = await supabase
+          .from('notification_settings')
+          .select('*')
+          .eq('user_id', user.id)
+          .single();
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error loading settings:', error);
+          return;
+        }
+
+        if (data) {
+          setEnabled(data.enabled);
+          setPeriod(data.period);
+          setQuantity(data.quantity.toString());
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, [user]);
+
+  const handleSave = async () => {
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to save settings.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('notification_settings')
+        .upsert({
+          user_id: user.id,
+          enabled,
+          period,
+          quantity: parseInt(quantity),
+        });
+
+      if (error) throw error;
+
+      toast({
+        title: "Settings saved!",
+        description: "Your notification preferences have been updated.",
+      });
+    } catch (error) {
+      console.error('Error saving settings:', error);
+      toast({
+        title: "Error",
+        description: "Failed to save settings. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -135,11 +205,18 @@ const Settings = () => {
 
             <Button 
               onClick={handleSave}
+              disabled={saving || loading || !user}
               className="w-full bg-gradient-warm hover:opacity-90 text-white shadow-glow transition-smooth"
               size="lg"
             >
-              Save Settings
+              {saving ? "Saving..." : "Save Settings"}
             </Button>
+            
+            {!user && (
+              <p className="text-sm text-muted-foreground text-center mt-2">
+                Please log in to save your notification preferences.
+              </p>
+            )}
           </div>
         </div>
       </div>
