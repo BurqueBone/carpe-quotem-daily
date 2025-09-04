@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-// Import Quotes Edge Function
+// Import Quotes Edge Function (enhanced diagnostics)
 // Fetches a public JSON dataset of inspirational quotes and inserts up to 1000
 // quotes with known authors into public.quotes, assigning sequential future
 // display_queue dates without gaps.
@@ -11,10 +11,17 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+if (!SUPABASE_URL) {
+  console.error("import-quotes: Missing SUPABASE_URL secret");
+}
+if (!SERVICE_ROLE_KEY) {
+  console.error("import-quotes: Missing SUPABASE_SERVICE_ROLE_KEY secret");
+}
+
+const supabase = createClient(SUPABASE_URL || "", SERVICE_ROLE_KEY || "");
 
 // Public dataset (~1000+ quotes) with author fields
 const DATASET_URL =
@@ -37,10 +44,10 @@ async function getMaxDisplayDate(): Promise<string> {
   if (error) throw error;
   if (!data || !data.display_queue) {
     const d = new Date();
-    d.setDate(d.getDate() + 0); // today; we will add +1 for first item
+    d.setDate(d.getDate()); // today; we will add +1 for first item
     return d.toISOString().slice(0, 10); // YYYY-MM-DD
   }
-  return data.display_queue as unknown as string; // already YYYY-MM-DD
+  return (data as any).display_queue as string; // YYYY-MM-DD
 }
 
 function addDays(dateStr: string, days: number): string {
@@ -50,7 +57,6 @@ function addDays(dateStr: string, days: number): string {
 }
 
 async function getExistingQuoteSet(): Promise<Set<string>> {
-  // Fetch existing quotes' text to avoid duplicates
   const existing = new Set<string>();
   let from = 0;
   const pageSize = 1000;
@@ -61,14 +67,14 @@ async function getExistingQuoteSet(): Promise<Set<string>> {
       .range(from, from + pageSize - 1);
     if (error) throw error;
     if (!data || data.length === 0) break;
-    for (const row of data) existing.add((row as any).quote.trim());
+    for (const row of data) existing.add(((row as any).quote || "").trim());
     if (data.length < pageSize) break;
     from += pageSize;
   }
   return existing;
 }
 
-async function insertInBatches(rows: any[], batchSize = 200) {
+async function insertInBatches(rows: any[], batchSize = 100) {
   for (let i = 0; i < rows.length; i += batchSize) {
     const chunk = rows.slice(i, i + batchSize);
     const { error } = await supabase.from("quotes").insert(chunk);
@@ -77,7 +83,7 @@ async function insertInBatches(rows: any[], batchSize = 200) {
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -90,56 +96,73 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Verify JWT is required by config; no extra checks needed here
+    if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+      return new Response(
+        JSON.stringify({ error: "Missing Supabase secrets on server", haveUrl: !!SUPABASE_URL, haveServiceRole: !!SERVICE_ROLE_KEY }),
+        { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } },
+      );
+    }
 
     // Fetch dataset
     const resp = await fetch(DATASET_URL);
     if (!resp.ok) {
+      console.error("import-quotes: dataset fetch failed", { status: resp.status, statusText: resp.statusText });
       return new Response(
         JSON.stringify({ error: "Failed to fetch dataset", status: resp.status }),
         { status: 502, headers: { "Content-Type": "application/json", ...corsHeaders } },
       );
     }
+
     const dataset: Array<{ quote: string; author?: string }> = await resp.json();
+    console.log("import-quotes: dataset length", dataset?.length);
 
-    // Prepare filtering: known author only, non-empty quote
+    // Prepare filtering: known author only, non-empty quote, dedupe within dataset
     const existing = await getExistingQuoteSet();
+    console.log("import-quotes: existing quotes in DB", existing.size);
 
-    const filtered = dataset
-      .filter((q) => q.quote && q.quote.trim().length > 0 && !isUnknownAuthor(q.author))
-      .filter((q) => !existing.has(q.quote.trim()));
-
-    // Limit to 1000 new items as requested
-    const limit = Math.min(1000, filtered.length);
-
-    // Determine start display date
-    const maxDisplayDate = await getMaxDisplayDate();
-
-    // Build rows with sequential future dates starting +1 day after max
-    const rows = [] as any[];
-    for (let i = 0; i < limit; i++) {
-      const q = filtered[i];
-      const displayDate = addDays(maxDisplayDate, i + 1);
-      rows.push({
-        quote: q.quote.trim(),
-        author: q.author?.trim() ?? "",
-        source: "daily-motivation dataset (GitHub)",
-        is_published: true,
-        display_queue: displayDate, // satisfies NOT NULL + unique index
-      });
+    const seen = new Set<string>();
+    const filtered = [] as Array<{ quote: string; author?: string }>;
+    for (const q of dataset) {
+      const qt = (q.quote || "").trim();
+      if (!qt) continue;
+      if (isUnknownAuthor(q.author)) continue;
+      if (existing.has(qt)) continue;
+      if (seen.has(qt)) continue; // dedupe within dataset
+      seen.add(qt);
+      filtered.push({ quote: qt, author: q.author?.trim() });
     }
 
-    if (rows.length === 0) {
+    const limit = Math.min(1000, filtered.length);
+    console.log("import-quotes: filtered count", filtered.length, "limit", limit);
+
+    if (limit === 0) {
       return new Response(
         JSON.stringify({ inserted: 0, message: "No new quotes to insert after filtering." }),
         { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
       );
     }
 
-    await insertInBatches(rows, 200);
+    const maxDisplayDate = await getMaxDisplayDate();
+    console.log("import-quotes: max display date", maxDisplayDate);
 
+    const rows = [] as any[];
+    for (let i = 0; i < limit; i++) {
+      const q = filtered[i];
+      const displayDate = addDays(maxDisplayDate, i + 1);
+      rows.push({
+        quote: q.quote,
+        author: q.author ?? "",
+        source: "daily-motivation dataset (GitHub)",
+        is_published: true,
+        display_queue: displayDate,
+      });
+    }
+
+    await insertInBatches(rows, 100);
+
+    console.log("import-quotes: inserted rows", rows.length);
     return new Response(
-      JSON.stringify({ inserted: rows.length, start_date_after: maxDisplayDate, last_display_date: rows[rows.length - 1].display_queue }),
+      JSON.stringify({ inserted: rows.length, start_after: maxDisplayDate, last_date: rows[rows.length - 1].display_queue }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } },
     );
   } catch (err) {
