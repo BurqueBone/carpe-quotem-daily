@@ -36,7 +36,7 @@ const Index = () => {
                       <Flower2 className="w-8 h-8 text-white" />
                     </div>
                     <h2 className="text-3xl font-bold mb-4 text-black text-center">Welcome to Sunday4k</h2>
-                    <p className="text-black/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6 text-center">We get it, that statement feels abrasive but we don't make it to cause distress. We use it as a form of grounding. A reminder of death instills a deep sense of gratitude and appreciation for life, prompts the setting of meaningful priorities, enhances mindfulness and intentional living, and can reduce fear and anxiety about death itself, ultimately leading to a more fulfilling existence and improved well-being.  </p>
+                    <p className="text-black/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6 text-center">We get it, that statement feels abrasive but don't say it to cause distress. We view this reminder as a form of grounding. A reminder of death instills a deep sense of gratitude and appreciation for life, prompts the setting of meaningful priorities, enhances mindfulness and intentional living, and can reduce fear and anxiety about death itself, ultimately leading to a more fulfilling existence and improved well-being.  </p>
                     
                   </div>
                 </div>
