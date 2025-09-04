@@ -25,6 +25,25 @@ const Index = () => {
                   <p className="text-2xl font-bold text-white">You will die one day.</p>
                 </div>
                 
+                <div className="relative text-center space-y-6 bg-gradient-warm rounded-2xl p-8 shadow-glow border-2 border-primary/20 overflow-hidden">
+                  <div className="absolute inset-0 bg-card/30"></div>
+                  <div className="relative z-10">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
+                      <Flower2 className="w-8 h-8 text-white" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-white mb-4">Welcome to Sunday4k</h2>
+                    <p className="text-white/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6">Don't let daily struggles distract you from the fact that life is a limited gift. Sunday4k will send reminders that you will die one day, but not to drag you down, instead to inspire you to live fully and purposefully.</p>
+                    <Link to="/auth" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
+                      
+                      
+                      <div className="flex items-center justify-center gap-2 text-white font-semibold">
+                        <ArrowRight className="w-4 h-4" />
+                        Start Your Inspiration
+                      </div>
+                    </Link>
+                  </div>
+                </div>
+                
                 {/* Quote Section */}
                 {loading ? (
                   <Card className="p-8 bg-gradient-subtle shadow-card border-border/50">
@@ -55,25 +74,6 @@ const Index = () => {
                   />
                 ) : null}
                 
-                <div className="relative text-center space-y-6 bg-gradient-warm rounded-2xl p-8 shadow-glow border-2 border-primary/20 overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-subtle opacity-30"></div>
-                  <div className="relative z-10">
-                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
-                      <Flower2 className="w-8 h-8 text-white" />
-                    </div>
-                    <h2 className="text-3xl font-bold text-white mb-4">Welcome to Sunday4k</h2>
-                    <p className="text-white/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6">Don't let daily struggles distract you from the fact that life is a limited gift. Sunday4k will send reminders that you will die one day, but not to drag you down, instead to inspire you to live fully and purposefully.</p>
-                    <Link to="/auth" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
-                      
-                      
-                      <div className="flex items-center justify-center gap-2 text-white font-semibold">
-                        <ArrowRight className="w-4 h-4" />
-                        Start Your Inspiration
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-
                 <div className="bg-gradient-to-br from-secondary/20 to-accent/20 rounded-2xl p-6 border border-secondary/30 shadow-card hover:shadow-warm transition-smooth">
                   <div className="text-center space-y-4">
                     <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg">
