@@ -1,6 +1,5 @@
 import { Card } from "@/components/ui/card";
 import { Clock, Heart, Eye } from "lucide-react";
-
 interface QuoteCardProps {
   quote: string;
   author: string;
@@ -8,10 +7,14 @@ interface QuoteCardProps {
   displayCount?: number;
   lastDisplayedAt?: string;
 }
-
-const QuoteCard = ({ quote, author, source, displayCount, lastDisplayedAt }: QuoteCardProps) => {
-  return (
-    <Card className="p-8 bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
+const QuoteCard = ({
+  quote,
+  author,
+  source,
+  displayCount,
+  lastDisplayedAt
+}: QuoteCardProps) => {
+  return <Card className="p-8 bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
       <div className="text-center space-y-6">
         <div className="flex justify-center">
           <div className="w-16 h-16 rounded-full bg-gradient-warm flex items-center justify-center shadow-glow">
@@ -25,9 +28,7 @@ const QuoteCard = ({ quote, author, source, displayCount, lastDisplayedAt }: Quo
         
         <div className="space-y-2">
           <p className="text-lg font-semibold text-primary">— {author}</p>
-          {source && (
-            <p className="text-sm text-muted-foreground italic">{source}</p>
-          )}
+          {source && <p className="text-sm text-muted-foreground italic">{source}</p>}
         </div>
         
         <div className="flex items-center justify-center gap-4 text-muted-foreground text-sm">
@@ -35,21 +36,13 @@ const QuoteCard = ({ quote, author, source, displayCount, lastDisplayedAt }: Quo
             <Clock className="w-4 h-4" />
             <span>Today's reminder</span>
           </div>
-          {displayCount && (
-            <div className="flex items-center gap-2">
-              <Eye className="w-4 h-4" />
-              <span>Viewed {displayCount} times</span>
-            </div>
-          )}
+          {displayCount && <div className="flex items-center gap-2">
+              
+              
+            </div>}
         </div>
-        {lastDisplayedAt && (
-          <div className="text-xs text-muted-foreground/70 text-center">
-            Last shown: {new Date(lastDisplayedAt).toLocaleDateString()}
-          </div>
-        )}
+        {lastDisplayedAt}
       </div>
-    </Card>
-  );
+    </Card>;
 };
-
 export default QuoteCard;
