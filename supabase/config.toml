@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.sync-hubspot]
 verify_jwt = true
+
+[functions.import-quotes]
+verify_jwt = true
