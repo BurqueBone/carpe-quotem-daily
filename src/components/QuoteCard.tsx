@@ -31,6 +31,17 @@ const QuoteCard = ({
           {source && <p className="text-sm italic text-white">{source}</p>}
         </div>
         
+        <div className="flex justify-center mt-6">
+          <a href="/auth" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
+            <div className="flex items-center justify-center gap-2 font-semibold text-black">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              Start Your Inspiration
+            </div>
+          </a>
+        </div>
+        
       </div>
     </Card>;
 };

@@ -41,14 +41,6 @@ const Index = () => {
 
 
 Sunday4k will send reminders that you will die one day, but not to drag you down, instead to inspire you to live fully and purposefully.</p>
-                    <Link to="/auth" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
-                      
-                      
-                      <div className="flex items-center justify-center gap-2 font-semibold text-black">
-                        <ArrowRight className="w-4 h-4" />
-                        Start Your Inspiration
-                      </div>
-                    </Link>
                   </div>
                 </div>
                 
