@@ -17,6 +17,7 @@ const Settings = () => {
   const [enabled, setEnabled] = useState(true);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [sending, setSending] = useState(false);
   const { toast } = useToast();
   const { user } = useAuth();
 
@@ -114,6 +115,27 @@ const Settings = () => {
       });
     } finally {
       setSaving(false);
+    }
+  };
+  
+  const handleSendTest = async () => {
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('send-daily-quotes');
+      if (error) throw error as any;
+      toast({
+        title: "Test send triggered",
+        description: `Emails sent: ${data?.emailsSent ?? 0}. Errors: ${data?.errors?.length ?? 0}`,
+      });
+    } catch (error: any) {
+      console.error('Error triggering test send:', error);
+      toast({
+        title: "Error",
+        description: error?.message ?? "Failed to trigger send. Check Edge Function logs.",
+        variant: "destructive",
+      });
+    } finally {
+      setSending(false);
     }
   };
 
@@ -221,6 +243,17 @@ const Settings = () => {
               size="lg"
             >
               {saving ? "Saving..." : "Save Settings"}
+            </Button>
+            
+            <Button
+              onClick={handleSendTest}
+              disabled={sending || !user}
+              variant="outline"
+              className="w-full"
+              size="sm"
+              aria-label="Send test daily quote email to all enabled users now"
+            >
+              {sending ? "Sending test..." : "Send test daily quote now"}
             </Button>
             
             {!user && (
