@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { useAuth } from '@/components/AuthContext';
 import { useToast } from '@/hooks/use-toast';
+import { useSecurityValidation } from '@/hooks/useSecurityValidation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -18,6 +19,7 @@ const Auth = () => {
   
   const { user, signInWithMagicLink } = useAuth();
   const { toast } = useToast();
+  const { validateEmail, checkRateLimit, sanitizeInput } = useSecurityValidation();
 
   // Redirect if already logged in
   if (user) {
@@ -29,8 +31,24 @@ const Auth = () => {
     setLoading(true);
     setError('');
 
+    // Enhanced security validation
+    const sanitizedEmail = sanitizeInput(email);
+    const emailValidation = validateEmail(sanitizedEmail);
+    
+    if (!emailValidation.isValid) {
+      setError(emailValidation.errors[0]);
+      setLoading(false);
+      return;
+    }
+
+    // Rate limiting check
+    if (!checkRateLimit(`magic-link-${sanitizedEmail}`, 3, 10 * 60 * 1000)) {
+      setLoading(false);
+      return;
+    }
+
     try {
-      const { error } = await signInWithMagicLink(email);
+      const { error } = await signInWithMagicLink(sanitizedEmail);
       if (error) {
         setError(error.message);
       } else {
@@ -41,7 +59,8 @@ const Auth = () => {
         });
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('Magic link error:', err);
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setLoading(false);
     }

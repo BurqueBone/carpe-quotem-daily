@@ -10,6 +10,7 @@ import { useAuth } from "@/components/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useSecurityValidation } from "@/hooks/useSecurityValidation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
@@ -18,6 +19,7 @@ import Footer from "@/components/Footer";
 const Profile = () => {
   const { user, signOut } = useAuth();
   const { toast } = useToast();
+  const { validateEmail, validatePassword, sanitizeInput } = useSecurityValidation();
   
   const [period, setPeriod] = useState("day");
   const [quantity, setQuantity] = useState("1");
@@ -61,10 +63,13 @@ const Profile = () => {
   };
 
   const handleEmailUpdate = async () => {
-    if (!newEmail.trim()) {
+    const sanitizedEmail = sanitizeInput(newEmail);
+    const emailValidation = validateEmail(sanitizedEmail);
+    
+    if (!emailValidation.isValid) {
       toast({
-        title: "Error",
-        description: "Please enter a new email address.",
+        title: "Invalid Email",
+        description: emailValidation.errors[0],
         variant: "destructive",
       });
       return;
@@ -73,7 +78,7 @@ const Profile = () => {
     setIsUpdating(true);
     try {
       const { error } = await supabase.auth.updateUser({
-        email: newEmail,
+        email: sanitizedEmail,
       });
 
       if (error) throw error;
@@ -84,9 +89,10 @@ const Profile = () => {
       });
       setNewEmail("");
     } catch (error: any) {
+      console.error('Email update error:', error);
       toast({
         title: "Error updating email",
-        description: error.message,
+        description: error.message || "Failed to update email. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -113,10 +119,12 @@ const Profile = () => {
       return;
     }
 
-    if (newPassword.length < 6) {
+    // Enhanced password validation
+    const passwordValidation = validatePassword(newPassword);
+    if (!passwordValidation.isValid) {
       toast({
-        title: "Error",
-        description: "Password must be at least 6 characters long.",
+        title: "Weak Password",
+        description: passwordValidation.errors[0],
         variant: "destructive",
       });
       return;
@@ -132,15 +140,16 @@ const Profile = () => {
 
       toast({
         title: "Password updated",
-        description: "Your password has been successfully updated.",
+        description: "Your password has been successfully updated with enhanced security.",
       });
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
     } catch (error: any) {
+      console.error('Password update error:', error);
       toast({
         title: "Error updating password",
-        description: error.message,
+        description: error.message || "Failed to update password. Please try again.",
         variant: "destructive",
       });
     } finally {
