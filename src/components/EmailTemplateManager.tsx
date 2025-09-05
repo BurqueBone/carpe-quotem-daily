@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Mail, Download, Send, Eye, Copy } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+
 
 export const EmailTemplateManager = () => {
   const { toast } = useToast();
@@ -52,53 +52,10 @@ export const EmailTemplateManager = () => {
   };
 
   const handleSendTestEmail = async () => {
-    if (!emailData.recipientEmail || !emailData.emailId) {
-      toast({
-        title: "Missing Information",
-        description: "Please provide recipient email and HubSpot template ID.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('send-hubspot-email', {
-        body: {
-          emailId: emailData.emailId,
-          recipientEmail: emailData.recipientEmail,
-          recipientName: emailData.recipientName,
-          customQuote: emailData.customQuote,
-          customAuthor: emailData.customAuthor,
-        },
-      });
-
-      if (error) throw error;
-
-      toast({
-        title: "Email Sent Successfully",
-        description: `Test email sent to ${emailData.recipientEmail} with today's inspiring quote.`,
-      });
-
-      // Clear form
-      setEmailData(prev => ({
-        ...prev,
-        recipientEmail: '',
-        recipientName: '',
-        customQuote: '',
-        customAuthor: ''
-      }));
-
-    } catch (error) {
-      console.error('Error sending email:', error);
-      toast({
-        title: "Email Send Failed",
-        description: error instanceof Error ? error.message : "Failed to send test email",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    toast({
+      title: "Feature Disabled",
+      description: "HubSpot test email sending is currently disabled.",
+    });
   };
 
   const copyTemplateInstructions = () => {
@@ -253,11 +210,13 @@ Brand Colors Used:
 
               <Button 
                 onClick={handleSendTestEmail} 
-                disabled={isLoading}
+                disabled
                 className="w-full flex items-center gap-2"
+                aria-disabled="true"
+                title="Disabled: HubSpot email sending is not available"
               >
                 <Send className="w-4 h-4" />
-                {isLoading ? 'Sending...' : 'Send Test Email'}
+                Send Test Email (Disabled)
               </Button>
             </CardContent>
           </Card>
