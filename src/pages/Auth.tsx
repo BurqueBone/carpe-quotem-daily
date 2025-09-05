@@ -11,13 +11,12 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
 const Auth = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
   
-  const { user, signIn, signUp } = useAuth();
+  const { user, signInWithMagicLink } = useAuth();
   const { toast } = useToast();
 
   // Redirect if already logged in
@@ -31,26 +30,15 @@ const Auth = () => {
     setError('');
 
     try {
-      if (isSignUp) {
-        const { error } = await signUp(email, password);
-        if (error) {
-          setError(error.message);
-        } else {
-          toast({
-            title: "Account created!",
-            description: "Please check your email to confirm your account.",
-          });
-        }
+      const { error } = await signInWithMagicLink(email);
+      if (error) {
+        setError(error.message);
       } else {
-        const { error } = await signIn(email, password);
-        if (error) {
-          setError(error.message);
-        } else {
-          toast({
-            title: "Welcome back!",
-            description: "You have successfully signed in.",
-          });
-        }
+        setEmailSent(true);
+        toast({
+          title: "Magic link sent!",
+          description: "Please check your email and click the link to sign in.",
+        });
       }
     } catch (err) {
       setError('An unexpected error occurred');
@@ -66,60 +54,61 @@ const Auth = () => {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl bg-gradient-warm bg-clip-text text-transparent">
-            {isSignUp ? 'Create Account' : 'Welcome Back'}
+            {emailSent ? 'Check Your Email' : 'Sign In with Magic Link'}
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <Alert variant="destructive">
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-            
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-              />
+          {emailSent ? (
+            <div className="text-center space-y-4">
+              <p className="text-muted-foreground">
+                We've sent a magic link to <strong>{email}</strong>
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Click the link in your email to sign in. You can close this tab.
+              </p>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setEmailSent(false);
+                  setEmail('');
+                }}
+                className="w-full"
+              >
+                Send to a different email
+              </Button>
             </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                required
-                minLength={6}
-              />
-            </div>
-            
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? (isSignUp ? 'Creating Account...' : 'Signing In...') : (isSignUp ? 'Create Account' : 'Sign In')}
-            </Button>
-          </form>
-          
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() => setIsSignUp(!isSignUp)}
-              className="text-sm text-primary hover:underline"
-            >
-              {isSignUp ? 'Already have an account? Sign in' : "Don't have an account? Sign up"}
-            </button>
-          </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <Alert variant="destructive">
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+              
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email address"
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  We'll send you a secure link to sign in - no password needed!
+                </p>
+              </div>
+              
+              <Button
+                type="submit"
+                className="w-full"
+                disabled={loading}
+              >
+                {loading ? 'Sending magic link...' : 'Send magic link'}
+              </Button>
+            </form>
+          )}
         </CardContent>
       </Card>
       </div>
