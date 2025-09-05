@@ -94,6 +94,17 @@ const Settings = () => {
         title: "Settings saved!",
         description: "Your notification preferences have been updated.",
       });
+
+      // Best-effort sync to Resend contacts when notifications are enabled
+      if (enabled && user?.email) {
+        try {
+          await supabase.functions.invoke('sync-resend-contacts', {
+            body: { action: 'sync_user', email: user.email },
+          });
+        } catch (e) {
+          console.warn('Resend contact sync skipped/failed:', e);
+        }
+      }
     } catch (error) {
       console.error('Error saving settings:', error);
       toast({

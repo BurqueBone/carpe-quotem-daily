@@ -16,6 +16,46 @@ interface UserToEmail {
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
+// Ensure an audience exists in Resend and return its ID
+async function getOrCreateAudience(name: string): Promise<string> {
+  try {
+    // @ts-ignore - SDK typing can vary between versions
+    const listed = await resend.audiences.list();
+    const arr: any[] = listed?.data?.data || listed?.data || [];
+    const existing = arr.find((a: any) => a?.name === name);
+    if (existing?.id) return existing.id as string;
+  } catch (e) {
+    console.log('audiences.list error:', e);
+  }
+  try {
+    // @ts-ignore
+    const created = await resend.audiences.create({ name });
+    // @ts-ignore
+    return created?.data?.id || created?.id as string;
+  } catch (e) {
+    console.error('audiences.create error:', e);
+    throw e;
+  }
+}
+
+// Create contact if not present, ignore "already exists" errors
+async function ensureContactInAudience(email: string, audienceId: string): Promise<void> {
+  if (!email || !audienceId) return;
+  try {
+    // @ts-ignore
+    const res = await resend.contacts.create({ audienceId, email });
+    // If SDK returns an error object, handle gracefully
+    // @ts-ignore
+    if (res?.error && String(res.error.message || '').toLowerCase().includes('already')) {
+      return;
+    }
+  } catch (e: any) {
+    const msg = String(e?.message || '').toLowerCase();
+    if (msg.includes('already')) return;
+    console.warn('ensureContactInAudience failed:', e);
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -44,6 +84,9 @@ serve(async (req) => {
     }
 
     console.log('Got quote:', quote.id);
+
+    // Ensure Resend audience exists and get its ID
+    const audienceId = await getOrCreateAudience('Sunday4k Subscribers');
 
     // Get users who should receive emails based on their settings and send history
     const { data: usersToEmail, error: usersError } = await supabase
@@ -77,6 +120,9 @@ serve(async (req) => {
           console.log(`Skipping user ${userSetting.user_id} - quota reached or not time yet`);
           continue;
         }
+
+        // Ensure contact exists in Resend audience
+        await ensureContactInAudience(userEmail, audienceId);
 
         // Send email using Resend
         const emailResponse = await resend.emails.send({

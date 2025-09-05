@@ -14,3 +14,9 @@ verify_jwt = false
 
 [functions.send-hubspot-email]
 verify_jwt = true
+
+[functions.send-daily-quotes]
+verify_jwt = false
+
+[functions.sync-resend-contacts]
+verify_jwt = false
