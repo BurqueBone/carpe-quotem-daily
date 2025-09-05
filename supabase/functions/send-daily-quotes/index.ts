@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
-import { Resend } from "npm:resend@2.0.0";
+import { Resend } from "npm:resend@4.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,9 +18,21 @@ const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 
 // Ensure an audience exists in Resend and return its ID
 async function getOrCreateAudience(name: string): Promise<string> {
+  // Prefer explicit audience via env to avoid SDK capability differences
+  const envId = Deno.env.get('RESEND_AUDIENCE_ID');
+  if (envId) {
+    return envId;
+  }
+  // Guard if audiences API is not available in this SDK/runtime
+  // @ts-ignore
+  const hasAudiences = typeof (resend as any)?.audiences?.list === 'function' && typeof (resend as any)?.audiences?.create === 'function';
+  if (!hasAudiences) {
+    console.log('Resend audiences API not available; skipping audience creation.');
+    return '';
+  }
   try {
-    // @ts-ignore - SDK typing can vary between versions
-    const listed = await resend.audiences.list();
+    // @ts-ignore
+    const listed = await (resend as any).audiences.list();
     const arr: any[] = listed?.data?.data || listed?.data || [];
     const existing = arr.find((a: any) => a?.name === name);
     if (existing?.id) return existing.id as string;
@@ -29,12 +41,12 @@ async function getOrCreateAudience(name: string): Promise<string> {
   }
   try {
     // @ts-ignore
-    const created = await resend.audiences.create({ name });
+    const created = await (resend as any).audiences.create({ name });
     // @ts-ignore
-    return created?.data?.id || created?.id as string;
+    return created?.data?.id || created?.id || '';
   } catch (e) {
     console.error('audiences.create error:', e);
-    throw e;
+    return '';
   }
 }
 
