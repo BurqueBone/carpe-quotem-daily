@@ -12,9 +12,11 @@ verify_jwt = true
 [functions.import-quotes]
 verify_jwt = false
 
-
 [functions.send-daily-quotes]
 verify_jwt = false
 
 [functions.sync-resend-contacts]
+verify_jwt = false
+
+[functions.send-auth-email]
 verify_jwt = false
