@@ -217,6 +217,17 @@ const Settings = () => {
               </div>
             </Card>
 
+            <Button
+              onClick={handleSendTest}
+              disabled={sending || !user}
+              variant="outline"
+              className="w-full"
+              size="sm"
+              aria-label="Send today's daily quote email to all enabled users now"
+            >
+              {sending ? "Sending..." : "Send Today's Quote"}
+            </Button>
+
             <Card className="p-6 bg-gradient-subtle shadow-card border-border/50">
               <div className="space-y-4">
                 <h3 className="font-semibold text-lg">About Notifications</h3>
@@ -243,17 +254,6 @@ const Settings = () => {
               size="lg"
             >
               {saving ? "Saving..." : "Save Settings"}
-            </Button>
-            
-            <Button
-              onClick={handleSendTest}
-              disabled={sending || !user}
-              variant="outline"
-              className="w-full"
-              size="sm"
-              aria-label="Send test daily quote email to all enabled users now"
-            >
-              {sending ? "Sending test..." : "Send test daily quote now"}
             </Button>
             
             {!user && (
