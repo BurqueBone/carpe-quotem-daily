@@ -138,7 +138,8 @@ serve(async (req) => {
 
         // Send email using Resend
         const emailResponse = await resend.emails.send({
-          from: "Sunday4k <noreply@resend.dev>",
+          from: "Sunday4k <info@sunday4k.life>",
+          reply_to: "info@sunday4k.life",
           to: [userEmail],
           subject: "Your Daily Inspiration from Sunday4k",
           html: generateEmailHTML(quote),
@@ -272,20 +273,20 @@ function generateEmailHTML(quote: any): string {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Your Daily Inspiration</title>
       <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f8f9fa; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
-        .header { background: linear-gradient(135deg, #9381ff, #b8b8ff); padding: 40px 30px; text-align: center; color: white; }
-        .logo { font-size: 28px; font-weight: bold; margin-bottom: 10px; }
-        .tagline { font-size: 16px; opacity: 0.9; }
-        .content { padding: 40px 30px; }
-        .quote-container { background: #f8f7ff; border-left: 4px solid #9381ff; padding: 25px; margin: 25px 0; border-radius: 8px; }
-        .quote { font-size: 20px; font-style: italic; margin-bottom: 15px; color: #2d3748; }
-        .author { font-size: 16px; color: #666; text-align: right; }
-        .message { font-size: 16px; color: #4a5568; margin: 25px 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #2d3748; margin: 0; padding: 0; background-color: #F8F7FF; }
+        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(147,129,255,0.15); }
+        .header { background: linear-gradient(135deg, #9381ff, #b8b8ff); padding: 40px 30px; text-align: center; color: #ffffff; }
+        .logo { font-size: 28px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 8px; }
+        .tagline { font-size: 14px; opacity: 0.95; }
+        .content { padding: 36px 30px; }
+        .quote-container { background: #FFEEDD; border-left: 4px solid #9381ff; padding: 20px; margin: 24px 0; border-radius: 8px; }
+        .quote { font-size: 20px; font-style: italic; margin-bottom: 12px; color: #1f2937; }
+        .author { font-size: 15px; color: #4b5563; text-align: right; }
+        .message { font-size: 16px; color: #374151; margin: 22px 0; }
         .cta { text-align: center; margin: 30px 0; }
-        .cta-button { display: inline-block; background: linear-gradient(135deg, #9381ff, #b8b8ff); color: white; padding: 15px 30px; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px; }
-        .footer { background: #f7fafc; padding: 30px; text-align: center; font-size: 14px; color: #666; }
-        .unsubscribe { color: #9381ff; text-decoration: none; }
+        .cta-button { display: inline-block; background: linear-gradient(135deg, #9381ff, #b8b8ff); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 16px; box-shadow: 0 6px 16px rgba(147,129,255,0.25); }
+        .footer { background: #FFD8BE; padding: 24px 30px; text-align: center; font-size: 13px; color: #5b5b5b; }
+        .links a { color: #9381ff; text-decoration: none; }
       </style>
     </head>
     <body>
@@ -310,13 +311,13 @@ function generateEmailHTML(quote: any): string {
           </div>
           
           <div class="cta">
-            <a href="https://aywuwyqscrtavulqijxm.supabase.co" class="cta-button">Explore More Resources</a>
+            <a href="https://sunday4k.life" class="cta-button">Explore More Resources</a>
           </div>
         </div>
         
         <div class="footer">
           <p>You're receiving this because you've subscribed to Sunday4k daily inspiration.</p>
-          <p><a href="#" class="unsubscribe">Update your preferences</a> | <a href="#" class="unsubscribe">Unsubscribe</a></p>
+          <p class="links"><a href="https://sunday4k.life">Visit Sunday4k</a> · <a href="#">Update preferences</a> · <a href="#">Unsubscribe</a></p>
         </div>
       </div>
     </body>
