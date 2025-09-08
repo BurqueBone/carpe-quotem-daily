@@ -103,12 +103,7 @@ serve(async (req) => {
     // Get users who should receive emails based on their settings and send history
     const { data: usersToEmail, error: usersError } = await supabase
       .from('notification_settings')
-      .select(`
-        user_id,
-        period,
-        quantity,
-        profiles!inner(email)
-      `)
+      .select('user_id, period, quantity')
       .eq('enabled', true);
 
     if (usersError) {
@@ -123,7 +118,17 @@ serve(async (req) => {
 
     for (const userSetting of usersToEmail || []) {
       try {
-        const userEmail = (userSetting.profiles as any).email;
+        // Fetch user's email from auth schema (service role access)
+        const { data: userRecord, error: userFetchError } = await supabase
+          .from('auth.users')
+          .select('email')
+          .eq('id', userSetting.user_id)
+          .single();
+        if (userFetchError || !userRecord?.email) {
+          console.warn(`No email found for user ${userSetting.user_id}`, userFetchError);
+          continue;
+        }
+        const userEmail = userRecord.email as string;
         
         // Check if user should receive email based on their quota and recent sends
         const shouldSend = await checkUserQuota(supabase, userSetting.user_id, userSetting.period, userSetting.quantity);
