@@ -69,6 +69,7 @@ serve(async (req) => {
         subject = 'You\'re Invited to Join Sunday4k';
         html = generateInviteEmailHTML(token, token_hash, redirect_to, site_url);
         break;
+      case 'magiclink':
       case 'magic_link':
         subject = 'Your Sunday4k Magic Link';
         html = generateMagicLinkEmailHTML(token, token_hash, redirect_to, site_url);
@@ -117,7 +118,8 @@ serve(async (req) => {
 });
 
 function generateSignupEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
-  const confirmUrl = `${site_url}/auth/v1/verify?token=${token_hash}&type=signup&redirect_to=${redirect_to}`;
+  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  const confirmUrl = `${authBase}/verify?token=${token_hash}&type=signup&redirect_to=${encodeURIComponent(redirect_to)}`;
   
   return `
     ${getEmailHeader()}
@@ -146,7 +148,8 @@ function generateSignupEmailHTML(token: string, token_hash: string, redirect_to:
 }
 
 function generatePasswordResetEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
-  const resetUrl = `${site_url}/auth/v1/verify?token=${token_hash}&type=recovery&redirect_to=${redirect_to}`;
+  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  const resetUrl = `${authBase}/verify?token=${token_hash}&type=recovery&redirect_to=${encodeURIComponent(redirect_to)}`;
   
   return `
     ${getEmailHeader()}
@@ -179,7 +182,8 @@ function generatePasswordResetEmailHTML(token: string, token_hash: string, redir
 }
 
 function generateMagicLinkEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
-  const loginUrl = `${site_url}/auth/v1/verify?token=${token_hash}&type=magiclink&redirect_to=${redirect_to}`;
+  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  const loginUrl = `${authBase}/verify?token=${token_hash}&type=magiclink&redirect_to=${encodeURIComponent(redirect_to)}`;
   
   return `
     ${getEmailHeader()}
@@ -208,7 +212,8 @@ function generateMagicLinkEmailHTML(token: string, token_hash: string, redirect_
 }
 
 function generateInviteEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
-  const inviteUrl = `${site_url}/auth/v1/verify?token=${token_hash}&type=invite&redirect_to=${redirect_to}`;
+  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  const inviteUrl = `${authBase}/verify?token=${token_hash}&type=invite&redirect_to=${encodeURIComponent(redirect_to)}`;
   
   return `
     ${getEmailHeader()}
@@ -237,7 +242,8 @@ function generateInviteEmailHTML(token: string, token_hash: string, redirect_to:
 }
 
 function generateGenericAuthEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string, action_type: string): string {
-  const actionUrl = `${site_url}/auth/v1/verify?token=${token_hash}&type=${action_type}&redirect_to=${redirect_to}`;
+  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  const actionUrl = `${authBase}/verify?token=${token_hash}&type=${action_type}&redirect_to=${encodeURIComponent(redirect_to)}`;
   
   return `
     ${getEmailHeader()}
