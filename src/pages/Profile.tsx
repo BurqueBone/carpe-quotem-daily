@@ -13,18 +13,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSecurityValidation } from "@/hooks/useSecurityValidation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-
-
-
 const Profile = () => {
-  const { user, signOut } = useAuth();
-  const { toast } = useToast();
-  const { validateEmail, validatePassword, sanitizeInput } = useSecurityValidation();
-  
+  const {
+    user,
+    signOut
+  } = useAuth();
+  const {
+    toast
+  } = useToast();
+  const {
+    validateEmail,
+    validatePassword,
+    sanitizeInput
+  } = useSecurityValidation();
   const [period, setPeriod] = useState("day");
   const [quantity, setQuantity] = useState("1");
   const [enabled, setEnabled] = useState(true);
-  
+
   // Account settings state
   const [newEmail, setNewEmail] = useState("");
   const [currentPassword, setCurrentPassword] = useState("");
@@ -36,56 +41,55 @@ const Profile = () => {
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
-
   const getMaxQuantity = (selectedPeriod: string): number => {
     switch (selectedPeriod) {
-      case "day": return 1;
-      case "week": return 7;
-      case "month": return 30;
-      default: return 1;
+      case "day":
+        return 1;
+      case "week":
+        return 7;
+      case "month":
+        return 30;
+      default:
+        return 1;
     }
   };
-
   const getQuantityOptions = (selectedPeriod: string): string[] => {
     const max = getMaxQuantity(selectedPeriod);
-    return Array.from({ length: max }, (_, i) => (i + 1).toString());
+    return Array.from({
+      length: max
+    }, (_, i) => (i + 1).toString());
   };
-
   const handleSave = () => {
     toast({
       title: "Settings saved",
-      description: "Your notification preferences have been updated.",
+      description: "Your notification preferences have been updated."
     });
   };
-
   const handleSignOut = async () => {
     await signOut();
   };
-
   const handleEmailUpdate = async () => {
     const sanitizedEmail = sanitizeInput(newEmail);
     const emailValidation = validateEmail(sanitizedEmail);
-    
     if (!emailValidation.isValid) {
       toast({
         title: "Invalid Email",
         description: emailValidation.errors[0],
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setIsUpdating(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        email: sanitizedEmail,
+      const {
+        error
+      } = await supabase.auth.updateUser({
+        email: sanitizedEmail
       });
-
       if (error) throw error;
-
       toast({
         title: "Email update initiated",
-        description: "Please check your new email address for a confirmation link.",
+        description: "Please check your new email address for a confirmation link."
       });
       setNewEmail("");
     } catch (error: any) {
@@ -93,28 +97,26 @@ const Profile = () => {
       toast({
         title: "Error updating email",
         description: error.message || "Failed to update email. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsUpdating(false);
     }
   };
-
   const handlePasswordUpdate = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
       toast({
         title: "Error",
         description: "Please fill in all password fields.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     if (newPassword !== confirmPassword) {
       toast({
         title: "Error",
         description: "New passwords do not match.",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
@@ -125,22 +127,21 @@ const Profile = () => {
       toast({
         title: "Weak Password",
         description: passwordValidation.errors[0],
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setIsUpdating(true);
     try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
+      const {
+        error
+      } = await supabase.auth.updateUser({
+        password: newPassword
       });
-
       if (error) throw error;
-
       toast({
         title: "Password updated",
-        description: "Your password has been successfully updated with enhanced security.",
+        description: "Your password has been successfully updated with enhanced security."
       });
       setCurrentPassword("");
       setNewPassword("");
@@ -150,15 +151,13 @@ const Profile = () => {
       toast({
         title: "Error updating password",
         description: error.message || "Failed to update password. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsUpdating(false);
     }
   };
-
-  return (
-    <div className="min-h-screen bg-gradient-subtle flex flex-col">
+  return <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-2xl flex-1">
         <div className="flex items-center justify-between mb-8">
@@ -193,14 +192,10 @@ const Profile = () => {
                     Receive daily inspiration and gentle reminders
                   </p>
                 </div>
-                <Switch
-                  checked={enabled}
-                  onCheckedChange={setEnabled}
-                />
+                <Switch checked={enabled} onCheckedChange={setEnabled} />
               </div>
 
-              {enabled && (
-                <>
+              {enabled && <>
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">Frequency</label>
                     <Select value={period} onValueChange={setPeriod}>
@@ -219,30 +214,22 @@ const Profile = () => {
                     <label className="text-sm font-medium text-foreground">
                       Number of Notifications
                     </label>
-                    <Select 
-                      value={quantity} 
-                      onValueChange={setQuantity}
-                      key={period} // Force re-render when period changes
-                    >
+                    <Select value={quantity} onValueChange={setQuantity} key={period} // Force re-render when period changes
+                >
                       <SelectTrigger>
                         <SelectValue placeholder="Select quantity" />
                       </SelectTrigger>
                       <SelectContent>
-                        {getQuantityOptions(period).map((num) => (
-                          <SelectItem key={num} value={num}>
-                            {num} {period === "day" ? (num === "1" ? "notification" : "notifications") : 
-                                 period === "week" ? (num === "1" ? "notification" : "notifications") :
-                                 (num === "1" ? "notification" : "notifications")} per {period}
-                          </SelectItem>
-                        ))}
+                        {getQuantityOptions(period).map(num => <SelectItem key={num} value={num}>
+                            {num} {period === "day" ? num === "1" ? "notification" : "notifications" : period === "week" ? num === "1" ? "notification" : "notifications" : num === "1" ? "notification" : "notifications"} per {period}
+                          </SelectItem>)}
                       </SelectContent>
                     </Select>
                     <p className="text-xs text-muted-foreground">
                       Maximum: {getMaxQuantity(period)} per {period}
                     </p>
                   </div>
-                </>
-              )}
+                </>}
 
               <Button onClick={handleSave} className="w-full">
                 Save Settings
@@ -269,29 +256,13 @@ const Profile = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="current-email">Current Email</Label>
-                  <Input
-                    id="current-email"
-                    type="email"
-                    value={user?.email || ""}
-                    disabled
-                    className="bg-muted"
-                  />
+                  <Input id="current-email" type="email" value={user?.email || ""} disabled className="bg-muted" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="new-email">New Email</Label>
-                  <Input
-                    id="new-email"
-                    type="email"
-                    placeholder="Enter new email address"
-                    value={newEmail}
-                    onChange={(e) => setNewEmail(e.target.value)}
-                  />
+                  <Input id="new-email" type="email" placeholder="Enter new email address" value={newEmail} onChange={e => setNewEmail(e.target.value)} />
                 </div>
-                <Button 
-                  onClick={handleEmailUpdate} 
-                  disabled={isUpdating || !newEmail.trim()}
-                  className="w-full"
-                >
+                <Button onClick={handleEmailUpdate} disabled={isUpdating || !newEmail.trim()} className="w-full">
                   {isUpdating ? "Updating..." : "Update Email"}
                 </Button>
                 <p className="text-xs text-muted-foreground">
@@ -300,52 +271,7 @@ const Profile = () => {
               </div>
 
               {/* Password Update Section */}
-              <div className="space-y-4 border-t pt-6">
-                <div className="flex items-center gap-2">
-                  <Lock className="h-4 w-4 text-primary" />
-                  <h3 className="text-sm font-medium text-foreground">Change Password</h3>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="current-password">Current Password</Label>
-                  <Input
-                    id="current-password"
-                    type="password"
-                    placeholder="Enter current password"
-                    value={currentPassword}
-                    onChange={(e) => setCurrentPassword(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="new-password">New Password</Label>
-                  <Input
-                    id="new-password"
-                    type="password"
-                    placeholder="Enter new password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirm-password">Confirm New Password</Label>
-                  <Input
-                    id="confirm-password"
-                    type="password"
-                    placeholder="Confirm new password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </div>
-                <Button 
-                  onClick={handlePasswordUpdate} 
-                  disabled={isUpdating || !currentPassword || !newPassword || !confirmPassword}
-                  className="w-full"
-                >
-                  {isUpdating ? "Updating..." : "Update Password"}
-                </Button>
-                <p className="text-xs text-muted-foreground">
-                  Password must be at least 6 characters long.
-                </p>
-              </div>
+              
             </CardContent>
           </Card>
 
@@ -367,8 +293,6 @@ const Profile = () => {
         
       </div>
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Profile;
