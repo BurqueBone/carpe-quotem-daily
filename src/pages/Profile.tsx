@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, User, LogOut, Mail, Lock } from "lucide-react";
+import { Bell, User, LogOut, Mail, Lock, Send } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Navigate } from "react-router-dom";
@@ -36,6 +36,7 @@ const Profile = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
+  const [sending, setSending] = useState(false);
 
   // Redirect if not logged in
   if (!user) {
@@ -157,6 +158,26 @@ const Profile = () => {
       setIsUpdating(false);
     }
   };
+
+  const handleSendNow = async () => {
+    try {
+      setSending(true);
+      const { data, error } = await supabase.functions.invoke('send-daily-quotes');
+      if (error) throw error;
+      toast({
+        title: "Daily quote email triggered",
+        description: "Emails have been queued successfully.",
+      });
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "Failed to send",
+        description: err?.message ?? "Unexpected error triggering send.",
+      });
+    } finally {
+      setSending(false);
+    }
+  };
   return <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-2xl flex-1">
@@ -234,6 +255,13 @@ const Profile = () => {
               <Button onClick={handleSave} className="w-full">
                 Save Settings
               </Button>
+              
+              <div className="pt-4 border-t border-border/50">
+                <Button onClick={handleSendNow} disabled={sending} className="w-full gap-2">
+                  <Send className="h-4 w-4" />
+                  {sending ? "Sending..." : "Send daily quote now"}
+                </Button>
+              </div>
             </CardContent>
           </Card>
 

@@ -3,43 +3,18 @@ import CategoryCard from "@/components/CategoryCard";
 import { useCarpeDiemData } from "@/hooks/useCarpeDiemData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, RefreshCw, Zap, ArrowRight, Send } from "lucide-react";
+import { AlertCircle, RefreshCw, Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { useAuth } from "@/components/AuthContext";
 
 const CarpeDiem = () => {
   const { categories, loading, error } = useCarpeDiemData();
-  const { user } = useAuth();
-  const { toast } = useToast();
-  const [sending, setSending] = useState(false);
 
   const handleRetry = () => {
     window.location.reload();
   };
 
-  const handleSendNow = async () => {
-    try {
-      setSending(true);
-      const { data, error } = await supabase.functions.invoke('send-daily-quotes');
-      if (error) throw error;
-      toast({
-        title: "Daily quote email triggered",
-        description: "Emails have been queued successfully.",
-      });
-    } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Failed to send",
-        description: err?.message ?? "Unexpected error triggering send.",
-      });
-    } finally {
-      setSending(false);
-    }
-  };
   return (
     <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
@@ -116,14 +91,6 @@ const CarpeDiem = () => {
             Pick one resource from any category above and take action today. 
             Small steps compound into extraordinary transformations.
           </p>
-          {user && (
-            <div className="pt-4">
-              <Button onClick={handleSendNow} disabled={sending} className="gap-2">
-                <Send className="h-4 w-4" />
-                {sending ? "Sending..." : "Send daily quote now"}
-              </Button>
-            </div>
-          )}
         </div>
       </div>
         </div>
