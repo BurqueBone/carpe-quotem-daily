@@ -116,17 +116,17 @@ serve(async (req) => {
 
     for (const userSetting of usersToEmail || []) {
       try {
-        // Fetch user's email from auth schema (service role access)
-        const { data: userRecord, error: userFetchError } = await supabase
-          .from('auth.users')
+        // Fetch user's email from public.profiles (auth schema is not exposed via PostgREST)
+        const { data: userProfile, error: userFetchError } = await supabase
+          .from('profiles')
           .select('email')
           .eq('id', userSetting.user_id)
-          .single();
-        if (userFetchError || !userRecord?.email) {
+          .maybeSingle();
+        if (userFetchError || !userProfile?.email) {
           console.warn(`No email found for user ${userSetting.user_id}`, userFetchError);
           continue;
         }
-        const userEmail = userRecord.email as string;
+        const userEmail = userProfile.email as string;
         
         // Check if user should receive an email today
         const shouldSend = await checkUserQuota(supabase, userSetting.user_id);
