@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -36,15 +36,48 @@ const Profile = () => {
   const [isUpdating, setIsUpdating] = useState(false);
   const [sending, setSending] = useState(false);
 
+  // Load existing notification setting for the current user
+  useEffect(() => {
+    const loadSettings = async () => {
+      if (!user?.id) return;
+      const { data, error } = await supabase
+        .from('notification_settings')
+        .select('enabled')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (error) {
+        console.warn('Failed to load notification settings:', error);
+        return;
+      }
+      if (data) {
+        setEnabled(!!data.enabled);
+      }
+    };
+    loadSettings();
+  }, [user?.id]);
+
   // Redirect if not logged in
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
-  const handleSave = () => {
-    toast({
-      title: "Settings saved",
-      description: "Your notification preferences have been updated."
-    });
+  const handleSave = async () => {
+    try {
+      const { error } = await supabase
+        .from('notification_settings')
+        .upsert({ user_id: user.id, enabled }, { onConflict: 'user_id' });
+      if (error) throw error;
+      toast({
+        title: "Settings saved",
+        description: "Your notification preferences have been updated.",
+      });
+    } catch (e: any) {
+      console.error('Save settings error:', e);
+      toast({
+        title: "Failed to save",
+        description: e?.message ?? "Unexpected error saving settings.",
+        variant: "destructive",
+      });
+    }
   };
   const handleSignOut = async () => {
     await signOut();
