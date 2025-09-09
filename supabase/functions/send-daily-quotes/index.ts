@@ -10,8 +10,6 @@ const corsHeaders = {
 interface UserToEmail {
   user_id: string;
   email: string;
-  period: string;
-  quantity: number;
 }
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
@@ -100,10 +98,10 @@ serve(async (req) => {
     // Ensure Resend audience exists and get its ID
     const audienceId = await getOrCreateAudience('Sunday4k Subscribers');
 
-    // Get users who should receive emails based on their settings and send history
+    // Get users who should receive emails (enabled notifications only)
     const { data: usersToEmail, error: usersError } = await supabase
       .from('notification_settings')
-      .select('user_id, period, quantity')
+      .select('user_id')
       .eq('enabled', true);
 
     if (usersError) {
@@ -130,8 +128,8 @@ serve(async (req) => {
         }
         const userEmail = userRecord.email as string;
         
-        // Check if user should receive email based on their quota and recent sends
-        const shouldSend = await checkUserQuota(supabase, userSetting.user_id, userSetting.period, userSetting.quantity);
+        // Check if user should receive an email today
+        const shouldSend = await checkUserQuota(supabase, userSetting.user_id);
         
         if (!shouldSend) {
           console.log(`Skipping user ${userSetting.user_id} - quota reached or not time yet`);
@@ -201,72 +199,25 @@ serve(async (req) => {
   }
 });
 
-async function checkUserQuota(supabase: any, userId: string, period: string, quantity: number): Promise<boolean> {
+// Check if user should receive email today (simplified to once daily)
+async function checkUserQuota(supabase: any, userId: string): Promise<boolean> {
   const now = new Date();
-  let startDate: Date;
-
-  // Calculate the start date based on period
-  switch (period) {
-    case 'day':
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      break;
-    case 'week':
-      const dayOfWeek = now.getDay();
-      startDate = new Date(now.getTime() - (dayOfWeek * 24 * 60 * 60 * 1000));
-      startDate.setHours(0, 0, 0, 0);
-      break;
-    case 'month':
-      startDate = new Date(now.getFullYear(), now.getMonth(), 1);
-      break;
-    default:
-      startDate = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  }
-
-  // Count emails sent to this user in the current period
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  
+  // Count emails sent today
   const { data: sends, error } = await supabase
     .from('notification_sends')
-    .select('id')
+    .select('sent_at')
     .eq('user_id', userId)
-    .gte('sent_at', startDate.toISOString());
-
+    .gte('sent_at', today.toISOString());
+    
   if (error) {
     console.error('Error checking user quota:', error);
     return false;
   }
-
-  const sentCount = sends?.length || 0;
-  console.log(`User ${userId}: sent ${sentCount}/${quantity} emails in current ${period}`);
-
-  // Check if user has reached their quota
-  if (sentCount >= quantity) {
-    return false;
-  }
-
-  // For multiple emails per period, add some randomization to avoid sending all at once
-  if (quantity > 1) {
-    const randomFactor = Math.random();
-    // Increase chance of sending as we get closer to the end of the period
-    const periodProgress = getPeriodProgress(period, now);
-    const shouldSendProbability = Math.min(0.8, 0.1 + (periodProgress * 0.7));
-    
-    return randomFactor < shouldSendProbability;
-  }
-
-  return true;
-}
-
-function getPeriodProgress(period: string, now: Date): number {
-  switch (period) {
-    case 'day':
-      return now.getHours() / 24;
-    case 'week':
-      return now.getDay() / 7;
-    case 'month':
-      const daysInMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      return now.getDate() / daysInMonth;
-    default:
-      return 0.5;
-  }
+  
+  // Return true if no email sent today
+  return !sends || sends.length === 0;
 }
 
 function generateEmailHTML(quote: any): string {

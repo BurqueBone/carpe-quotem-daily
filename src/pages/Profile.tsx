@@ -26,8 +26,6 @@ const Profile = () => {
     validatePassword,
     sanitizeInput
   } = useSecurityValidation();
-  const [period, setPeriod] = useState("day");
-  const [quantity, setQuantity] = useState("1");
   const [enabled, setEnabled] = useState(true);
 
   // Account settings state
@@ -42,24 +40,6 @@ const Profile = () => {
   if (!user) {
     return <Navigate to="/auth" replace />;
   }
-  const getMaxQuantity = (selectedPeriod: string): number => {
-    switch (selectedPeriod) {
-      case "day":
-        return 1;
-      case "week":
-        return 7;
-      case "month":
-        return 30;
-      default:
-        return 1;
-    }
-  };
-  const getQuantityOptions = (selectedPeriod: string): string[] => {
-    const max = getMaxQuantity(selectedPeriod);
-    return Array.from({
-      length: max
-    }, (_, i) => (i + 1).toString());
-  };
   const handleSave = () => {
     toast({
       title: "Settings saved",
@@ -216,41 +196,11 @@ const Profile = () => {
                 <Switch checked={enabled} onCheckedChange={setEnabled} />
               </div>
 
-              {enabled && <>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Frequency</label>
-                    <Select value={period} onValueChange={setPeriod}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select frequency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="day">Per Day</SelectItem>
-                        <SelectItem value="week">Per Week</SelectItem>
-                        <SelectItem value="month">Per Month</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">
-                      Number of Notifications
-                    </label>
-                    <Select value={quantity} onValueChange={setQuantity} key={period} // Force re-render when period changes
-                >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select quantity" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {getQuantityOptions(period).map(num => <SelectItem key={num} value={num}>
-                            {num} {period === "day" ? num === "1" ? "notification" : "notifications" : period === "week" ? num === "1" ? "notification" : "notifications" : num === "1" ? "notification" : "notifications"} per {period}
-                          </SelectItem>)}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      Maximum: {getMaxQuantity(period)} per {period}
-                    </p>
-                  </div>
-                </>}
+              {enabled && (
+                <p className="text-sm text-muted-foreground">
+                  You'll receive one inspiring quote each morning to start your day with purpose.
+                </p>
+              )}
 
               <Button onClick={handleSave} className="w-full">
                 Save Settings
