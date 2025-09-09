@@ -95,6 +95,24 @@ serve(async (req) => {
 
     console.log('Got quote:', quote.id);
 
+    // Get a random resource to include as a "seize the day" suggestion
+    const { data: resource, error: resourceError } = await supabase
+      .from('resources')
+      .select('title, description, url, type')
+      .eq('ispublished', true)
+      .order('id', { ascending: false }) // Use a simple order to make it deterministic
+      .limit(10);
+
+    let randomResource = null;
+    if (!resourceError && resource && resource.length > 0) {
+      // Pick a random resource from the first 10
+      const randomIndex = Math.floor(Math.random() * resource.length);
+      randomResource = resource[randomIndex];
+      console.log('Got resource:', randomResource.title);
+    } else {
+      console.warn('No resources found or error fetching resources:', resourceError);
+    }
+
     // Ensure Resend audience exists and get its ID
     const audienceId = await getOrCreateAudience('Sunday4k Subscribers');
 
@@ -145,7 +163,7 @@ serve(async (req) => {
           reply_to: "info@sunday4k.life",
           to: [userEmail],
           subject: "Your Daily Inspiration from Sunday4k",
-          html: generateEmailHTML(quote),
+          html: generateEmailHTML(quote, randomResource),
         });
 
         console.log('Email sent successfully to:', userEmail, emailResponse);
@@ -220,7 +238,7 @@ async function checkUserQuota(supabase: any, userId: string): Promise<boolean> {
   return !sends || sends.length === 0;
 }
 
-function generateEmailHTML(quote: any): string {
+function generateEmailHTML(quote: any, resource: any = null): string {
   return `
     <!DOCTYPE html>
     <html>
@@ -239,6 +257,11 @@ function generateEmailHTML(quote: any): string {
         .quote { font-size: 20px; font-style: italic; margin-bottom: 12px; color: #1f2937; }
         .author { font-size: 15px; color: #4b5563; text-align: right; }
         .message { font-size: 16px; color: #374151; margin: 22px 0; }
+        .resource-container { background: #B8B8FF; background: linear-gradient(135deg, #B8B8FF, #F8F7FF); border: 1px solid #9381ff; padding: 20px; margin: 24px 0; border-radius: 8px; }
+        .resource-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
+        .resource-description { font-size: 15px; color: #4b5563; margin-bottom: 12px; }
+        .resource-link { display: inline-block; background: #9381ff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; }
+        .resource-header { font-size: 16px; font-weight: 600; color: #9381ff; margin-bottom: 12px; }
         .cta { text-align: center; margin: 30px 0; }
         .cta-button { display: inline-block; background: linear-gradient(135deg, #9381ff, #b8b8ff); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 16px; box-shadow: 0 6px 16px rgba(147,129,255,0.25); }
         .footer { background: #FFD8BE; padding: 24px 30px; text-align: center; font-size: 13px; color: #5b5b5b; }
@@ -265,6 +288,15 @@ function generateEmailHTML(quote: any): string {
           <div class="message">
             Take a moment to reflect on these words. How can you apply this wisdom to create more meaning in your day?
           </div>
+          
+          ${resource ? `
+          <div class="resource-container">
+            <div class="resource-header">💡 Seize the Day Suggestion:</div>
+            <div class="resource-title">${resource.title}</div>
+            <div class="resource-description">${resource.description}</div>
+            <a href="${resource.url}" class="resource-link" target="_blank">Learn More</a>
+          </div>
+          ` : ''}
           
           <div class="cta">
             <a href="https://sunday4k.life" class="cta-button">Explore More Resources</a>
