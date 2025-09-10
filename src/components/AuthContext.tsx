@@ -33,33 +33,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('🔧 AuthContext: useEffect triggered');
     
-    // Immediate URL check
     const url = new URL(window.location.href);
-    console.log('🔗 Full URL breakdown:', {
-      origin: url.origin,
-      pathname: url.pathname,
-      search: url.search,
-      searchParams: Object.fromEntries(url.searchParams),
-      hash: url.hash
-    });
-    
     const code = url.searchParams.get('code');
     const error = url.searchParams.get('error');
     
-    console.log('🔑 Auth code check:', { code: code ? code.substring(0, 8) + '...' : null, error });
+    console.log('🔗 URL analysis:', {
+      hasCode: !!code,
+      hasError: !!error,
+      fullURL: window.location.href
+    });
     
     if (error) {
-      console.error('🚨 Auth Error from URL:', error, url.searchParams.get('error_description'));
+      console.error('🚨 Auth Error from URL:', error);
+      setLoading(false);
+      return;
     }
     
-    // Test Supabase client
-    console.log('🧪 Testing Supabase client:', supabase ? 'exists' : 'missing');
-    
-    // Set up auth state listener
-    console.log('👂 Setting up auth state listener...');
+    // Set up auth state listener first
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('🔄 Auth state change:', { event, userEmail: session?.user?.email, hasAccessToken: !!session?.access_token });
+      async (event, session) => {
+        console.log('🔄 Auth state change:', { 
+          event, 
+          hasSession: !!session,
+          userEmail: session?.user?.email 
+        });
         
         setSession(session);
         setUser(session?.user ?? null);
@@ -67,56 +64,44 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (event === 'SIGNED_IN' && session?.user) {
           console.log('✅ Successfully signed in:', session.user.email);
-          // Clean URL
+          // Clean URL after successful login
           if (window.location.search.includes('code=')) {
-            console.log('🧹 Cleaning URL...');
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         }
       }
     );
 
-    // Get current session
-    console.log('📋 Getting current session...');
-    supabase.auth.getSession()
-      .then(({ data: { session }, error }) => {
-        console.log('📋 Session result:', { 
-          hasSession: !!session, 
-          userEmail: session?.user?.email, 
-          error: error?.message 
+    // Initialize auth state
+    const initAuth = async () => {
+      try {
+        console.log('🔍 Initializing auth state...');
+        
+        // If we have a code parameter, Supabase should handle it automatically
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        console.log('📋 Initial session check:', { 
+          hasSession: !!session,
+          userEmail: session?.user?.email,
+          error: sessionError?.message,
+          hasCodeInURL: !!code
         });
         
-        if (!session && code) {
-          console.log('🔄 No session but have code, exchanging for session...');
-          // Exchange the auth code for a session
-          return supabase.auth.exchangeCodeForSession(code);
+        if (!session && !sessionError) {
+          console.log('ℹ️ No active session found');
         }
         
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-      })
-      .then((result) => {
-        if (result && 'data' in result) {
-          const { data: { session }, error } = result;
-          console.log('🔄 Code exchange result:', { 
-            hasSession: !!session, 
-            userEmail: session?.user?.email, 
-            error: error?.message 
-          });
-          if (session) {
-            setSession(session);
-            setUser(session.user);
-            setLoading(false);
-            // Clean URL after successful auth
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
-        }
-      })
-      .catch(err => {
-        console.error('💥 Error getting/exchanging session:', err);
+        
+      } catch (err) {
+        console.error('💥 Auth initialization error:', err);
         setLoading(false);
-      });
+      }
+    };
+
+    initAuth();
 
     return () => {
       console.log('🧹 Cleaning up auth subscription');
