@@ -76,7 +76,7 @@ const Index = () => {
                       <span>•</span>
                       <span>Lifetime Access</span>
                     </div>
-                    <Link to="/carpe-diem" className="inline-flex items-center gap-2 bg-gradient-warm text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
+                    <Link to="/carpe-diem" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
                       <Zap className="w-4 h-4" />
                       Explore Resources
                       <ArrowRight className="w-4 h-4" />
