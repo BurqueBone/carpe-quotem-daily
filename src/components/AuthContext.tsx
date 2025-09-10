@@ -87,17 +87,34 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
         
         if (!session && code) {
-          console.log('🔄 No session but have code, refreshing auth...');
-          // Try refreshing the session which should handle the code
-          return supabase.auth.refreshSession();
+          console.log('🔄 No session but have code, exchanging for session...');
+          // Exchange the auth code for a session
+          return supabase.auth.exchangeCodeForSession(code);
         }
         
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
       })
+      .then((result) => {
+        if (result && 'data' in result) {
+          const { data: { session }, error } = result;
+          console.log('🔄 Code exchange result:', { 
+            hasSession: !!session, 
+            userEmail: session?.user?.email, 
+            error: error?.message 
+          });
+          if (session) {
+            setSession(session);
+            setUser(session.user);
+            setLoading(false);
+            // Clean URL after successful auth
+            window.history.replaceState({}, document.title, window.location.pathname);
+          }
+        }
+      })
       .catch(err => {
-        console.error('💥 Error getting session:', err);
+        console.error('💥 Error getting/exchanging session:', err);
         setLoading(false);
       });
 
