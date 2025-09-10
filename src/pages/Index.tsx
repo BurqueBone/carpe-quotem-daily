@@ -30,12 +30,16 @@ const Index = () => {
         {!loading && (
           <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
             <p className="text-sm text-blue-700">
-              <strong>Auth Status:</strong> {user ? `Logged in as ${user.email}` : 'Not logged in'}
+              <strong>🔐 Auth Status:</strong> {user ? `✅ Logged in as ${user.email}` : '❌ Not logged in'}
               {user && (
                 <span className="ml-4">
                   <Link to="/profile" className="text-blue-600 underline">Go to Profile</Link>
                 </span>
               )}
+            </p>
+            <p className="text-xs text-blue-600 mt-1">
+              <strong>URL Check:</strong> {window.location.search || 'No URL params'} | 
+              <strong> Hash:</strong> {window.location.hash || 'No hash'}
             </p>
           </div>
         )}
