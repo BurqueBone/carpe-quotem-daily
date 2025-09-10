@@ -25,92 +25,84 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // Immediate logging to check if component renders
+  console.log('🚀 AuthProvider: Component rendered/re-rendered');
+  console.log('🌐 Current URL:', window.location.href);
+  console.log('📊 Current state:', { hasUser: !!user, hasSession: !!session, loading });
+
   useEffect(() => {
-    console.log('🔧 AuthContext: Setting up auth state listener');
+    console.log('🔧 AuthContext: useEffect triggered');
     
-    // Check for auth callback in URL (from magic link)
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
-    const error = urlParams.get('error');
-    const errorDescription = urlParams.get('error_description');
+    // Immediate URL check
+    const url = new URL(window.location.href);
+    console.log('🔗 Full URL breakdown:', {
+      origin: url.origin,
+      pathname: url.pathname,
+      search: url.search,
+      searchParams: Object.fromEntries(url.searchParams),
+      hash: url.hash
+    });
+    
+    const code = url.searchParams.get('code');
+    const error = url.searchParams.get('error');
+    
+    console.log('🔑 Auth code check:', { code: code ? code.substring(0, 8) + '...' : null, error });
     
     if (error) {
-      console.error('🚨 Auth Error from URL:', error, errorDescription);
+      console.error('🚨 Auth Error from URL:', error, url.searchParams.get('error_description'));
     }
     
+    // Test Supabase client
+    console.log('🧪 Testing Supabase client:', supabase ? 'exists' : 'missing');
+    
     // Set up auth state listener
+    console.log('👂 Setting up auth state listener...');
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        console.log('🔄 AuthContext: Auth state change event:', event, {
-          hasSession: !!session,
-          userEmail: session?.user?.email,
-          accessToken: session?.access_token ? 'present' : 'missing'
-        });
+      (event, session) => {
+        console.log('🔄 Auth state change:', { event, userEmail: session?.user?.email, hasAccessToken: !!session?.access_token });
         
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
         
-        // Handle successful magic link authentication
         if (event === 'SIGNED_IN' && session?.user) {
-          console.log('✅ AuthContext: User successfully signed in:', session.user.email);
-          
-          // Clear auth params from URL
-          if (window.location.search.includes('code=') || window.location.search.includes('error=')) {
+          console.log('✅ Successfully signed in:', session.user.email);
+          // Clean URL
+          if (window.location.search.includes('code=')) {
+            console.log('🧹 Cleaning URL...');
             window.history.replaceState({}, document.title, window.location.pathname);
           }
-        }
-        
-        if (event === 'SIGNED_OUT') {
-          console.log('👋 AuthContext: User signed out');
         }
       }
     );
 
-    // Check for existing session and handle auth callback
-    const initAuth = async () => {
-      console.log('🔍 AuthContext: Initializing auth...');
-      
-      try {
-        // If we have a code, let Supabase handle it automatically
-        if (code) {
-          console.log('🔑 AuthContext: Found auth code in URL:', code.substring(0, 8) + '...');
-          // Force Supabase to process any pending auth
-          await supabase.auth.getSession();
-        }
+    // Get current session
+    console.log('📋 Getting current session...');
+    supabase.auth.getSession()
+      .then(({ data: { session }, error }) => {
+        console.log('📋 Session result:', { 
+          hasSession: !!session, 
+          userEmail: session?.user?.email, 
+          error: error?.message 
+        });
         
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
-        if (sessionError) {
-          console.error('❌ AuthContext: Error getting session:', sessionError);
-        } else {
-          console.log('📋 AuthContext: Session check result:', {
-            hasSession: !!session,
-            userEmail: session?.user?.email,
-            accessToken: session?.access_token ? 'present' : 'missing'
-          });
+        if (!session && code) {
+          console.log('🔄 No session but have code, refreshing auth...');
+          // Try refreshing the session which should handle the code
+          return supabase.auth.refreshSession();
         }
         
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        
-        // Clean URL if we processed a code
-        if (code && session) {
-          console.log('🧹 AuthContext: Cleaning URL after successful auth');
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-        
-      } catch (err) {
-        console.error('💥 AuthContext: Unexpected error during auth init:', err);
+      })
+      .catch(err => {
+        console.error('💥 Error getting session:', err);
         setLoading(false);
-      }
-    };
-    
-    initAuth();
+      });
 
     return () => {
-      console.log('🧹 AuthContext: Cleaning up auth listener');
+      console.log('🧹 Cleaning up auth subscription');
       subscription.unsubscribe();
     };
   }, []);
