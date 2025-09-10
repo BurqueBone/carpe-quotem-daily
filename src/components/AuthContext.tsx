@@ -47,7 +47,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signInWithMagicLink = async (email: string) => {
     const redirectUrl = `${window.location.origin}/`;
-    
+    // Enforce email format validation before hitting auth
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return { error: new Error('Invalid email format') };
+    }
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {

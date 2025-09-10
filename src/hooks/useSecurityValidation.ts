@@ -129,11 +129,14 @@ export const useSecurityValidation = () => {
   };
 
   const sanitizeInput = (input: string): string => {
-    // Basic XSS prevention - remove HTML tags and encode special chars
+    // Robust XSS prevention - strip tags and neutralize common vectors
     return input
-      .replace(/[<>]/g, '') // Remove angle brackets
-      .replace(/javascript:/gi, '') // Remove javascript: protocol
-      .replace(/on\w+=/gi, '') // Remove event handlers
+      .replace(/<\s*script[^>]*>[\s\S]*?<\s*\/\s*script>/gi, '') // remove script blocks
+      .replace(/[<>]/g, '') // remove angle brackets
+      .replace(/javascript:/gi, '') // remove javascript: protocol
+      .replace(/on\w+\s*=\s*/gi, '') // remove inline event handlers
+      .replace(/url\((.*?)\)/gi, 'url()') // neutralize css url()
+      .replace(/['"`]/g, '') // strip quotes that can break attributes
       .trim();
   };
 

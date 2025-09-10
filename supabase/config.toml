@@ -10,16 +10,16 @@ verify_jwt = false
 verify_jwt = true
 
 [functions.import-quotes]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-daily-quotes]
-verify_jwt = false
+verify_jwt = true
 
 [functions.sync-resend-contacts]
-verify_jwt = false
+verify_jwt = true
 
 [functions.send-auth-email]
 verify_jwt = false
 
 [functions.broadcast-email]
-verify_jwt = false
+verify_jwt = true
