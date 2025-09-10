@@ -28,7 +28,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('🔧 AuthContext: Setting up auth state listener');
     
-    // Check for auth callback code in URL (from magic link)
+    // Check for auth callback in URL (from magic link)
     const urlParams = new URLSearchParams(window.location.search);
     const code = urlParams.get('code');
     const error = urlParams.get('error');
@@ -38,24 +38,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('🚨 Auth Error from URL:', error, errorDescription);
     }
     
-    if (code) {
-      console.log('🔑 AuthContext: Found auth code in URL, exchanging for session...');
-      // Manually exchange the code for a session
-      supabase.auth.exchangeCodeForSession(code).then(({ data, error }) => {
-        if (error) {
-          console.error('❌ AuthContext: Code exchange failed:', error);
-        } else {
-          console.log('✅ AuthContext: Code exchange successful:', data.session?.user?.email);
-          setSession(data.session);
-          setUser(data.session?.user ?? null);
-          setLoading(false);
-          
-          // Clean up URL
-          window.history.replaceState({}, document.title, window.location.pathname);
-        }
-      });
-    }
-
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
@@ -73,8 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (event === 'SIGNED_IN' && session?.user) {
           console.log('✅ AuthContext: User successfully signed in:', session.user.email);
           
-          // Clear any auth error from URL
-          if (window.location.search.includes('error=') || window.location.search.includes('code=')) {
+          // Clear auth params from URL
+          if (window.location.search.includes('code=') || window.location.search.includes('error=')) {
             window.history.replaceState({}, document.title, window.location.pathname);
           }
         }
@@ -85,16 +67,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // Check for existing session (only if no code to exchange)
-    if (!code) {
-      const checkSession = async () => {
-        console.log('🔍 AuthContext: Checking for existing session...');
-        const { data: { session }, error } = await supabase.auth.getSession();
+    // Check for existing session and handle auth callback
+    const initAuth = async () => {
+      console.log('🔍 AuthContext: Initializing auth...');
+      
+      try {
+        // If we have a code, let Supabase handle it automatically
+        if (code) {
+          console.log('🔑 AuthContext: Found auth code in URL:', code.substring(0, 8) + '...');
+          // Force Supabase to process any pending auth
+          await supabase.auth.getSession();
+        }
         
-        if (error) {
-          console.error('❌ AuthContext: Error getting session:', error);
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error('❌ AuthContext: Error getting session:', sessionError);
         } else {
-          console.log('📋 AuthContext: Initial session check:', {
+          console.log('📋 AuthContext: Session check result:', {
             hasSession: !!session,
             userEmail: session?.user?.email,
             accessToken: session?.access_token ? 'present' : 'missing'
@@ -104,10 +94,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-      };
-      
-      checkSession();
-    }
+        
+        // Clean URL if we processed a code
+        if (code && session) {
+          console.log('🧹 AuthContext: Cleaning URL after successful auth');
+          window.history.replaceState({}, document.title, window.location.pathname);
+        }
+        
+      } catch (err) {
+        console.error('💥 AuthContext: Unexpected error during auth init:', err);
+        setLoading(false);
+      }
+    };
+    
+    initAuth();
 
     return () => {
       console.log('🧹 AuthContext: Cleaning up auth listener');
