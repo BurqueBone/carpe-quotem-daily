@@ -13,6 +13,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSecurityValidation } from "@/hooks/useSecurityValidation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { maskEmail } from "@/lib/utils";
 const Profile = () => {
   const {
     user,
@@ -267,7 +268,7 @@ const Profile = () => {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="current-email">Current Email</Label>
-                  <Input id="current-email" type="email" value={user?.email || ""} disabled className="bg-muted" />
+                  <Input id="current-email" type="email" value={user?.email ? maskEmail(user.email) : ""} disabled className="bg-muted" />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="new-email">New Email</Label>

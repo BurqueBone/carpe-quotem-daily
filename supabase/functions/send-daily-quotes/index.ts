@@ -173,7 +173,7 @@ serve(async (req) => {
           html: generateEmailHTML(quote, randomResource),
         });
 
-        console.log('Email sent successfully to:', userEmail, emailResponse);
+        console.log('Email sent successfully to:', `${userEmail.charAt(0)}***@${userEmail.split('@')[1]?.charAt(0)}***`, emailResponse);
 
         // Track the email send
         await supabase

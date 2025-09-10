@@ -10,6 +10,7 @@ import { useAuth } from "@/components/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import { maskEmailForLogs } from "@/lib/utils";
 
 const Settings = () => {
   const [period, setPeriod] = useState("day");
@@ -103,7 +104,7 @@ const Settings = () => {
             body: { action: 'sync_user', email: user.email },
           });
         } catch (e) {
-          console.warn('Resend contact sync skipped/failed:', e);
+          console.warn(`Resend contact sync skipped/failed for ${maskEmailForLogs(user.email)}:`, e);
         }
       }
     } catch (error) {

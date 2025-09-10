@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useSecurityValidation } from '@/hooks/useSecurityValidation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { maskEmail } from '@/lib/utils';
 
 const Auth = () => {
   const [email, setEmail] = useState('');
@@ -80,7 +81,7 @@ const Auth = () => {
           {emailSent ? (
             <div className="text-center space-y-4">
               <p className="text-muted-foreground">
-                We've sent a magic link to <strong>{email}</strong>
+                We've sent a magic link to <strong>{maskEmail(email)}</strong>
               </p>
               <p className="text-sm text-muted-foreground">
                 Click the link in your email to sign in. You can close this tab.

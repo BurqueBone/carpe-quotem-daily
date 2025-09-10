@@ -98,7 +98,7 @@ serve(async (req) => {
       throw error;
     }
 
-    console.log(`Auth email sent successfully to ${user.email} for ${email_action_type}`);
+    console.log(`Auth email sent successfully to ${user.email.charAt(0)}***@${user.email.split('@')[1]?.charAt(0)}*** for ${email_action_type}`);
 
     return new Response(
       JSON.stringify({ success: true }),
