@@ -19,32 +19,7 @@ const Index = () => {
     refetch
   } = useQuoteOfTheDay();
 
-  // Debug auth state
-  console.log('Index: Current auth state - user:', user?.email, 'loading:', loading);
-
-  return <div className="min-h-screen bg-gradient-subtle flex flex-col">
-      <Header />
-      <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
-        
-        {/* Auth Status Debug */}
-        {!loading && (
-          <div className="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-            <p className="text-sm text-blue-700">
-              <strong>🔐 Auth Status:</strong> {user ? `✅ Logged in as ${user.email}` : '❌ Not logged in'}
-              {user && (
-                <span className="ml-4">
-                  <Link to="/profile" className="text-blue-600 underline">Go to Profile</Link>
-                </span>
-              )}
-            </p>
-            <p className="text-xs text-blue-600 mt-1">
-              <strong>URL Check:</strong> {window.location.search || 'No URL params'} | 
-              <strong> Hash:</strong> {window.location.hash || 'No hash'}
-            </p>
-          </div>
-        )}
-
-        <div className="space-y-6">
+          <div className="space-y-6">
           <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
           
           <div className="tab-content">
