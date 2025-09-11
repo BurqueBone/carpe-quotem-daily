@@ -49,9 +49,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return;
     }
     
-    // Set up auth state listener first
+    // Set up auth state listener first (must be synchronous)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('🔄 Auth state change:', { 
           event, 
           hasSession: !!session,
@@ -77,7 +77,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         console.log('🔍 Initializing auth state...');
         
-        // If we have a code parameter, Supabase should handle it automatically
+        // First check for existing session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         console.log('📋 Initial session check:', { 
@@ -87,13 +87,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           hasCodeInURL: !!code
         });
         
-        if (!session && !sessionError) {
-          console.log('ℹ️ No active session found');
+        // If we have a code but no session, exchange the code for session (PKCE flow)
+        if (!session && code && !sessionError) {
+          console.log('🔄 No session but have code, exchanging for session...');
+          try {
+            const { data: { session: newSession }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+            
+            console.log('🔄 Code exchange result:', { 
+              hasSession: !!newSession,
+              userEmail: newSession?.user?.email,
+              error: exchangeError?.message 
+            });
+            
+            if (exchangeError) {
+              console.error('❌ Code exchange failed:', exchangeError);
+              setLoading(false);
+              return;
+            }
+            
+            // Session will be set via onAuthStateChange callback
+            return;
+          } catch (exchangeErr) {
+            console.error('💥 Code exchange error:', exchangeErr);
+            setLoading(false);
+            return;
+          }
         }
         
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+        // Set initial state if we have a session or no code to exchange
+        if (session || !code) {
+          setSession(session);
+          setUser(session?.user ?? null);
+          setLoading(false);
+        }
         
       } catch (err) {
         console.error('💥 Auth initialization error:', err);
