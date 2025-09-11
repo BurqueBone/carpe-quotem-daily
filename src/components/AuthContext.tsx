@@ -33,22 +33,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     console.log('🔧 AuthContext: useEffect triggered');
     
-    const url = new URL(window.location.href);
-    const code = url.searchParams.get('code');
-    const error = url.searchParams.get('error');
-    
-    console.log('🔗 URL analysis:', {
-      hasCode: !!code,
-      hasError: !!error,
-      fullURL: window.location.href
-    });
-    
-    if (error) {
-      console.error('🚨 Auth Error from URL:', error);
-      setLoading(false);
-      return;
-    }
-    
     // Set up auth state listener first (must be synchronous)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
@@ -64,10 +48,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         
         if (event === 'SIGNED_IN' && session?.user) {
           console.log('✅ Successfully signed in:', session.user.email);
-          // Clean URL after successful login
-          if (window.location.search.includes('code=')) {
-            window.history.replaceState({}, document.title, window.location.pathname);
-          }
         }
       }
     );
@@ -77,49 +57,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       try {
         console.log('🔍 Initializing auth state...');
         
-        // First check for existing session
+        // Check for existing session - Supabase will automatically handle URL tokens
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         console.log('📋 Initial session check:', { 
           hasSession: !!session,
           userEmail: session?.user?.email,
-          error: sessionError?.message,
-          hasCodeInURL: !!code
+          error: sessionError?.message
         });
         
-        // If we have a code but no session, exchange the code for session (PKCE flow)
-        if (!session && code && !sessionError) {
-          console.log('🔄 No session but have code, exchanging for session...');
-          try {
-            const { data: { session: newSession }, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-            
-            console.log('🔄 Code exchange result:', { 
-              hasSession: !!newSession,
-              userEmail: newSession?.user?.email,
-              error: exchangeError?.message 
-            });
-            
-            if (exchangeError) {
-              console.error('❌ Code exchange failed:', exchangeError);
-              setLoading(false);
-              return;
-            }
-            
-            // Session will be set via onAuthStateChange callback
-            return;
-          } catch (exchangeErr) {
-            console.error('💥 Code exchange error:', exchangeErr);
-            setLoading(false);
-            return;
-          }
-        }
-        
-        // Set initial state if we have a session or no code to exchange
-        if (session || !code) {
-          setSession(session);
-          setUser(session?.user ?? null);
-          setLoading(false);
-        }
+        // Set initial state
+        setSession(session);
+        setUser(session?.user ?? null);
+        setLoading(false);
         
       } catch (err) {
         console.error('💥 Auth initialization error:', err);
@@ -136,7 +86,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signInWithMagicLink = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/`;
+    const redirectUrl = `${window.location.origin}/auth/callback`;
     console.log('📧 AuthContext: Sending magic link to:', email, 'with redirect:', redirectUrl);
     
     // Enforce email format validation before hitting auth
