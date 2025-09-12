@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -127,6 +127,13 @@ const Auth = () => {
               >
                 {loading ? 'Sending magic link...' : 'Send magic link'}
               </Button>
+
+              <div className="text-center text-sm text-muted-foreground mt-4">
+                By signing in, you agree to our{' '}
+                <Link to="/terms" className="text-primary hover:underline">
+                  Terms of Service
+                </Link>
+              </div>
             </form>
           )}
         </CardContent>
