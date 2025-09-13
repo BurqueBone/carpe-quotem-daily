@@ -25,16 +25,12 @@ const Profile = () => {
   } = useToast();
   const {
     validateEmail,
-    validatePassword,
     sanitizeInput
   } = useSecurityValidation();
   const [enabled, setEnabled] = useState(true);
 
   // Account settings state
   const [newEmail, setNewEmail] = useState("");
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [sending, setSending] = useState(false);
   
@@ -122,61 +118,6 @@ const Profile = () => {
       setIsUpdating(false);
     }
   };
-  const handlePasswordUpdate = async () => {
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      toast({
-        title: "Error",
-        description: "Please fill in all password fields.",
-        variant: "destructive"
-      });
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      toast({
-        title: "Error",
-        description: "New passwords do not match.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    // Enhanced password validation
-    const passwordValidation = validatePassword(newPassword);
-    if (!passwordValidation.isValid) {
-      toast({
-        title: "Weak Password",
-        description: passwordValidation.errors[0],
-        variant: "destructive"
-      });
-      return;
-    }
-    setIsUpdating(true);
-    try {
-      const {
-        error
-      } = await supabase.auth.updateUser({
-        password: newPassword
-      });
-      if (error) throw error;
-      toast({
-        title: "Password updated",
-        description: "Your password has been successfully updated with enhanced security."
-      });
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch (error: any) {
-      console.error('Password update error:', error);
-      toast({
-        title: "Error updating password",
-        description: error.message || "Failed to update password. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsUpdating(false);
-    }
-  };
-
   const handleShareQuote = async (method: 'copy' | 'email' | 'text') => {
     if (!quote) {
       toast({
