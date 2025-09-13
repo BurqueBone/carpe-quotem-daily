@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Bell, User, LogOut, Mail, Lock, Send } from "lucide-react";
+import { Bell, User, LogOut, Mail, Lock, Share2, MessageCircle, Copy, Heart } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Navigate } from "react-router-dom";
@@ -14,6 +14,7 @@ import { useSecurityValidation } from "@/hooks/useSecurityValidation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { maskEmail } from "@/lib/utils";
+import { useQuoteOfTheDay } from "@/hooks/useQuoteOfTheDay";
 const Profile = () => {
   const {
     user,
@@ -36,6 +37,9 @@ const Profile = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [sending, setSending] = useState(false);
+  
+  // Get today's quote for sharing
+  const { quote, loading: quoteLoading } = useQuoteOfTheDay();
 
   // Load existing notification setting for the current user
   useEffect(() => {
@@ -173,23 +177,54 @@ const Profile = () => {
     }
   };
 
-  const handleSendNow = async () => {
+  const handleShareQuote = async (method: 'copy' | 'email' | 'text') => {
+    if (!quote) {
+      toast({
+        title: "No quote available",
+        description: "Please wait for today's quote to load.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const shareText = `"${quote.quote}" - ${quote.author}${quote.source ? `, ${quote.source}` : ''}\n\nShared from Sunday4k - Daily inspiration for meaningful living\nhttps://sunday4k.life`;
+
     try {
-      setSending(true);
-      const { data, error } = await supabase.functions.invoke('send-daily-quotes');
-      if (error) throw error;
+      switch (method) {
+        case 'copy':
+          await navigator.clipboard.writeText(shareText);
+          toast({
+            title: "Quote copied!",
+            description: "The quote has been copied to your clipboard.",
+          });
+          break;
+        
+        case 'email':
+          const emailSubject = encodeURIComponent("Thought you'd love this inspiring quote");
+          const emailBody = encodeURIComponent(shareText);
+          window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`);
+          break;
+        
+        case 'text':
+          if (navigator.share) {
+            await navigator.share({
+              title: 'Inspiring Quote from Sunday4k',
+              text: shareText,
+            });
+          } else {
+            // Fallback to WhatsApp
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
+            window.open(whatsappUrl, '_blank');
+          }
+          break;
+      }
+    } catch (error) {
+      console.error('Share error:', error);
       toast({
-        title: "Daily quote email triggered",
-        description: "Emails have been queued successfully.",
+        title: "Share failed",
+        description: "Unable to share the quote. Please try again.",
+        variant: "destructive"
       });
-    } catch (err: any) {
-      toast({
-        variant: "destructive",
-        title: "Failed to send",
-        description: err?.message ?? "Unexpected error triggering send.",
-      });
-    } finally {
-      setSending(false);
     }
   };
   return <div className="min-h-screen bg-gradient-subtle flex flex-col">
@@ -241,10 +276,65 @@ const Profile = () => {
               </Button>
               
               <div className="pt-4 border-t border-border/50">
-                <Button onClick={handleSendNow} disabled={sending} className="w-full gap-2">
-                  <Send className="h-4 w-4" />
-                  {sending ? "Sending..." : "Send daily quote now"}
-                </Button>
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-foreground flex items-center gap-2">
+                    <Heart className="h-4 w-4 text-primary" />
+                    Share Today's Inspiration
+                  </h3>
+                  
+                  {quoteLoading ? (
+                    <div className="text-sm text-muted-foreground text-center py-4">
+                      Loading today's quote...
+                    </div>
+                  ) : quote ? (
+                    <>
+                      <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                        <p className="text-sm italic text-foreground">"{quote.quote}"</p>
+                        <p className="text-xs text-muted-foreground text-right">
+                          — {quote.author}{quote.source ? `, ${quote.source}` : ''}
+                        </p>
+                      </div>
+                      
+                      <div className="grid grid-cols-3 gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleShareQuote('copy')}
+                          className="flex items-center gap-2"
+                        >
+                          <Copy className="h-4 w-4" />
+                          Copy
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleShareQuote('email')}
+                          className="flex items-center gap-2"
+                        >
+                          <Mail className="h-4 w-4" />
+                          Email
+                        </Button>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          onClick={() => handleShareQuote('text')}
+                          className="flex items-center gap-2"
+                        >
+                          <MessageCircle className="h-4 w-4" />
+                          Share
+                        </Button>
+                      </div>
+                      
+                      <p className="text-xs text-muted-foreground text-center">
+                        Spread positivity by sharing this inspiring quote with a friend
+                      </p>
+                    </>
+                  ) : (
+                    <div className="text-sm text-muted-foreground text-center py-4">
+                      No quote available today
+                    </div>
+                  )}
+                </div>
               </div>
             </CardContent>
           </Card>
