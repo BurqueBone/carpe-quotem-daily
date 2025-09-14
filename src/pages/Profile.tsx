@@ -153,9 +153,11 @@ const Profile = () => {
               text: shareText,
             });
           } else {
-            // Fallback to WhatsApp
-            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText)}`;
-            window.open(whatsappUrl, '_blank');
+            toast({
+              title: "Share not available",
+              description: "Native sharing is not supported on this device. Please use copy or email instead.",
+              variant: "destructive"
+            });
           }
           break;
       }
