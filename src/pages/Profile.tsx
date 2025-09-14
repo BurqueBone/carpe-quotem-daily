@@ -5,6 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Bell, User, LogOut, Mail, Lock, Share2, MessageCircle, Copy, Heart } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
@@ -33,6 +34,11 @@ const Profile = () => {
   const [newEmail, setNewEmail] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [sending, setSending] = useState(false);
+  
+  // Email share modal state
+  const [emailShareOpen, setEmailShareOpen] = useState(false);
+  const [recipientEmail, setRecipientEmail] = useState("");
+  const [sendingEmail, setSendingEmail] = useState(false);
   
   // Get today's quote for sharing
   const { quote, loading: quoteLoading } = useQuoteOfTheDay();
@@ -141,9 +147,7 @@ const Profile = () => {
           break;
         
         case 'email':
-          const emailSubject = encodeURIComponent("Thought you'd love this inspiring quote");
-          const emailBody = encodeURIComponent(shareText);
-          window.open(`mailto:?subject=${emailSubject}&body=${emailBody}`);
+          setEmailShareOpen(true);
           break;
         
         case 'text':
@@ -168,6 +172,49 @@ const Profile = () => {
         description: "Unable to share the quote. Please try again.",
         variant: "destructive"
       });
+    }
+  };
+
+  const handleSendEmail = async () => {
+    const emailValidation = validateEmail(recipientEmail);
+    if (!emailValidation.isValid) {
+      toast({
+        title: "Invalid Email",
+        description: emailValidation.errors[0],
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      const { error } = await supabase.functions.invoke('share-quote-email', {
+        body: {
+          recipientEmail,
+          quote: quote?.quote,
+          author: quote?.author,
+          source: quote?.source
+        }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Quote shared!",
+        description: `Daily quote sent to ${recipientEmail}`,
+      });
+      
+      setEmailShareOpen(false);
+      setRecipientEmail("");
+    } catch (error: any) {
+      console.error('Email send error:', error);
+      toast({
+        title: "Failed to send",
+        description: error.message || "Unable to send the quote. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setSendingEmail(false);
     }
   };
   return <div className="min-h-screen bg-gradient-subtle flex flex-col">
@@ -338,6 +385,54 @@ const Profile = () => {
         
       </div>
       <Footer />
+      
+      {/* Email Share Modal */}
+      <Dialog open={emailShareOpen} onOpenChange={setEmailShareOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Share Today's Quote</DialogTitle>
+            <DialogDescription>
+              Send today's inspiring quote to a friend via email
+            </DialogDescription>
+          </DialogHeader>
+          
+          {quote && (
+            <div className="bg-muted/50 rounded-lg p-4 space-y-2 mb-4">
+              <p className="text-sm italic text-foreground">"{quote.quote}"</p>
+              <p className="text-xs text-muted-foreground text-right">
+                — {quote.author}{quote.source ? `, ${quote.source}` : ''}
+              </p>
+            </div>
+          )}
+          
+          <div className="space-y-2">
+            <Label htmlFor="recipient-email">Recipient Email</Label>
+            <Input
+              id="recipient-email"
+              type="email"
+              placeholder="friend@example.com"
+              value={recipientEmail}
+              onChange={(e) => setRecipientEmail(e.target.value)}
+            />
+          </div>
+          
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setEmailShareOpen(false)}
+              disabled={sendingEmail}
+            >
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleSendEmail}
+              disabled={sendingEmail || !recipientEmail.trim()}
+            >
+              {sendingEmail ? "Sending..." : "Send Quote"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>;
 };
 export default Profile;
