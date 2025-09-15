@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.broadcast-email]
 verify_jwt = true
+
+[functions.share-quote-email]
+verify_jwt = true

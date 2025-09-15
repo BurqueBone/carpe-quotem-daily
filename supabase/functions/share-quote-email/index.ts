@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "npm:resend@2.0.0";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -15,18 +16,154 @@ interface ShareQuoteRequest {
   source?: string;
 }
 
+interface RateLimitRecord {
+  user_id: string;
+  action: string;
+  attempts: number;
+  window_start: string;
+}
+
+// Enhanced email validation
+const validateEmail = (email: string): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+  
+  if (!email.trim()) {
+    errors.push('Email is required');
+  } else if (!emailRegex.test(email)) {
+    errors.push('Please enter a valid email address');
+  } else if (email.length > 254) {
+    errors.push('Email address is too long');
+  }
+  
+  if (email.includes('..') || email.startsWith('.') || email.endsWith('.')) {
+    errors.push('Email format is invalid');
+  }
+  
+  return { isValid: errors.length === 0, errors };
+};
+
+// Input sanitization
+const sanitizeInput = (input: string): string => {
+  return input
+    .replace(/<\s*script[^>]*>[\s\S]*?<\s*\/\s*script>/gi, '')
+    .replace(/[<>]/g, '')
+    .replace(/javascript:/gi, '')
+    .replace(/on\w+\s*=\s*/gi, '')
+    .replace(/url\((.*?)\)/gi, 'url()')
+    .replace(/['"`]/g, '')
+    .trim();
+};
+
+// Rate limiting check
+const checkRateLimit = async (supabase: any, userId: string): Promise<boolean> => {
+  const windowMs = 60 * 60 * 1000; // 1 hour
+  const maxAttempts = 5;
+  const now = new Date();
+  const windowStart = new Date(now.getTime() - windowMs);
+
+  try {
+    // Check current attempts in the window
+    const { data: rateLimitData, error } = await supabase
+      .from('security_logs')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('action', 'SHARE_QUOTE')
+      .gte('timestamp', windowStart.toISOString())
+      .order('timestamp', { ascending: false });
+
+    if (error) {
+      console.error('Rate limit check error:', error);
+      return true; // Allow on error to avoid blocking legitimate users
+    }
+
+    const attemptCount = rateLimitData?.length || 0;
+    return attemptCount < maxAttempts;
+  } catch (error) {
+    console.error('Rate limit check failed:', error);
+    return true; // Allow on error
+  }
+};
+
 const handler = async (req: Request): Promise<Response> => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
+  const supabase = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  );
+
   try {
+    // Get user from authorization header
+    const authHeader = req.headers.get('authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Authorization required' }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      console.error('Auth error:', authError);
+      return new Response(JSON.stringify({ error: 'Invalid authorization' }), {
+        status: 401,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
     const { recipientEmail, quote, author, source }: ShareQuoteRequest = await req.json();
 
-    console.log('Sending quote email to:', recipientEmail);
+    // Validate and sanitize inputs
+    const emailValidation = validateEmail(recipientEmail);
+    if (!emailValidation.isValid) {
+      return new Response(JSON.stringify({ error: emailValidation.errors[0] }), {
+        status: 400,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
 
-    // Generate email HTML content
+    // Check rate limits
+    const rateLimitPassed = await checkRateLimit(supabase, user.id);
+    if (!rateLimitPassed) {
+      // Log rate limit violation
+      await supabase.from('security_logs').insert({
+        user_id: user.id,
+        action: 'SHARE_QUOTE_BLOCKED',
+        table_name: 'rate_limit',
+        target_user_id: null,
+        timestamp: new Date().toISOString()
+      });
+
+      return new Response(JSON.stringify({ error: 'Too many share attempts. Please wait before trying again.' }), {
+        status: 429,
+        headers: { "Content-Type": "application/json", ...corsHeaders },
+      });
+    }
+
+    // Sanitize inputs
+    const sanitizedQuote = sanitizeInput(quote);
+    const sanitizedAuthor = sanitizeInput(author);
+    const sanitizedSource = source ? sanitizeInput(source) : undefined;
+    const sanitizedEmail = sanitizeInput(recipientEmail);
+
+    console.log('Sending quote email to:', sanitizedEmail.replace(/(.{2}).*@/, '$1***@'));
+
+    // Log the share attempt
+    await supabase.from('security_logs').insert({
+      user_id: user.id,
+      action: 'SHARE_QUOTE',
+      table_name: 'email_share',
+      target_user_id: null,
+      timestamp: new Date().toISOString()
+    });
+
+    // Generate email HTML content with sanitized inputs
     const emailHTML = `
       <!DOCTYPE html>
       <html>
@@ -48,10 +185,10 @@ const handler = async (req: Request): Promise<Response> => {
             <div style="padding: 40px 30px;">
               <div style="background-color: #f8f7ff; border-left: 4px solid #9381ff; padding: 30px; margin: 20px 0; border-radius: 8px;">
                 <blockquote style="margin: 0; font-size: 20px; line-height: 1.6; color: #333; font-style: italic;">
-                  "${quote}"
+                  "${sanitizedQuote}"
                 </blockquote>
                 <footer style="margin-top: 20px; text-align: right; color: #666; font-size: 16px;">
-                  — <strong>${author}</strong>${source ? `, ${source}` : ''}
+                  — <strong>${sanitizedAuthor}</strong>${sanitizedSource ? `, ${sanitizedSource}` : ''}
                 </footer>
               </div>
               
@@ -80,14 +217,23 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailResponse = await resend.emails.send({
       from: "Sunday4K <quotes@sunday4k.life>",
-      to: [recipientEmail],
+      to: [sanitizedEmail],
       subject: "A friend shared this inspiring quote with you",
       html: emailHTML,
     });
 
-    console.log("Email sent successfully:", emailResponse);
+    console.log("Email sent successfully");
 
-    return new Response(JSON.stringify(emailResponse), {
+    // Log successful share
+    await supabase.from('security_logs').insert({
+      user_id: user.id,
+      action: 'SHARE_QUOTE_SUCCESS',
+      table_name: 'email_share',
+      target_user_id: null,
+      timestamp: new Date().toISOString()
+    });
+
+    return new Response(JSON.stringify({ success: true }), {
       status: 200,
       headers: {
         "Content-Type": "application/json",
@@ -96,8 +242,22 @@ const handler = async (req: Request): Promise<Response> => {
     });
   } catch (error: any) {
     console.error("Error in share-quote-email function:", error);
+    
+    // Log error for security monitoring
+    try {
+      await supabase.from('security_logs').insert({
+        user_id: null,
+        action: 'SHARE_QUOTE_ERROR',
+        table_name: 'email_share',
+        target_user_id: null,
+        timestamp: new Date().toISOString()
+      });
+    } catch (logError) {
+      console.error("Failed to log error:", logError);
+    }
+
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'Failed to send email. Please try again later.' }),
       {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
