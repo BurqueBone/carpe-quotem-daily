@@ -47,9 +47,9 @@ const Index = () => {
                   
                   {/* Quote Section */}
                   {quoteLoading ? (
-                    <Card className="p-8 bg-gradient-subtle shadow-card border-border/50">
+                    <Card className="p-8 bg-gradient-to-br from-accent/20 to-secondary/20 shadow-card border-border/50">
                       <div className="text-center space-y-4">
-                        <div className="w-16 h-16 mx-auto rounded-full bg-gradient from-#B8B8FF to-#FFEEDD flex items-center justify-center shadow-glow">
+                        <div className="w-16 h-16 mx-auto rounded-full bg-gradient-warm flex items-center justify-center shadow-glow">
                           <RefreshCw className="w-8 h-8 text-white animate-spin" />
                         </div>
                         <p className="text-muted-foreground">Loading today's inspiration...</p>
