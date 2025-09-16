@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Bell, User, LogOut, Mail, Lock, Share2, MessageCircle, Copy, Heart } from "lucide-react";
+import { Bell, User, LogOut, Mail, Lock, Copy, Heart } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Navigate } from "react-router-dom";
@@ -124,7 +124,7 @@ const Profile = () => {
       setIsUpdating(false);
     }
   };
-  const handleShareQuote = async (method: 'copy' | 'email' | 'text') => {
+  const handleShareQuote = async (method: 'copy' | 'email') => {
     if (!quote) {
       toast({
         title: "No quote available",
@@ -148,21 +148,6 @@ const Profile = () => {
         
         case 'email':
           setEmailShareOpen(true);
-          break;
-        
-        case 'text':
-          if (navigator.share) {
-            await navigator.share({
-              title: 'Inspiring Quote from Sunday4k',
-              text: shareText,
-            });
-          } else {
-            toast({
-              title: "Share not available",
-              description: "Native sharing is not supported on this device. Please use copy or email instead.",
-              variant: "destructive"
-            });
-          }
           break;
       }
     } catch (error) {
@@ -285,7 +270,7 @@ const Profile = () => {
                         </p>
                       </div>
                       
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-2 gap-2">
                         <Button 
                           variant="outline" 
                           size="sm" 
@@ -303,15 +288,6 @@ const Profile = () => {
                         >
                           <Mail className="h-4 w-4" />
                           Email
-                        </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleShareQuote('text')}
-                          className="flex items-center gap-2"
-                        >
-                          <MessageCircle className="h-4 w-4" />
-                          Share
                         </Button>
                       </div>
                       
