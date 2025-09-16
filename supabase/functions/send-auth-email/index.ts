@@ -283,17 +283,77 @@ function getEmailHeader(): string {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Sunday4k</title>
       <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #2d3748; margin: 0; padding: 0; background-color: #F8F7FF; }
-        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(147,129,255,0.15); }
-        .header { background: linear-gradient(135deg, #9381ff, #b8b8ff); padding: 40px 30px; text-align: center; color: #ffffff; }
-        .logo { font-size: 28px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 8px; }
-        .tagline { font-size: 14px; opacity: 0.95; }
-        .content { padding: 36px 30px; }
-        .message { font-size: 16px; color: #374151; margin: 22px 0; }
-        .cta { text-align: center; margin: 30px 0; }
-        .cta-button { display: inline-block; background: linear-gradient(135deg, #9381ff, #b8b8ff); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 16px; box-shadow: 0 6px 16px rgba(147,129,255,0.25); }
-        .footer { background: #FFD8BE; padding: 24px 30px; text-align: center; font-size: 13px; color: #5b5b5b; }
-        .links a { color: #9381ff; text-decoration: none; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            margin: 0;
+            padding: 0;
+            background-color: #F8F7FF;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #F8F7FF;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(147, 129, 255, 0.15);
+        }
+
+        .header {
+            background-color: #F8F7FF;
+            padding: 40px 30px;
+            text-align: center;
+            color: #9381FF;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+
+        .content {
+            padding: 10px 30px;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #1F2937;
+            margin: 22px 0;
+        }
+
+        .cta {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background-color: #FFD8BE;
+            color: #ffffff;
+            padding: 14px 28px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 16px;
+            box-shadow: 0 6px 16px rgba(147, 129, 255, 0.25);
+        }
+
+        .footer {
+            background-color: #FFEEDD;
+            padding: 24px 30px;
+            text-align: center;
+            font-size: 13px;
+            color: #5b5b5b;
+        }
+
+        .links a {
+            color: #9381ff;
+            text-decoration: none;
+        }
       </style>
     </head>
     <body>
@@ -308,9 +368,9 @@ function getEmailHeader(): string {
 function getEmailFooter(): string {
   return `
         <div class="footer">
-          <p>Sunday4k - Inspiring meaningful living, one day at a time.</p>
+          <p>Sunday4k - Inspiring meaningful living, one Sunday at a time.</p>
           <p class="links">
-            <a href="https://sunday4k.life">Visit Sunday4k</a> · 
+            <a href="https://sunday4k.life">Visit Sunday4k</a> ·
             <a href="mailto:info@sunday4k.life">Contact Us</a>
           </p>
         </div>
