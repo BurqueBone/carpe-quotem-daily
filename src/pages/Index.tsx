@@ -35,9 +35,9 @@ const Index = () => {
                     <p className="text-2xl font-bold text-white">You only have 4,000 Sundays in your life.</p>
                   </div>
                   
-                  <div className="p-8 rounded-full bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
+                  <div className="p-8 bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
                     <div>
-                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
+                      <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
                         <Flower2 className="w-8 h-8 text-white" />
                       </div>
                       <h2 className="text-3xl font-bold mb-4 text-black text-center">Welcome to Sunday4k</h2>
