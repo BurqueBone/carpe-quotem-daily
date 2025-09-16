@@ -146,6 +146,10 @@ function generateSignupEmailHTML(token: string, token_hash: string, redirect_to:
       </div>
       
       <p class="message" style="font-size: 14px; color: #6b7280;">
+        This link will expire in 1 hour for security reasons.
+      </p>
+      
+      <p class="message" style="font-size: 14px; color: #6b7280;">
         Or copy and paste this link into your browser:<br>
         <a href="${confirmUrl}" style="color: #9381ff; word-break: break-all;">${confirmUrl}</a>
       </p>
@@ -161,7 +165,7 @@ function generatePasswordResetEmailHTML(token: string, token_hash: string, redir
   return `
     ${getEmailHeader()}
     <div class="content">
-      <h1 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">Reset Your Password</h1>
+      <h1 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">Reset Your Sunday4k Password</h1>
       
       <p class="message">
         We received a request to reset your password for your Sunday4k account.
@@ -174,6 +178,10 @@ function generatePasswordResetEmailHTML(token: string, token_hash: string, redir
       <div class="cta">
         <a href="${resetUrl}" class="cta-button">Reset Password</a>
       </div>
+      
+      <p class="message" style="font-size: 14px; color: #6b7280;">
+        This link will expire in 1 hour for security reasons.
+      </p>
       
       <p class="message" style="font-size: 14px; color: #6b7280;">
         If you didn't request this password reset, you can safely ignore this email.
@@ -240,6 +248,10 @@ function generateInviteEmailHTML(token: string, token_hash: string, redirect_to:
       </div>
       
       <p class="message" style="font-size: 14px; color: #6b7280;">
+        This invitation will expire in 24 hours for security reasons.
+      </p>
+      
+      <p class="message" style="font-size: 14px; color: #6b7280;">
         Or copy and paste this link into your browser:<br>
         <a href="${inviteUrl}" style="color: #9381ff; word-break: break-all;">${inviteUrl}</a>
       </p>
@@ -264,6 +276,10 @@ function generateGenericAuthEmailHTML(token: string, token_hash: string, redirec
       <div class="cta">
         <a href="${actionUrl}" class="cta-button">Continue</a>
       </div>
+      
+      <p class="message" style="font-size: 14px; color: #6b7280;">
+        This link will expire in 1 hour for security reasons.
+      </p>
       
       <p class="message" style="font-size: 14px; color: #6b7280;">
         Or copy and paste this link into your browser:<br>
