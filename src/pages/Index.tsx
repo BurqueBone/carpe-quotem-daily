@@ -32,9 +32,6 @@ const Index = () => {
               {activeTab === "home" && (
                 <div className="space-y-6">
                   <div className="bg-gradient-warm rounded-2xl p-6 border border-primary/20 shadow-glow hover:shadow-xl transition-smooth text-center">
-                      <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-xl">
-                        <Flower2 className="w-8 h-8 text-white" />
-                      </div>
                     <p className="text-2xl font-bold text-white">You only have around 4,000 Sundays in your life.</p>
                   </div>
                   
