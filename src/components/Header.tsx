@@ -28,6 +28,11 @@ const Header = () => {
               Carpe Diem
             </Button>
           </Link>
+          <Link to="/about">
+            <Button variant="ghost" className="text-foreground hover:text-primary">
+              About
+            </Button>
+          </Link>
           {user ? <Link to="/profile">
               <Button variant="ghost" size="icon" className="rounded-full" title="Profile">
                 <User className="h-5 w-5" />

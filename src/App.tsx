@@ -10,6 +10,7 @@ import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import CarpeDiem from "./pages/CarpeDiem";
+import About from "./pages/About";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="/carpe-diem" element={<CarpeDiem />} />
+            <Route path="/about" element={<About />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
