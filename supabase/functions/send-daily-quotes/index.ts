@@ -105,7 +105,7 @@ serve(async (req) => {
     // Get a random resource to include as a "seize the day" suggestion
     const { data: resource, error: resourceError } = await supabase
       .from('resources')
-      .select('title, description, url, type')
+      .select('title, description, url, type, categories(title)')
       .eq('ispublished', true)
       .order('id', { ascending: false }) // Use a simple order to make it deterministic
       .limit(10);
@@ -254,25 +254,29 @@ function generateEmailHTML(quote: any, resource: any = null): string {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Your Daily Inspiration</title>
       <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #2d3748; margin: 0; padding: 0; background-color: #F8F7FF; }
-        .container { max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(147,129,255,0.15); }
-        .header { background: linear-gradient(135deg, #9381ff, #b8b8ff); padding: 40px 30px; text-align: center; color: #ffffff; }
-        .logo { font-size: 28px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 8px; }
-        .tagline { font-size: 14px; opacity: 0.95; }
-        .content { padding: 36px 30px; }
-        .quote-container { background: #FFEEDD; border-left: 4px solid #9381ff; padding: 20px; margin: 24px 0; border-radius: 8px; }
-        .quote { font-size: 20px; font-style: italic; margin-bottom: 12px; color: #1f2937; }
-        .author { font-size: 15px; color: #4b5563; text-align: right; }
-        .message { font-size: 16px; color: #374151; margin: 22px 0; }
-        .resource-container { background: #B8B8FF; background: linear-gradient(135deg, #B8B8FF, #F8F7FF); border: 1px solid #9381ff; padding: 20px; margin: 24px 0; border-radius: 8px; }
-        .resource-title { font-size: 18px; font-weight: 700; color: #1f2937; margin-bottom: 8px; }
-        .resource-description { font-size: 15px; color: #4b5563; margin-bottom: 12px; }
-        .resource-link { display: inline-block; background: #9381ff; color: #ffffff; padding: 10px 20px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 14px; }
-        .resource-header { font-size: 16px; font-weight: 600; color: #9381ff; margin-bottom: 12px; }
-        .cta { text-align: center; margin: 30px 0; }
-        .cta-button { display: inline-block; background: linear-gradient(135deg, #9381ff, #b8b8ff); color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 10px; font-weight: 700; font-size: 16px; box-shadow: 0 6px 16px rgba(147,129,255,0.25); }
-        .footer { background: #FFD8BE; padding: 24px 30px; text-align: center; font-size: 13px; color: #5b5b5b; }
-        .links a { color: #9381ff; text-decoration: none; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; line-height: 1.6; color: #333; background-color: #ffffff; margin: 0; padding: 12px; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
+        .header { padding: 40px 0; text-align: center; }
+        .logo { color: #333; font-size: 24px; font-weight: bold; margin-bottom: 14px; }
+        .tagline { color: #898989; font-size: 12px; line-height: 22px; margin-top: 12px; margin-bottom: 24px; }
+        .content { padding: 0 12px; }
+        .greeting { color: #333; font-size: 24px; font-weight: bold; margin: 40px 0; padding: 0; }
+        .quote-container { background-color: #f4f4f4; border-radius: 5px; border: 1px solid #eee; padding: 16px 4.5%; width: 90.5%; margin: 24px 0; display: inline-block; }
+        .quote { font-size: 18px; font-style: italic; color: #333; margin-bottom: 15px; line-height: 1.5; }
+        .author { font-size: 14px; color: #333; text-align: right; }
+        .message { font-size: 14px; color: #333; margin: 24px 0; line-height: 1.6; }
+        .resource-container { background-color: #ffffff; border: 1px solid #eee; padding: 25px; border-radius: 5px; margin: 30px 0; }
+        .resource-header { color: #333; font-size: 16px; margin-bottom: 15px; font-weight: 600; }
+        .resource-category { font-size: 12px; color: #898989; margin-bottom: 5px; }
+        .resource-type { font-size: 12px; color: #9381ff; font-weight: 500; }
+        .resource-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .resource-description { font-size: 14px; color: #333; margin-bottom: 12px; }
+        .resource-link { display: inline-block; background: #9381ff; color: #ffffff; padding: 10px 20px; text-decoration: underline; border-radius: 5px; font-weight: 600; font-size: 14px; }
+        .cta { text-align: center; margin: 40px 0; }
+        .cta-button { display: inline-block; background: #9381ff; color: #ffffff; text-decoration: underline; padding: 16px 32px; border-radius: 5px; font-weight: 600; font-size: 14px; }
+        .footer { padding: 30px 12px; text-align: center; }
+        .footer-text { color: #898989; font-size: 12px; line-height: 22px; margin-top: 12px; margin-bottom: 24px; }
+        .links a { color: #9381ff; text-decoration: underline; font-size: 12px; }
       </style>
     </head>
     <body>
@@ -283,8 +287,8 @@ function generateEmailHTML(quote: any, resource: any = null): string {
         </div>
         
         <div class="content">
-          <div class="message">
-            Here's your daily reminder to live fully and meaningfully:
+          <div class="greeting">
+            Here's your daily inspiration:
           </div>
           
           <div class="quote-container">
@@ -298,7 +302,8 @@ function generateEmailHTML(quote: any, resource: any = null): string {
           
           ${resource ? `
           <div class="resource-container">
-            <div class="resource-header">💡 Seize the Day Suggestion:</div>
+            <div class="resource-header">💡 Seize the Day Suggestion</div>
+            <div class="resource-category">${resource.categories?.title || 'Personal Growth'} • ${resource.type || 'Resource'}</div>
             <div class="resource-title">${resource.title}</div>
             <div class="resource-description">${resource.description}</div>
             <a href="${resource.url}" class="resource-link" target="_blank">Learn More</a>
@@ -306,13 +311,19 @@ function generateEmailHTML(quote: any, resource: any = null): string {
           ` : ''}
           
           <div class="cta">
-            <a href="https://sunday4k.life" class="cta-button">Explore More Resources</a>
+            <a href="https://sunday4k.life/carpe-diem" class="cta-button">Explore More Resources</a>
           </div>
         </div>
         
         <div class="footer">
-          <p>You're receiving this because you've subscribed to Sunday4k daily inspiration.</p>
-          <p class="links"><a href="https://sunday4k.life">Visit Sunday4k</a> · <a href="#">Update preferences</a> · <a href="#">Unsubscribe</a></p>
+          <div class="footer-text">
+            Sunday4k - Inspiring positive action and reflection
+          </div>
+          <p class="links">
+            <a href="https://sunday4k.life">Visit Sunday4k</a> · 
+            <a href="https://sunday4k.life/profile">Update preferences</a> · 
+            <a href="https://resend.com/unsubscribe">Unsubscribe</a>
+          </p>
         </div>
       </div>
     </body>
