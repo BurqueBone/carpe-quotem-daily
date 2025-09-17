@@ -32,7 +32,7 @@ const Index = () => {
               {activeTab === "home" && (
                 <div className="space-y-6">
                   <div className="bg-gradient-warm rounded-2xl p-6 border border-primary/20 shadow-glow hover:shadow-xl transition-smooth text-center">
-                    <p className="text-2xl font-bold text-white">You only have 4,000 Sundays in your life.</p>
+                    <p className="text-2xl font-bold text-white">You only have around 4,000 Sundays in your life.</p>
                   </div>
                   
                   <div className="p-8 rounded-2xl bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
@@ -41,7 +41,7 @@ const Index = () => {
                         <Flower2 className="w-8 h-8 text-white" />
                       </div>
                       <h2 className="text-3xl font-bold mb-4 text-black text-center">Welcome to Sunday4k</h2>
-                      <p className="text-black/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6 text-center">That doesn't sound like a lot so we use that as motivation. To acknowledging death instills a deep sense of gratitude and appreciation for life, it prompts the setting of meaningful priorities, and can reduce fear and anxiety about death itself, ultimately leading to a more fulfilling existence and improved well-being.</p>
+                      <p className="text-black/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6 text-center">Every one of them is a chance to live with purpose, create meaningful memories, and make lasting progress. But in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that awareness is the first step toward action. We'll deliver daily inspiration to your inbox, along with a curated collection of resources designed to help you transform your awareness into a life of intention. Stop waiting for the right moment. Start living a life with no regrets.</p>
                     </div>
                   </div>
                   
