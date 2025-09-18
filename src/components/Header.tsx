@@ -7,6 +7,7 @@ import newLogo from '@/assets/new-logo.png';
 const Header = () => {
   const {
     user,
+    isAdmin,
     signOut
   } = useAuth();
   const handleSignOut = async () => {
@@ -33,6 +34,13 @@ const Header = () => {
               About
             </Button>
           </Link>
+          {user && isAdmin && (
+            <Link to="/admin">
+              <Button variant="ghost" className="text-foreground hover:text-primary">
+                Admin
+              </Button>
+            </Link>
+          )}
           {user ? <Link to="/profile">
               <Button variant="ghost" size="icon" className="rounded-full" title="Profile">
                 <User className="h-5 w-5" />

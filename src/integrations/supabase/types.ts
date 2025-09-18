@@ -41,6 +41,39 @@ export type Database = {
         }
         Relationships: []
       }
+      email_templates: {
+        Row: {
+          created_at: string
+          description: string | null
+          html_content: string
+          id: string
+          is_active: boolean
+          subject: string
+          template_name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          html_content: string
+          id?: string
+          is_active?: boolean
+          subject: string
+          template_name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          html_content?: string
+          id?: string
+          is_active?: boolean
+          subject?: string
+          template_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notification_sends: {
         Row: {
           id: string
@@ -159,12 +192,15 @@ export type Database = {
       }
       resources: {
         Row: {
+          affiliate_url: string | null
           category_id: string
           created_at: string
+          date_display_reference: string | null
           description: string
           has_affiliate: boolean
+          how_resource_helps: string | null
           id: string
-          ispublished: boolean | null
+          ispublished: boolean
           s4k_favorite: boolean
           title: string
           type: string
@@ -172,12 +208,15 @@ export type Database = {
           url: string
         }
         Insert: {
+          affiliate_url?: string | null
           category_id: string
           created_at?: string
+          date_display_reference?: string | null
           description: string
           has_affiliate?: boolean
+          how_resource_helps?: string | null
           id?: string
-          ispublished?: boolean | null
+          ispublished?: boolean
           s4k_favorite?: boolean
           title: string
           type: string
@@ -185,12 +224,15 @@ export type Database = {
           url: string
         }
         Update: {
+          affiliate_url?: string | null
           category_id?: string
           created_at?: string
+          date_display_reference?: string | null
           description?: string
           has_affiliate?: boolean
+          how_resource_helps?: string | null
           id?: string
-          ispublished?: boolean | null
+          ispublished?: boolean
           s4k_favorite?: boolean
           title?: string
           type?: string
@@ -240,6 +282,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -256,9 +322,16 @@ export type Database = {
           source: string
         }[]
       }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -385,6 +458,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
