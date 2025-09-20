@@ -86,6 +86,24 @@ serve(async (req) => {
 
     console.log('Starting daily quote sending process...');
 
+    // Get the email template for daily inspiration
+    const { data: emailTemplate, error: templateError } = await supabase
+      .from('email_templates')
+      .select('subject, html_content')
+      .eq('template_name', 'daily_inspiration')
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (templateError) {
+      console.error('Error fetching email template:', templateError);
+      throw templateError;
+    }
+
+    if (!emailTemplate) {
+      console.error('No daily_inspiration email template found');
+      throw new Error('Email template not found');
+    }
+
     // Get today's quote from the database
     const { data: quote, error: quoteError } = await supabase
       .rpc('get_random_quote_and_track')
@@ -164,13 +182,16 @@ serve(async (req) => {
         // Ensure contact exists in Resend audience
         await ensureContactInAudience(userEmail, audienceId);
 
+        // Generate email HTML using template
+        const emailHTML = generateEmailFromTemplate(emailTemplate.html_content, quote, randomResource);
+
         // Send email using Resend
         const emailResponse = await resend.emails.send({
           from: "Sunday4k <info@sunday4k.life>",
           reply_to: "info@sunday4k.life",
           to: [userEmail],
-          subject: "Your Daily Inspiration from Sunday4k",
-          html: generateEmailHTML(quote, randomResource),
+          subject: emailTemplate.subject,
+          html: emailHTML,
         });
 
         console.log('Email sent successfully to:', `${userEmail.charAt(0)}***@${userEmail.split('@')[1]?.charAt(0)}***`, emailResponse);
@@ -245,88 +266,29 @@ async function checkUserQuota(supabase: any, userId: string): Promise<boolean> {
   return !sends || sends.length === 0;
 }
 
-function generateEmailHTML(quote: any, resource: any = null): string {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Your Daily Inspiration</title>
-      <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; line-height: 1.6; color: #333; background-color: #ffffff; margin: 0; padding: 12px; }
-        .container { max-width: 600px; margin: 0 auto; background-color: #ffffff; }
-        .header { padding: 40px 0; text-align: center; }
-        .logo { color: #333; font-size: 24px; font-weight: bold; margin-bottom: 14px; }
-        .tagline { color: #898989; font-size: 12px; line-height: 22px; margin-top: 12px; margin-bottom: 24px; }
-        .content { padding: 0 12px; }
-        .greeting { color: #333; font-size: 24px; font-weight: bold; margin: 40px 0; padding: 0; }
-        .quote-container { background-color: #f4f4f4; border-radius: 5px; border: 1px solid #eee; padding: 16px 4.5%; width: 90.5%; margin: 24px 0; display: inline-block; }
-        .quote { font-size: 18px; font-style: italic; color: #333; margin-bottom: 15px; line-height: 1.5; }
-        .author { font-size: 14px; color: #333; text-align: right; }
-        .message { font-size: 14px; color: #333; margin: 24px 0; line-height: 1.6; }
-        .resource-container { background-color: #ffffff; border: 1px solid #eee; padding: 25px; border-radius: 5px; margin: 30px 0; }
-        .resource-header { color: #333; font-size: 16px; margin-bottom: 15px; font-weight: 600; }
-        .resource-category { font-size: 12px; color: #898989; margin-bottom: 5px; }
-        .resource-type { font-size: 12px; color: #9381ff; font-weight: 500; }
-        .resource-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 8px; }
-        .resource-description { font-size: 14px; color: #333; margin-bottom: 12px; }
-        .resource-link { display: inline-block; background: #9381ff; color: #ffffff; padding: 10px 20px; text-decoration: underline; border-radius: 5px; font-weight: 600; font-size: 14px; }
-        .cta { text-align: center; margin: 40px 0; }
-        .cta-button { display: inline-block; background: #9381ff; color: #ffffff; text-decoration: underline; padding: 16px 32px; border-radius: 5px; font-weight: 600; font-size: 14px; }
-        .footer { padding: 30px 12px; text-align: center; }
-        .footer-text { color: #898989; font-size: 12px; line-height: 22px; margin-top: 12px; margin-bottom: 24px; }
-        .links a { color: #9381ff; text-decoration: underline; font-size: 12px; }
-      </style>
-    </head>
-    <body>
-      <div class="container">
-        <div class="header">
-          <div class="logo">Sunday4k</div>
-          <div class="tagline">Daily inspiration for meaningful living</div>
-        </div>
-        
-        <div class="content">
-          <div class="greeting">
-            Here's your daily inspiration:
-          </div>
-          
-          <div class="quote-container">
-            <div class="quote">"${quote.quote}"</div>
-            <div class="author">— ${quote.author}${quote.source ? `, ${quote.source}` : ''}</div>
-          </div>
-          
-          <div class="message">
-            Take a moment to reflect on these words. How can you apply this wisdom to create more meaning in your day?
-          </div>
-          
-          ${resource ? `
-          <div class="resource-container">
-            <div class="resource-header">💡 Seize the Day Suggestion</div>
-            <div class="resource-category">${resource.categories?.title || 'Personal Growth'} • ${resource.type || 'Resource'}</div>
-            <div class="resource-title">${resource.title}</div>
-            <div class="resource-description">${resource.description}</div>
-            <a href="${resource.url}" class="resource-link" target="_blank">Learn More</a>
-          </div>
-          ` : ''}
-          
-          <div class="cta">
-            <a href="https://sunday4k.life/carpe-diem" class="cta-button">Explore More Resources</a>
-          </div>
-        </div>
-        
-        <div class="footer">
-          <div class="footer-text">
-            Sunday4k - Inspiring positive action and reflection
-          </div>
-          <p class="links">
-            <a href="https://sunday4k.life">Visit Sunday4k</a> · 
-            <a href="https://sunday4k.life/profile">Update preferences</a> · 
-            <a href="https://resend.com/unsubscribe">Unsubscribe</a>
-          </p>
-        </div>
+function generateEmailFromTemplate(template: string, quote: any, resource: any = null): string {
+  let emailHTML = template;
+  
+  // Replace quote placeholders
+  emailHTML = emailHTML.replace(/\{\{quote_text\}\}/g, quote.quote || '');
+  emailHTML = emailHTML.replace(/\{\{quote_author\}\}/g, quote.author || '');
+  emailHTML = emailHTML.replace(/\{\{quote_source\}\}/g, quote.source ? `, ${quote.source}` : '');
+  
+  // Handle resource section
+  if (resource) {
+    const resourceSection = `
+      <div class="resource-container">
+        <div class="resource-header">💡 Seize the Day Suggestion</div>
+        <div class="resource-category">${resource.categories?.title || 'Personal Growth'} • ${resource.type || 'Resource'}</div>
+        <div class="resource-title">${resource.title}</div>
+        <div class="resource-description">${resource.description}</div>
+        <a href="${resource.url}" class="resource-link" target="_blank">Learn More</a>
       </div>
-    </body>
-    </html>
-  `;
+    `;
+    emailHTML = emailHTML.replace(/\{\{resource_section\}\}/g, resourceSection);
+  } else {
+    emailHTML = emailHTML.replace(/\{\{resource_section\}\}/g, '');
+  }
+  
+  return emailHTML;
 }

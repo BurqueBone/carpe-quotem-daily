@@ -40,7 +40,23 @@ serve(async (req) => {
 
     const body = (await req.json().catch(() => ({}))) as BroadcastRequest;
 
-    // 1) Get today's quote (same source as daily emails)
+    // Get the broadcast email template from database
+    const { data: emailTemplate, error: templateError } = await supabase
+      .from('email_templates')
+      .select('subject, html_content')
+      .eq('template_name', 'broadcast')
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (templateError) {
+      console.error('broadcast-email: error fetching template', templateError);
+      return new Response(JSON.stringify({ error: 'Failed to fetch email template' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      });
+    }
+
+    // Get today's quote (same source as daily emails)
     const { data: quote, error: quoteError } = await supabase
       .rpc('get_random_quote_and_track')
       .single();
@@ -60,16 +76,29 @@ serve(async (req) => {
       });
     }
 
-    const subject = body.subject?.trim() || 'Your Sunday4k Daily Inspiration';
+    const subject = body.subject?.trim() || (emailTemplate?.subject || 'Your Sunday4k Daily Inspiration');
     const preheader = body.preheader?.trim() || 'A gentle nudge toward a more meaningful day';
     const ctaUrl = body.cta_url?.trim() || 'https://sunday4k.life';
 
-    const html = generateBroadcastHTML({
-      subject,
-      preheader,
-      ctaUrl,
-      quote,
-    });
+    let html: string;
+    if (emailTemplate) {
+      // Use template from database
+      html = generateEmailFromTemplate(emailTemplate.html_content, {
+        subject,
+        preheader,
+        ctaUrl,
+        quote,
+      });
+    } else {
+      // Fallback to hardcoded template
+      console.warn('No broadcast template found, using fallback');
+      html = generateBroadcastHTML({
+        subject,
+        preheader,
+        ctaUrl,
+        quote,
+      });
+    }
 
     return new Response(
       JSON.stringify({ success: true, subject, html }),
@@ -87,6 +116,21 @@ serve(async (req) => {
   }
 });
 
+function generateEmailFromTemplate(template: string, data: { subject: string; preheader: string; ctaUrl: string; quote: any }): string {
+  let emailHTML = template;
+  
+  // Replace placeholders
+  emailHTML = emailHTML.replace(/\{\{subject\}\}/g, escapeHtml(data.subject));
+  emailHTML = emailHTML.replace(/\{\{preheader\}\}/g, escapeHtml(data.preheader));
+  emailHTML = emailHTML.replace(/\{\{cta_url\}\}/g, escapeAttr(data.ctaUrl));
+  emailHTML = emailHTML.replace(/\{\{quote_text\}\}/g, escapeHtml(data.quote.quote));
+  emailHTML = emailHTML.replace(/\{\{quote_author\}\}/g, escapeHtml(data.quote.author || 'Unknown'));
+  emailHTML = emailHTML.replace(/\{\{quote_source\}\}/g, data.quote.source ? `, ${escapeHtml(data.quote.source)}` : '');
+  
+  return emailHTML;
+}
+
+// Fallback function (kept for backward compatibility)
 function generateBroadcastHTML({ subject, preheader, ctaUrl, quote }: { subject: string; preheader: string; ctaUrl: string; quote: any }) {
   // Brand palette
   const primary = '#9381ff';
@@ -134,7 +178,7 @@ function generateBroadcastHTML({ subject, preheader, ctaUrl, quote }: { subject:
           <div class="content">
             <p class="intro">Here's your daily reminder to live fully and meaningfully:</p>
             <div class="quote-wrap">
-              <div class="quote">“${escapeHtml(quote.quote)}”</div>
+              <div class="quote">"${escapeHtml(quote.quote)}"</div>
               <p class="author">— ${escapeHtml(quote.author || 'Unknown')}${quote.source ? `, ${escapeHtml(quote.source)}` : ''}</p>
             </div>
             <p class="intro">Take a moment to reflect on these words. How might you bring a little more intention, kindness, or courage into today?</p>
@@ -144,7 +188,7 @@ function generateBroadcastHTML({ subject, preheader, ctaUrl, quote }: { subject:
           </div>
           <div class="divider"></div>
           <div class="footer">
-            <p>You’re receiving this because you subscribed to Sunday4k daily inspiration.</p>
+            <p>You're receiving this because you subscribed to Sunday4k daily inspiration.</p>
             <p class="links"><a href="https://sunday4k.life">Visit Sunday4k</a> · <a href="#">Update preferences</a> · <a href="#">Unsubscribe</a></p>
           </div>
         </div>

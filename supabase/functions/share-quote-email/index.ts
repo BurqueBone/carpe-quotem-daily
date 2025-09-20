@@ -163,62 +163,36 @@ const handler = async (req: Request): Promise<Response> => {
       timestamp: new Date().toISOString()
     });
 
-    // Generate email HTML content with sanitized inputs
-    const emailHTML = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>A Friend Shared This Inspiring Quote</title>
-        </head>
-        <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background-color: #f8f9fa;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            
-            <!-- Header -->
-            <div style="background: linear-gradient(135deg, #9381ff, #b8b8ff); padding: 40px 30px; text-align: center;">
-              <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 600;">Sunday4K</h1>
-              <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">A friend thought you'd love this quote</p>
-            </div>
-            
-            <!-- Quote Content -->
-            <div style="padding: 40px 30px;">
-              <div style="background-color: #f8f7ff; border-left: 4px solid #9381ff; padding: 30px; margin: 20px 0; border-radius: 8px;">
-                <blockquote style="margin: 0; font-size: 20px; line-height: 1.6; color: #333; font-style: italic;">
-                  "${sanitizedQuote}"
-                </blockquote>
-                <footer style="margin-top: 20px; text-align: right; color: #666; font-size: 16px;">
-                  — <strong>${sanitizedAuthor}</strong>${sanitizedSource ? `, ${sanitizedSource}` : ''}
-                </footer>
-              </div>
-              
-              <!-- Call to Action -->
-              <div style="text-align: center; margin: 40px 0;">
-                <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
-                  Get daily inspiration like this delivered to your inbox
-                </p>
-                <a href="https://sunday4k.life/auth" 
-                   style="display: inline-block; background: linear-gradient(135deg, #9381ff, #b8b8ff); color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: 600; font-size: 16px;">
-                  Start Your Daily Inspiration
-                </a>
-              </div>
-            </div>
-            
-            <!-- Footer -->
-            <div style="background-color: #f8f9fa; padding: 20px 30px; text-align: center; border-top: 1px solid #eee;">
-              <p style="color: #999; font-size: 14px; margin: 0;">
-                This quote was shared from <a href="https://sunday4k.life" style="color: #9381ff; text-decoration: none;">Sunday4K</a> - Daily inspiration for meaningful living
-              </p>
-            </div>
-          </div>
-        </body>
-      </html>
-    `;
+    // Get the share quote email template from database
+    const { data: emailTemplate, error: templateError } = await supabase
+      .from('email_templates')
+      .select('subject, html_content')
+      .eq('template_name', 'share_quote')
+      .eq('is_active', true)
+      .maybeSingle();
+
+    let emailHTML: string;
+    let subject: string;
+
+    if (emailTemplate) {
+      // Use template from database
+      subject = emailTemplate.subject;
+      emailHTML = generateEmailFromTemplate(emailTemplate.html_content, {
+        quote: sanitizedQuote,
+        author: sanitizedAuthor,
+        source: sanitizedSource
+      });
+    } else {
+      // Fallback to hardcoded template
+      console.warn('No share_quote template found, using fallback');
+      subject = "A friend shared this inspiring quote with you";
+      emailHTML = generateFallbackEmailHTML(sanitizedQuote, sanitizedAuthor, sanitizedSource);
+    }
 
     const emailResponse = await resend.emails.send({
       from: "Sunday4K <quotes@sunday4k.life>",
       to: [sanitizedEmail],
-      subject: "A friend shared this inspiring quote with you",
+      subject,
       html: emailHTML,
     });
 
@@ -265,5 +239,70 @@ const handler = async (req: Request): Promise<Response> => {
     );
   }
 };
+
+function generateEmailFromTemplate(template: string, data: { quote: string; author: string; source?: string }): string {
+  let emailHTML = template;
+  
+  // Replace placeholders
+  emailHTML = emailHTML.replace(/\{\{quote_text\}\}/g, data.quote);
+  emailHTML = emailHTML.replace(/\{\{quote_author\}\}/g, data.author);
+  emailHTML = emailHTML.replace(/\{\{quote_source\}\}/g, data.source ? `, ${data.source}` : '');
+  
+  return emailHTML;
+}
+
+// Fallback function (kept for backward compatibility)
+function generateFallbackEmailHTML(sanitizedQuote: string, sanitizedAuthor: string, sanitizedSource?: string): string {
+  return `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>A Friend Shared This Inspiring Quote</title>
+      </head>
+      <body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif; background-color: #f8f9fa;">
+        <div style="max-width: 600px; margin: 0 auto; background-color: white; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+          
+          <!-- Header -->
+          <div style="background: linear-gradient(135deg, #9381ff, #b8b8ff); padding: 40px 30px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 600;">Sunday4K</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 16px;">A friend thought you'd love this quote</p>
+          </div>
+          
+          <!-- Quote Content -->
+          <div style="padding: 40px 30px;">
+            <div style="background-color: #f8f7ff; border-left: 4px solid #9381ff; padding: 30px; margin: 20px 0; border-radius: 8px;">
+              <blockquote style="margin: 0; font-size: 20px; line-height: 1.6; color: #333; font-style: italic;">
+                "${sanitizedQuote}"
+              </blockquote>
+              <footer style="margin-top: 20px; text-align: right; color: #666; font-size: 16px;">
+                — <strong>${sanitizedAuthor}</strong>${sanitizedSource ? `, ${sanitizedSource}` : ''}
+              </footer>
+            </div>
+            
+            <!-- Call to Action -->
+            <div style="text-align: center; margin: 40px 0;">
+              <p style="color: #666; font-size: 16px; margin-bottom: 20px;">
+                Get daily inspiration like this delivered to your inbox
+              </p>
+              <a href="https://sunday4k.life/auth" 
+                 style="display: inline-block; background: linear-gradient(135deg, #9381ff, #b8b8ff); color: white; padding: 12px 30px; text-decoration: none; border-radius: 25px; font-weight: 600; font-size: 16px;">
+                Start Your Daily Inspiration
+              </a>
+            </div>
+          </div>
+          
+          <!-- Footer -->
+          <div style="background-color: #f8f9fa; padding: 20px 30px; text-align: center; border-top: 1px solid #eee;">
+            <p style="color: #999; font-size: 14px; margin: 0;">
+              This quote was shared from <a href="https://sunday4k.life" style="color: #9381ff; text-decoration: none;">Sunday4K</a> - Daily inspiration for meaningful living
+            </p>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+}
 
 serve(handler);

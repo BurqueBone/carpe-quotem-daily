@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0';
 import { Resend } from "npm:resend@4.0.0";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 const hookSecret = Deno.env.get('SUPABASE_AUTH_WEBHOOK_SECRET') || '';
@@ -28,6 +29,10 @@ serve(async (req) => {
   }
 
   try {
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
     const payload = await req.text();
     const headers = Object.fromEntries(req.headers);
 
@@ -60,30 +65,79 @@ serve(async (req) => {
       throw new Error('No user email found in webhook data');
     }
 
-    let subject: string;
-    let html: string;
-
+    // Map email action types to template names
+    let templateName: string;
     switch (email_action_type) {
       case 'signup':
-        subject = 'Welcome to Sunday4k - Confirm Your Email';
-        html = generateSignupEmailHTML(token, token_hash, redirect_to, site_url);
+        templateName = 'signup';
         break;
       case 'recovery':
-        subject = 'Reset Your Sunday4k Password';
-        html = generatePasswordResetEmailHTML(token, token_hash, redirect_to, site_url);
+        templateName = 'password_reset';
         break;
       case 'invite':
-        subject = 'You\'re Invited to Join Sunday4k';
-        html = generateInviteEmailHTML(token, token_hash, redirect_to, site_url);
+        templateName = 'invite';
         break;
       case 'magiclink':
       case 'magic_link':
-        subject = 'Your Sunday4k Magic Link';
-        html = generateMagicLinkEmailHTML(token, token_hash, redirect_to, site_url);
+        templateName = 'magic_link';
         break;
       default:
-        subject = 'Sunday4k Authentication';
-        html = generateGenericAuthEmailHTML(token, token_hash, redirect_to, site_url, email_action_type);
+        // Fallback to a generic template or use signup
+        templateName = 'signup';
+    }
+
+    // Get the email template from database
+    const { data: emailTemplate, error: templateError } = await supabase
+      .from('email_templates')
+      .select('subject, html_content')
+      .eq('template_name', templateName)
+      .eq('is_active', true)
+      .maybeSingle();
+
+    if (templateError) {
+      console.error('Error fetching email template:', templateError);
+      throw templateError;
+    }
+
+    let subject: string;
+    let html: string;
+
+    if (emailTemplate) {
+      // Use template from database
+      subject = emailTemplate.subject;
+      html = generateEmailFromTemplate(
+        emailTemplate.html_content, 
+        token, 
+        token_hash, 
+        redirect_to, 
+        site_url, 
+        email_action_type
+      );
+    } else {
+      // Fallback to hardcoded templates if not found
+      console.warn(`No template found for ${templateName}, using fallback`);
+      switch (email_action_type) {
+        case 'signup':
+          subject = 'Welcome to Sunday4k - Confirm Your Email';
+          html = generateSignupEmailHTML(token, token_hash, redirect_to, site_url);
+          break;
+        case 'recovery':
+          subject = 'Reset Your Sunday4k Password';
+          html = generatePasswordResetEmailHTML(token, token_hash, redirect_to, site_url);
+          break;
+        case 'invite':
+          subject = 'You\'re Invited to Join Sunday4k';
+          html = generateInviteEmailHTML(token, token_hash, redirect_to, site_url);
+          break;
+        case 'magiclink':
+        case 'magic_link':
+          subject = 'Your Sunday4k Magic Link';
+          html = generateMagicLinkEmailHTML(token, token_hash, redirect_to, site_url);
+          break;
+        default:
+          subject = 'Sunday4k Authentication';
+          html = generateGenericAuthEmailHTML(token, token_hash, redirect_to, site_url, email_action_type);
+      }
     }
 
     const { error } = await resend.emails.send({
@@ -124,6 +178,48 @@ serve(async (req) => {
   }
 });
 
+function generateEmailFromTemplate(
+  template: string, 
+  token: string, 
+  token_hash: string, 
+  redirect_to: string, 
+  site_url: string, 
+  email_action_type: string
+): string {
+  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  
+  let actionUrl: string;
+  switch (email_action_type) {
+    case 'signup':
+      actionUrl = `${authBase}/verify?token=${token_hash}&type=signup&redirect_to=${encodeURIComponent(redirect_to)}`;
+      break;
+    case 'recovery':
+      actionUrl = `${authBase}/verify?token=${token_hash}&type=recovery&redirect_to=${encodeURIComponent(redirect_to)}`;
+      break;
+    case 'invite':
+      actionUrl = `${authBase}/verify?token=${token_hash}&type=invite&redirect_to=${encodeURIComponent(redirect_to)}`;
+      break;
+    case 'magiclink':
+    case 'magic_link':
+      actionUrl = `${authBase}/verify?token=${token_hash}&type=magiclink&redirect_to=${encodeURIComponent(redirect_to)}`;
+      break;
+    default:
+      actionUrl = `${authBase}/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${encodeURIComponent(redirect_to)}`;
+  }
+
+  let emailHTML = template;
+  
+  // Replace common placeholders
+  emailHTML = emailHTML.replace(/\{\{confirmation_url\}\}/g, actionUrl);
+  emailHTML = emailHTML.replace(/\{\{reset_password_url\}\}/g, actionUrl);
+  emailHTML = emailHTML.replace(/\{\{login_url\}\}/g, actionUrl);
+  emailHTML = emailHTML.replace(/\{\{invite_url\}\}/g, actionUrl);
+  emailHTML = emailHTML.replace(/\{\{action_url\}\}/g, actionUrl);
+  
+  return emailHTML;
+}
+
+// Fallback functions (kept for backward compatibility)
 function generateSignupEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
   const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
   const confirmUrl = `${authBase}/verify?token=${token_hash}&type=signup&redirect_to=${encodeURIComponent(redirect_to)}`;
