@@ -24,6 +24,21 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       icon: LayoutDashboard,
     },
     {
+      title: 'Blog Posts',
+      href: '/admin/blog',
+      icon: Settings,
+    },
+    {
+      title: 'Categories',
+      href: '/admin/categories',
+      icon: Settings,
+    },
+    {
+      title: 'Contact Messages',
+      href: '/admin/contact',
+      icon: Mail,
+    },
+    {
       title: 'Email Templates',
       href: '/admin/templates',
       icon: Mail,

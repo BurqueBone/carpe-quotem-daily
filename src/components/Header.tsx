@@ -24,6 +24,16 @@ const Header = () => {
         </Link>
 
         <div className="flex items-center gap-4">
+          <Link to="/blog">
+            <Button variant="ghost" className="text-foreground hover:text-primary">
+              Blog
+            </Button>
+          </Link>
+          <Link to="/contact">
+            <Button variant="ghost" className="text-foreground hover:text-primary">
+              Contact
+            </Button>
+          </Link>
           <Link to="/carpe-diem">
             <Button variant="ghost" className="text-foreground hover:text-primary">
               Carpe Diem

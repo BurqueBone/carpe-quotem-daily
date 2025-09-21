@@ -16,6 +16,14 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminTemplates from "./pages/AdminTemplates";
+import AdminBlog from "./pages/AdminBlog";
+import AdminBlogNew from "./pages/AdminBlogNew";
+import AdminBlogEdit from "./pages/AdminBlogEdit";
+import AdminCategories from "./pages/AdminCategories";
+import AdminContact from "./pages/AdminContact";
+import Blog from "./pages/Blog";
+import BlogPost from "./pages/BlogPost";
+import Contact from "./pages/Contact";
 import AuthUrlHandler from "./components/AuthUrlHandler";
 
 const queryClient = new QueryClient();
@@ -36,10 +44,18 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/carpe-diem" element={<CarpeDiem />} />
             <Route path="/about" element={<About />} />
+            <Route path="/blog" element={<Blog />} />
+            <Route path="/blog/:slug" element={<BlogPost />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/templates" element={<AdminTemplates />} />
+            <Route path="/admin/blog" element={<AdminBlog />} />
+            <Route path="/admin/blog/new" element={<AdminBlogNew />} />
+            <Route path="/admin/blog/edit/:id" element={<AdminBlogEdit />} />
+            <Route path="/admin/categories" element={<AdminCategories />} />
+            <Route path="/admin/contact" element={<AdminContact />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
