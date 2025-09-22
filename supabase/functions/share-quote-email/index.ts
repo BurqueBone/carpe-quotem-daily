@@ -163,6 +163,29 @@ const handler = async (req: Request): Promise<Response> => {
       timestamp: new Date().toISOString()
     });
 
+    // Get a random resource from the database to include in the email
+    const { data: randomResource } = await supabase
+      .from('resources')
+      .select('id, title, description, url, type, category_id')
+      .eq('ispublished', true)
+      .limit(1)
+      .single();
+
+    let resourceWithCategory = null;
+    if (randomResource) {
+      // Get the category title for the resource
+      const { data: category } = await supabase
+        .from('categories')
+        .select('title')
+        .eq('id', randomResource.category_id)
+        .single();
+
+      resourceWithCategory = {
+        ...randomResource,
+        category: category?.title || ''
+      };
+    }
+
     // Get the share quote email template from database
     const { data: emailTemplate, error: templateError } = await supabase
       .from('email_templates')
@@ -180,7 +203,8 @@ const handler = async (req: Request): Promise<Response> => {
       emailHTML = generateEmailFromTemplate(emailTemplate.html_content, {
         quote: sanitizedQuote,
         author: sanitizedAuthor,
-        source: sanitizedSource
+        source: sanitizedSource,
+        resource: resourceWithCategory
       });
     } else {
       // Fallback to hardcoded template
@@ -240,13 +264,44 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-function generateEmailFromTemplate(template: string, data: { quote: string; author: string; source?: string }): string {
+function generateEmailFromTemplate(
+  template: string, 
+  data: { 
+    quote: string; 
+    author: string; 
+    source?: string; 
+    resource?: any;
+  }
+): string {
   let emailHTML = template;
   
-  // Replace placeholders
-  emailHTML = emailHTML.replace(/\{\{quote_text\}\}/g, data.quote);
-  emailHTML = emailHTML.replace(/\{\{quote_author\}\}/g, data.author);
-  emailHTML = emailHTML.replace(/\{\{quote_source\}\}/g, data.source ? `, ${data.source}` : '');
+  // Replace basic placeholders
+  emailHTML = emailHTML.replace(/\{\{quote\}\}/g, data.quote);
+  emailHTML = emailHTML.replace(/\{\{author\}\}/g, data.author);
+  emailHTML = emailHTML.replace(/\{\{source\}\}/g, data.source ? `, ${data.source}` : '');
+  
+  // Handle base_url placeholder
+  emailHTML = emailHTML.replace(/\{\{base_url\}\}/g, 'https://sunday4k.life');
+  
+  // Handle resource conditional blocks
+  if (data.resource) {
+    // Replace {{#if resource}} and {{/if}} blocks - keep the content
+    emailHTML = emailHTML.replace(/\{\{#if resource\}\}/g, '');
+    emailHTML = emailHTML.replace(/\{\{\/if\}\}/g, '');
+    
+    // Replace resource placeholders
+    emailHTML = emailHTML.replace(/\{\{resource\.title\}\}/g, data.resource.title || '');
+    emailHTML = emailHTML.replace(/\{\{resource\.description\}\}/g, data.resource.description || '');
+    emailHTML = emailHTML.replace(/\{\{resource\.url\}\}/g, data.resource.url || '');
+    emailHTML = emailHTML.replace(/\{\{resource\.type\}\}/g, data.resource.type || '');
+    emailHTML = emailHTML.replace(/\{\{resource\.category\}\}/g, data.resource.category || '');
+  } else {
+    // Remove the entire conditional block if no resource
+    emailHTML = emailHTML.replace(/\{\{#if resource\}\}[\s\S]*?\{\{\/if\}\}/g, '');
+  }
+  
+  // Handle unsubscribe token (placeholder for now)
+  emailHTML = emailHTML.replace(/\{\{unsubscribe_token\}\}/g, 'placeholder-token');
   
   return emailHTML;
 }
