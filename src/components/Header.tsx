@@ -35,11 +35,39 @@ const Header = () => {
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <Link to="/carpe-diem">
-                  <Button variant="ghost" className="text-foreground hover:text-primary">
-                    Carpe Diem
-                  </Button>
-                </Link>
+                <NavigationMenuTrigger className="text-foreground hover:text-primary bg-transparent hover:bg-accent/50">
+                  Carpe Diem
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <ul className="grid gap-3 p-4 w-48">
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/carpe-diem"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">Resources</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            Explore self-improvement resources
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                    <li>
+                      <NavigationMenuLink asChild>
+                        <Link
+                          to="/life-compass"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">Life Compass</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            Assess your life balance and design your ideal week
+                          </p>
+                        </Link>
+                      </NavigationMenuLink>
+                    </li>
+                  </ul>
+                </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className="text-foreground hover:text-primary bg-transparent hover:bg-accent/50">
