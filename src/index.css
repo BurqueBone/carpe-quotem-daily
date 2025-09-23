@@ -67,6 +67,16 @@ All colors MUST be HSL.
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* Life area colors for Life Compass */
+    --life-career: 220 70% 60%;     /* Professional blue */
+    --life-health: 0 75% 65%;       /* Energizing red */
+    --life-finances: 142 75% 45%;   /* Money green */
+    --life-relationships: 340 75% 65%; /* Love pink */
+    --life-growth: 249 75% 70%;     /* Growth purple */
+    --life-social: 45 90% 60%;      /* Social yellow */
+    --life-hobbies: 280 75% 65%;    /* Creative magenta */
+    --life-contribution: 160 60% 50%; /* Nature green */
   }
 
   .dark {

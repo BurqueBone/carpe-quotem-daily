@@ -2,10 +2,12 @@ import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import PriorityBlock from "@/components/LifeCompass/PriorityBlock";
+import CalendarGrid from "@/components/LifeCompass/CalendarGrid";
+import IdealWeekProfiles from "@/components/LifeCompass/IdealWeekProfiles";
 import { 
   Briefcase, 
   Heart, 
@@ -16,7 +18,8 @@ import {
   Palette, 
   Sprout,
   ChevronRight,
-  RotateCcw
+  RotateCcw,
+  Sparkles
 } from "lucide-react";
 
 interface LifeArea {
@@ -27,23 +30,69 @@ interface LifeArea {
   color: string;
 }
 
+interface PlacedBlock {
+  id: string;
+  area: LifeArea;
+  day: string;
+  hour: number;
+}
+
 const LifeCompass = () => {
   const [currentStep, setCurrentStep] = useState<'assessment' | 'designer' | 'results'>('assessment');
+  const [placedBlocks, setPlacedBlocks] = useState<PlacedBlock[]>([]);
+  const [nextBlockId, setNextBlockId] = useState(1);
+  
   const [lifeAreas, setLifeAreas] = useState<LifeArea[]>([
-    { id: 'career', name: 'Work & Career', icon: <Briefcase className="w-5 h-5" />, rating: 5, color: 'hsl(var(--chart-1))' },
-    { id: 'health', name: 'Health & Wellness', icon: <Heart className="w-5 h-5" />, rating: 5, color: 'hsl(var(--chart-2))' },
-    { id: 'finances', name: 'Finances', icon: <DollarSign className="w-5 h-5" />, rating: 5, color: 'hsl(var(--chart-3))' },
-    { id: 'relationships', name: 'Relationships', icon: <Users className="w-5 h-5" />, rating: 5, color: 'hsl(var(--chart-4))' },
-    { id: 'growth', name: 'Personal Growth', icon: <Brain className="w-5 h-5" />, rating: 5, color: 'hsl(var(--chart-5))' },
-    { id: 'social', name: 'Social Life', icon: <PartyPopper className="w-5 h-5" />, rating: 5, color: 'hsl(var(--destructive))' },
-    { id: 'hobbies', name: 'Hobbies & Fun', icon: <Palette className="w-5 h-5" />, rating: 5, color: 'hsl(var(--warning))' },
-    { id: 'contribution', name: 'Contribution', icon: <Sprout className="w-5 h-5" />, rating: 5, color: 'hsl(var(--success))' }
+    { id: 'career', name: 'Work & Career', icon: <Briefcase className="w-5 h-5" />, rating: 5, color: 'life-area-career' },
+    { id: 'health', name: 'Health & Wellness', icon: <Heart className="w-5 h-5" />, rating: 5, color: 'life-area-health' },
+    { id: 'finances', name: 'Finances', icon: <DollarSign className="w-5 h-5" />, rating: 5, color: 'life-area-finances' },
+    { id: 'relationships', name: 'Relationships', icon: <Users className="w-5 h-5" />, rating: 5, color: 'life-area-relationships' },
+    { id: 'growth', name: 'Personal Growth', icon: <Brain className="w-5 h-5" />, rating: 5, color: 'life-area-growth' },
+    { id: 'social', name: 'Social Life', icon: <PartyPopper className="w-5 h-5" />, rating: 5, color: 'life-area-social' },
+    { id: 'hobbies', name: 'Hobbies & Fun', icon: <Palette className="w-5 h-5" />, rating: 5, color: 'life-area-hobbies' },
+    { id: 'contribution', name: 'Contribution', icon: <Sprout className="w-5 h-5" />, rating: 5, color: 'life-area-contribution' }
   ]);
 
   const updateRating = (id: string, rating: number) => {
     setLifeAreas(prev => prev.map(area => 
       area.id === id ? { ...area, rating } : area
     ));
+  };
+
+  const handleBlockPlaced = (area: LifeArea, day: string, hour: number) => {
+    const newBlock: PlacedBlock = {
+      id: `block-${nextBlockId}`,
+      area,
+      day,
+      hour
+    };
+    setPlacedBlocks(prev => [...prev, newBlock]);
+    setNextBlockId(prev => prev + 1);
+  };
+
+  const handleBlockRemoved = (blockId: string) => {
+    setPlacedBlocks(prev => prev.filter(block => block.id !== blockId));
+  };
+
+  const handleProfileSelected = (blocks: Array<{ areaId: string; day: string; hour: number }>) => {
+    const newBlocks: PlacedBlock[] = blocks.map((block, index) => {
+      const area = lifeAreas.find(a => a.id === block.areaId);
+      if (!area) return null;
+      
+      return {
+        id: `profile-block-${nextBlockId + index}`,
+        area,
+        day: block.day,
+        hour: block.hour
+      };
+    }).filter(Boolean) as PlacedBlock[];
+    
+    setPlacedBlocks(newBlocks);
+    setNextBlockId(prev => prev + newBlocks.length);
+  };
+
+  const clearCalendar = () => {
+    setPlacedBlocks([]);
   };
 
   const getWheelAnalysis = () => {
@@ -154,12 +203,8 @@ const LifeCompass = () => {
   };
 
   const IdealWeekDesigner = () => {
-    const [selectedBlocks, setSelectedBlocks] = useState<any[]>([]);
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-    const timeSlots = Array.from({ length: 16 }, (_, i) => i + 6); // 6 AM to 10 PM
-
     return (
-      <div className="space-y-6">
+      <div className="space-y-8">
         <div className="text-center space-y-4">
           <h2 className="text-2xl font-bold">Design Your Ideal Week</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
@@ -168,60 +213,62 @@ const LifeCompass = () => {
           </p>
         </div>
 
+        {/* Ideal Week Profiles */}
+        <IdealWeekProfiles 
+          lifeAreas={lifeAreas}
+          onProfileSelected={handleProfileSelected}
+        />
+
+        <Separator />
+
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Priority Blocks */}
           <div className="space-y-4">
-            <h3 className="font-semibold">Priority Blocks</h3>
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold">Priority Blocks</h3>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={clearCalendar}
+                className="text-xs"
+              >
+                Clear All
+              </Button>
+            </div>
             <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
               {lifeAreas.map(area => (
-                <Card key={area.id} className="p-3 cursor-move hover:shadow-md transition-shadow">
-                  <div className="flex items-center gap-2">
-                    <div style={{ color: area.color }}>
-                      {area.icon}
-                    </div>
-                    <span className="text-sm font-medium">{area.name}</span>
-                  </div>
-                </Card>
+                <PriorityBlock key={area.id} area={area} />
               ))}
             </div>
           </div>
 
           {/* Calendar Grid */}
           <div className="lg:col-span-3">
-            <div className="border rounded-lg p-4 bg-card">
-              <div className="grid grid-cols-8 gap-1 text-xs">
-                <div className="p-2"></div>
-                {days.map(day => (
-                  <div key={day} className="p-2 text-center font-medium">
-                    {day.slice(0, 3)}
-                  </div>
-                ))}
-                
-                {timeSlots.map(hour => (
-                  <>
-                    <div key={hour} className="p-2 text-right text-muted-foreground">
-                      {hour % 12 === 0 ? 12 : hour % 12}{hour >= 12 ? 'PM' : 'AM'}
-                    </div>
-                    {days.map(day => (
-                      <div
-                        key={`${day}-${hour}`}
-                        className="p-1 border border-border/30 min-h-[40px] hover:bg-accent/50 transition-colors"
-                      >
-                        {/* Droppable area for blocks */}
-                      </div>
-                    ))}
-                  </>
-                ))}
-              </div>
-            </div>
+            <CalendarGrid
+              placedBlocks={placedBlocks}
+              onBlockPlaced={handleBlockPlaced}
+              onBlockRemoved={handleBlockRemoved}
+            />
           </div>
         </div>
 
-        <div className="text-center">
-          <Button onClick={() => setCurrentStep('results')} size="lg">
-            Generate My Analysis
-            <ChevronRight className="w-4 h-4 ml-2" />
-          </Button>
+        <div className="text-center space-y-4">
+          <div className="bg-gradient-subtle rounded-xl p-6">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <Sparkles className="w-5 h-5 text-primary" />
+              <h3 className="text-lg font-semibold">Your Ideal Week</h3>
+            </div>
+            <p className="text-muted-foreground mb-4">
+              You've placed {placedBlocks.length} priority blocks in your ideal week. 
+              {placedBlocks.length > 0 ? " Ready to see your insights?" : " Start by choosing a template or dragging blocks to your calendar."}
+            </p>
+            {placedBlocks.length > 0 && (
+              <Button onClick={() => setCurrentStep('results')} size="lg">
+                Generate My Analysis
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     );

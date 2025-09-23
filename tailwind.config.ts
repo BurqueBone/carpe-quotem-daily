@@ -62,6 +62,16 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				'life-area': {
+					career: 'hsl(var(--life-career))',
+					health: 'hsl(var(--life-health))',
+					finances: 'hsl(var(--life-finances))',
+					relationships: 'hsl(var(--life-relationships))',
+					growth: 'hsl(var(--life-growth))',
+					social: 'hsl(var(--life-social))',
+					hobbies: 'hsl(var(--life-hobbies))',
+					contribution: 'hsl(var(--life-contribution))'
 				}
 			},
 			backgroundImage: {
