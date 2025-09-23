@@ -14,12 +14,16 @@ import {
   DollarSign, 
   Users, 
   Brain, 
-  PartyPopper, 
   Palette, 
-  Sprout,
   ChevronRight,
   RotateCcw,
-  Sparkles
+  Sparkles,
+  Dumbbell,
+  BookOpen,
+  MessageCircle,
+  Leaf,
+  Globe,
+  CheckCircle2
 } from "lucide-react";
 
 interface LifeArea {
@@ -38,19 +42,24 @@ interface PlacedBlock {
 }
 
 const LifeCompass = () => {
-  const [currentStep, setCurrentStep] = useState<'assessment' | 'designer' | 'results'>('assessment');
+  const [currentStep, setCurrentStep] = useState<'assessment' | 'priorities' | 'designer' | 'results'>('assessment');
   const [placedBlocks, setPlacedBlocks] = useState<PlacedBlock[]>([]);
   const [nextBlockId, setNextBlockId] = useState(1);
+  const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
   
   const [lifeAreas, setLifeAreas] = useState<LifeArea[]>([
-    { id: 'career', name: 'Work & Career', icon: <Briefcase className="w-5 h-5" />, rating: 5, color: 'life-area-career' },
-    { id: 'health', name: 'Health & Wellness', icon: <Heart className="w-5 h-5" />, rating: 5, color: 'life-area-health' },
-    { id: 'finances', name: 'Finances', icon: <DollarSign className="w-5 h-5" />, rating: 5, color: 'life-area-finances' },
-    { id: 'relationships', name: 'Relationships', icon: <Users className="w-5 h-5" />, rating: 5, color: 'life-area-relationships' },
-    { id: 'growth', name: 'Personal Growth', icon: <Brain className="w-5 h-5" />, rating: 5, color: 'life-area-growth' },
-    { id: 'social', name: 'Social Life', icon: <PartyPopper className="w-5 h-5" />, rating: 5, color: 'life-area-social' },
-    { id: 'hobbies', name: 'Hobbies & Fun', icon: <Palette className="w-5 h-5" />, rating: 5, color: 'life-area-hobbies' },
-    { id: 'contribution', name: 'Contribution', icon: <Sprout className="w-5 h-5" />, rating: 5, color: 'life-area-contribution' }
+    { id: 'physical', name: 'Physical', icon: <Dumbbell className="w-5 h-5" />, rating: 5, color: 'life-area-physical' },
+    { id: 'mental', name: 'Mental', icon: <Brain className="w-5 h-5" />, rating: 5, color: 'life-area-mental' },
+    { id: 'emotional', name: 'Emotional', icon: <Heart className="w-5 h-5" />, rating: 5, color: 'life-area-emotional' },
+    { id: 'family', name: 'Family', icon: <Users className="w-5 h-5" />, rating: 5, color: 'life-area-family' },
+    { id: 'financial', name: 'Financial', icon: <DollarSign className="w-5 h-5" />, rating: 5, color: 'life-area-financial' },
+    { id: 'career', name: 'Career', icon: <Briefcase className="w-5 h-5" />, rating: 5, color: 'life-area-career' },
+    { id: 'learning', name: 'Learning', icon: <BookOpen className="w-5 h-5" />, rating: 5, color: 'life-area-learning' },
+    { id: 'creative', name: 'Creative', icon: <Palette className="w-5 h-5" />, rating: 5, color: 'life-area-creative' },
+    { id: 'social', name: 'Social', icon: <MessageCircle className="w-5 h-5" />, rating: 5, color: 'life-area-social' },
+    { id: 'spiritual', name: 'Spiritual', icon: <Sparkles className="w-5 h-5" />, rating: 5, color: 'life-area-spiritual' },
+    { id: 'environment', name: 'Environment', icon: <Leaf className="w-5 h-5" />, rating: 5, color: 'life-area-environment' },
+    { id: 'community', name: 'Community', icon: <Globe className="w-5 h-5" />, rating: 5, color: 'life-area-community' }
   ]);
 
   const updateRating = (id: string, rating: number) => {
@@ -93,6 +102,80 @@ const LifeCompass = () => {
 
   const clearCalendar = () => {
     setPlacedBlocks([]);
+  };
+
+  const getPrioritySelectionStep = () => {
+    const lowestRated = lifeAreas
+      .sort((a, b) => a.rating - b.rating)
+      .slice(0, 5);
+
+    const togglePriority = (areaId: string) => {
+      setSelectedPriorities(prev => 
+        prev.includes(areaId) 
+          ? prev.filter(id => id !== areaId)
+          : [...prev, areaId]
+      );
+    };
+
+    return (
+      <div className="space-y-8">
+        <Card className="max-w-4xl mx-auto">
+          <CardHeader className="text-center">
+            <CardTitle>Focus Areas for Growth</CardTitle>
+            <CardDescription>
+              Based on your ratings, these are the areas where you scored lowest. 
+              Select which ones you'd like to prioritize improving in your ideal week.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {lowestRated.map(area => (
+                <div 
+                  key={area.id}
+                  onClick={() => togglePriority(area.id)}
+                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                    selectedPriorities.includes(area.id)
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div style={{ color: `hsl(var(--${area.color}))` }}>
+                      {area.icon}
+                    </div>
+                    <div className="flex-1">
+                      <div className="font-medium">{area.name}</div>
+                      <div className="text-sm text-muted-foreground">
+                        Current rating: {area.rating}/10
+                      </div>
+                    </div>
+                    {selectedPriorities.includes(area.id) && (
+                      <CheckCircle2 className="w-5 h-5 text-primary" />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <Separator />
+
+            <div className="bg-gradient-subtle rounded-xl p-6 text-center space-y-4">
+              <h3 className="text-lg font-semibold">Ready to Design Your Week?</h3>
+              <p className="text-muted-foreground">
+                {selectedPriorities.length > 0 
+                  ? `You've selected ${selectedPriorities.length} area${selectedPriorities.length > 1 ? 's' : ''} to focus on. Let's design a week that supports your growth!`
+                  : "You can proceed without selecting any priorities, or choose areas you'd like to focus on improving."
+                }
+              </p>
+              <Button onClick={() => setCurrentStep('designer')} size="lg">
+                Design Your Ideal Week
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
   };
 
   const getWheelAnalysis = () => {
@@ -301,16 +384,23 @@ const LifeCompass = () => {
                 <span className="font-medium">Life Wheel</span>
               </div>
               <div className="w-8 h-px bg-border"></div>
+              <div className={`flex items-center space-x-2 ${currentStep === 'priorities' ? 'text-primary' : 'text-muted-foreground'}`}>
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'priorities' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
+                  2
+                </div>
+                <span className="font-medium">Priorities</span>
+              </div>
+              <div className="w-8 h-px bg-border"></div>
               <div className={`flex items-center space-x-2 ${currentStep === 'designer' ? 'text-primary' : 'text-muted-foreground'}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'designer' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
-                  2
+                  3
                 </div>
                 <span className="font-medium">Ideal Week</span>
               </div>
               <div className="w-8 h-px bg-border"></div>
               <div className={`flex items-center space-x-2 ${currentStep === 'results' ? 'text-primary' : 'text-muted-foreground'}`}>
                 <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'results' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
-                  3
+                  4
                 </div>
                 <span className="font-medium">Results</span>
               </div>
@@ -360,8 +450,8 @@ const LifeCompass = () => {
                   <div className="bg-gradient-subtle rounded-xl p-6 text-center space-y-4">
                     <h3 className="text-lg font-semibold">Your Wheel Analysis</h3>
                     <p className="text-muted-foreground">{getWheelAnalysis()}</p>
-                    <Button onClick={() => setCurrentStep('designer')} size="lg">
-                      Design Your Ideal Week
+                    <Button onClick={() => setCurrentStep('priorities')} size="lg">
+                      Choose Priority Areas
                       <ChevronRight className="w-4 h-4 ml-2" />
                     </Button>
                   </div>
@@ -369,6 +459,8 @@ const LifeCompass = () => {
               </Card>
             </div>
           )}
+
+          {currentStep === 'priorities' && getPrioritySelectionStep()}
 
           {currentStep === 'designer' && (
             <Card className="max-w-7xl mx-auto">
@@ -380,55 +472,199 @@ const LifeCompass = () => {
 
           {currentStep === 'results' && (
             <div className="space-y-8">
-              <Card className="max-w-4xl mx-auto">
+              <Card className="max-w-6xl mx-auto">
                 <CardHeader className="text-center">
                   <CardTitle>Your Life Compass Results</CardTitle>
                   <CardDescription>
-                    Here's your personalized analysis and next steps
+                    Here's your personalized analysis and actionable insights
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <CardContent className="space-y-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div>
                       <h3 className="font-semibold mb-4">Your Current Wheel</h3>
                       <WheelVisualization />
                     </div>
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">Key Insights</h3>
-                      <div className="space-y-3">
-                        {lifeAreas
-                          .sort((a, b) => a.rating - b.rating)
-                          .slice(0, 3)
-                          .map(area => (
-                            <div key={area.id} className="flex items-center gap-3 p-3 rounded-lg bg-accent/50">
-                              <div style={{ color: area.color }}>
-                                {area.icon}
+                    
+                    <div className="space-y-6">
+                      {/* What you're doing well */}
+                      <div>
+                        <h3 className="font-semibold mb-3 text-green-600">🌟 What You're Excelling At</h3>
+                        <div className="space-y-2">
+                          {lifeAreas
+                            .filter(area => area.rating >= 7)
+                            .sort((a, b) => b.rating - a.rating)
+                            .slice(0, 3)
+                            .map(area => (
+                              <div key={area.id} className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
+                                <div style={{ color: `hsl(var(--${area.color}))` }}>
+                                  {area.icon}
+                                </div>
+                                <div>
+                                  <div className="font-medium text-green-800">{area.name}</div>
+                                  <div className="text-sm text-green-600">Rating: {area.rating}/10 - Keep up the great work!</div>
+                                </div>
                               </div>
-                              <div>
-                                <div className="font-medium">{area.name}</div>
-                                <div className="text-sm text-muted-foreground">Current rating: {area.rating}/10</div>
-                              </div>
-                            </div>
-                          ))}
+                            ))}
+                          {lifeAreas.filter(area => area.rating >= 7).length === 0 && (
+                            <p className="text-muted-foreground italic">Every area has room for growth - that's the beauty of continuous improvement!</p>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Areas to work on */}
+                      <div>
+                        <h3 className="font-semibold mb-3 text-orange-600">🎯 Your Priority Growth Areas</h3>
+                        <div className="space-y-2">
+                          {selectedPriorities.length > 0 ? (
+                            selectedPriorities.map(priorityId => {
+                              const area = lifeAreas.find(a => a.id === priorityId);
+                              if (!area) return null;
+                              return (
+                                <div key={area.id} className="flex items-center gap-3 p-3 rounded-lg bg-orange-50 border border-orange-200">
+                                  <div style={{ color: `hsl(var(--${area.color}))` }}>
+                                    {area.icon}
+                                  </div>
+                                  <div>
+                                    <div className="font-medium text-orange-800">{area.name}</div>
+                                    <div className="text-sm text-orange-600">Current: {area.rating}/10 - You chose to focus here</div>
+                                  </div>
+                                </div>
+                              );
+                            })
+                          ) : (
+                            <p className="text-muted-foreground italic">You didn't select specific areas to prioritize, which means you're taking a balanced approach to growth.</p>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   <Separator />
 
+                  {/* Ideal Week Analysis */}
+                  <div>
+                    <h3 className="font-semibold mb-4 text-blue-600">📅 Your Ideal Week Insights</h3>
+                    <div className="bg-blue-50 rounded-lg p-6 space-y-4">
+                      <p className="text-blue-800 font-medium">
+                        You placed {placedBlocks.length} priority blocks in your ideal week.
+                      </p>
+                      
+                      {selectedPriorities.length > 0 && placedBlocks.length > 0 && (
+                        <div className="space-y-3">
+                          <p className="text-blue-700">
+                            <strong>Growth Focus Analysis:</strong> Let's see how well your ideal week supports your priority areas:
+                          </p>
+                          {selectedPriorities.map(priorityId => {
+                            const area = lifeAreas.find(a => a.id === priorityId);
+                            const blocksForThisArea = placedBlocks.filter(block => block.area.id === priorityId).length;
+                            if (!area) return null;
+                            
+                            return (
+                              <div key={priorityId} className="flex items-center justify-between p-2 bg-white rounded border">
+                                <div className="flex items-center gap-2">
+                                  <div style={{ color: `hsl(var(--${area.color}))` }}>
+                                    {area.icon}
+                                  </div>
+                                  <span className="font-medium">{area.name}</span>
+                                </div>
+                                <div className="text-sm">
+                                  {blocksForThisArea > 0 
+                                    ? `${blocksForThisArea} time blocks scheduled ✅`
+                                    : "No time blocks yet - consider adding some! ⚠️"
+                                  }
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      
+                      {placedBlocks.length === 0 && (
+                        <p className="text-blue-700">
+                          You haven't scheduled any priority blocks yet. Consider going back to design your ideal week with activities that support your growth areas.
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  <Separator />
+
+                  {/* Suggested Resources */}
+                  {selectedPriorities.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold mb-4 text-purple-600">📚 Recommended Resources for Your Growth</h3>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedPriorities.slice(0, 4).map(priorityId => {
+                          const area = lifeAreas.find(a => a.id === priorityId);
+                          if (!area) return null;
+                          
+                          // Map area IDs to resource categories
+                          const categoryMapping: { [key: string]: string } = {
+                            'physical': 'Physical',
+                            'mental': 'Mental', 
+                            'emotional': 'Emotional',
+                            'family': 'Family',
+                            'financial': 'Financial',
+                            'career': 'Career',
+                            'learning': 'Learning',
+                            'creative': 'Creative',
+                            'social': 'Social',
+                            'spiritual': 'Spiritual',
+                            'environment': 'Environment',
+                            'community': 'Community'
+                          };
+                          
+                          return (
+                            <div key={priorityId} className="p-4 rounded-lg border bg-purple-50 border-purple-200">
+                              <div className="flex items-center gap-2 mb-3">
+                                <div style={{ color: `hsl(var(--${area.color}))` }}>
+                                  {area.icon}
+                                </div>
+                                <h4 className="font-semibold text-purple-800">{area.name}</h4>
+                              </div>
+                              <p className="text-sm text-purple-700 mb-3">
+                                Since you want to improve in this area, check out our curated resources in the{' '}
+                                <strong>{categoryMapping[area.id] || area.name}</strong> category.
+                              </p>
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={() => window.open('/carpe-diem', '_blank')}
+                                className="text-purple-700 border-purple-300 hover:bg-purple-100"
+                              >
+                                View {categoryMapping[area.id] || area.name} Resources
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  <Separator />
+
                   <div className="bg-gradient-subtle rounded-xl p-6 text-center space-y-4">
-                    <h3 className="text-lg font-semibold">What's one small step you can take this week?</h3>
+                    <h3 className="text-lg font-semibold">🚀 Your Next Steps</h3>
                     <p className="text-muted-foreground">
-                      Look at the areas where you rated yourself lowest. What's one small action you could take 
-                      this week to move the needle? Remember, small steps compound into extraordinary transformations.
+                      {selectedPriorities.length > 0 
+                        ? `You've identified ${selectedPriorities.length} area${selectedPriorities.length > 1 ? 's' : ''} for growth. Start with just one small action this week in your highest priority area. Small, consistent steps create lasting transformation.`
+                        : "Focus on maintaining your strengths while being open to growth opportunities. Sometimes the best growth comes from doubling down on what you're already good at."
+                      }
                     </p>
-                    <div className="flex justify-center gap-4">
+                    <div className="flex justify-center gap-4 flex-wrap">
                       <Button onClick={() => setCurrentStep('assessment')} variant="outline">
                         <RotateCcw className="w-4 h-4 mr-2" />
                         Retake Assessment
                       </Button>
+                      <Button onClick={() => setCurrentStep('designer')} variant="outline">
+                        Redesign My Week
+                      </Button>
                       <Button onClick={() => window.print()}>
-                        Save Results
+                        Save My Results
+                      </Button>
+                      <Button onClick={() => window.open('/carpe-diem', '_blank')}>
+                        Explore Resources
                       </Button>
                     </div>
                   </div>

@@ -64,14 +64,18 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				'life-area': {
-					career: 'hsl(var(--life-career))',
-					health: 'hsl(var(--life-health))',
-					finances: 'hsl(var(--life-finances))',
-					relationships: 'hsl(var(--life-relationships))',
-					growth: 'hsl(var(--life-growth))',
-					social: 'hsl(var(--life-social))',
-					hobbies: 'hsl(var(--life-hobbies))',
-					contribution: 'hsl(var(--life-contribution))'
+					physical: 'hsl(var(--life-area-physical))',
+					mental: 'hsl(var(--life-area-mental))',
+					emotional: 'hsl(var(--life-area-emotional))',
+					family: 'hsl(var(--life-area-family))',
+					financial: 'hsl(var(--life-area-financial))',
+					career: 'hsl(var(--life-area-career))',
+					learning: 'hsl(var(--life-area-learning))',
+					creative: 'hsl(var(--life-area-creative))',
+					social: 'hsl(var(--life-area-social))',
+					spiritual: 'hsl(var(--life-area-spiritual))',
+					environment: 'hsl(var(--life-area-environment))',
+					community: 'hsl(var(--life-area-community))'
 				}
 			},
 			backgroundImage: {
