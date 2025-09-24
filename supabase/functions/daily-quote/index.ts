@@ -41,18 +41,18 @@ serve(async (req) => {
       throw new Error('No quote found');
     }
 
-    console.log('Quote fetched successfully:', quote.id);
+    console.log('Quote fetched successfully:', (quote as any).id);
 
     return new Response(
       JSON.stringify({
         success: true,
         quote: {
-          id: quote.id,
-          quote: quote.quote,
-          author: quote.author,
-          source: quote.source,
-          display_count: quote.display_count,
-          last_displayed_at: quote.last_displayed_at
+          id: (quote as any).id,
+          quote: (quote as any).quote,
+          author: (quote as any).author,
+          source: (quote as any).source,
+          display_count: (quote as any).display_count,
+          last_displayed_at: (quote as any).last_displayed_at
         }
       }),
       {
@@ -66,7 +66,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message
+        error: (error as Error).message
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
