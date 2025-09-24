@@ -320,7 +320,11 @@ const LifeCompass = () => {
             </div>
             <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
               {lifeAreas.map(area => (
-                <PriorityBlock key={area.id} area={area} />
+                <PriorityBlock 
+                  key={area.id} 
+                  area={area} 
+                  isPriority={selectedPriorities.includes(area.id)}
+                />
               ))}
             </div>
           </div>

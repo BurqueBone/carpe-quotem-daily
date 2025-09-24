@@ -19,20 +19,29 @@ interface PriorityBlockProps {
   isPlaced?: boolean;
   onRemove?: () => void;
   className?: string;
+  isPriority?: boolean;
 }
 
-const getColorClasses = (areaId: string) => {
+const getColorClasses = (areaId: string, isPriority: boolean = false) => {
+  if (!isPriority) {
+    return 'bg-muted border-border text-foreground';
+  }
+  
   const colorMap: Record<string, string> = {
+    physical: 'bg-life-area-physical border-life-area-physical text-white',
+    mental: 'bg-life-area-mental border-life-area-mental text-white',
+    emotional: 'bg-life-area-emotional border-life-area-emotional text-white',
+    family: 'bg-life-area-family border-life-area-family text-white',
+    financial: 'bg-life-area-financial border-life-area-financial text-white',
     career: 'bg-life-area-career border-life-area-career text-white',
-    health: 'bg-life-area-health border-life-area-health text-white',
-    finances: 'bg-life-area-finances border-life-area-finances text-white',
-    relationships: 'bg-life-area-relationships border-life-area-relationships text-white',
-    growth: 'bg-life-area-growth border-life-area-growth text-white',
+    learning: 'bg-life-area-learning border-life-area-learning text-white',
+    creative: 'bg-life-area-creative border-life-area-creative text-white',
     social: 'bg-life-area-social border-life-area-social text-white',
-    hobbies: 'bg-life-area-hobbies border-life-area-hobbies text-white',
-    contribution: 'bg-life-area-contribution border-life-area-contribution text-white',
+    spiritual: 'bg-life-area-spiritual border-life-area-spiritual text-white',
+    environment: 'bg-life-area-environment border-life-area-environment text-white',
+    community: 'bg-life-area-community border-life-area-community text-white',
   };
-  return colorMap[areaId] || 'bg-muted border-border text-foreground';
+  return colorMap[areaId] || 'bg-primary border-primary text-primary-foreground';
 };
 
 const getTooltipContent = (area: LifeArea) => {
@@ -54,9 +63,10 @@ const PriorityBlock: React.FC<PriorityBlockProps> = ({
   isDragging = false, 
   isPlaced = false,
   onRemove,
-  className 
+  className,
+  isPriority = false
 }) => {
-  const colorClasses = getColorClasses(area.id);
+  const colorClasses = getColorClasses(area.id, isPriority);
 
   return (
     <TooltipProvider>
