@@ -1,6 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
-import { Resend } from "npm:resend@4.0.0";
+import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -118,7 +118,7 @@ serve(async (req) => {
       throw new Error('No quote found');
     }
 
-    console.log('Got quote:', quote.id);
+    console.log('Got quote:', (quote as any).id);
 
     // Get a random resource to include as a "seize the day" suggestion
     const { data: resource, error: resourceError } = await supabase
@@ -201,13 +201,13 @@ serve(async (req) => {
           .from('notification_sends')
           .insert({
             user_id: userSetting.user_id,
-            quote_id: quote.id,
+            quote_id: (quote as any).id,
           });
 
         emailsSent++;
       } catch (error) {
         console.error(`Error sending email to user ${userSetting.user_id}:`, error);
-        errors.push(`User ${userSetting.user_id}: ${error.message}`);
+        errors.push(`User ${userSetting.user_id}: ${(error as any).message}`);
       }
     }
 
@@ -219,9 +219,9 @@ serve(async (req) => {
         emailsSent,
         errors,
         quote: {
-          id: quote.id,
-          text: quote.quote,
-          author: quote.author,
+          id: (quote as any).id,
+          text: (quote as any).quote,
+          author: (quote as any).author,
         }
       }),
       {
@@ -235,7 +235,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error.message
+        error: (error as any).message
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -270,24 +270,29 @@ function generateEmailFromTemplate(template: string, quote: any, resource: any =
   let emailHTML = template;
   
   // Replace quote placeholders
-  emailHTML = emailHTML.replace(/\{\{quote_text\}\}/g, quote.quote || '');
-  emailHTML = emailHTML.replace(/\{\{quote_author\}\}/g, quote.author || '');
-  emailHTML = emailHTML.replace(/\{\{quote_source\}\}/g, quote.source ? `, ${quote.source}` : '');
+  emailHTML = emailHTML.replace(/\{\{quote\}\}/g, (quote as any).quote || '');
+  emailHTML = emailHTML.replace(/\{\{author\}\}/g, (quote as any).author || '');
   
-  // Handle resource section
+  // Replace base URL
+  emailHTML = emailHTML.replace(/\{\{base_url\}\}/g, 'https://sunday4k.life');
+  
+  // Handle resource section with Handlebars-style conditional
   if (resource) {
-    const resourceSection = `
-      <div class="resource-container">
-        <div class="resource-header">💡 Seize the Day Suggestion</div>
-        <div class="resource-category">${resource.categories?.title || 'Personal Growth'} • ${resource.type || 'Resource'}</div>
-        <div class="resource-title">${resource.title}</div>
-        <div class="resource-description">${resource.description}</div>
-        <a href="${resource.url}" class="resource-link" target="_blank">Learn More</a>
-      </div>
-    `;
-    emailHTML = emailHTML.replace(/\{\{resource_section\}\}/g, resourceSection);
+    // Remove the conditional wrapper
+    emailHTML = emailHTML.replace(/\{\{#if resource\}\}/g, '');
+    emailHTML = emailHTML.replace(/\{\{\/if\}\}/g, '');
+    
+    // Replace resource placeholders
+    emailHTML = emailHTML.replace(/\{\{resource\.category\}\}/g, resource.categories?.title || 'Personal Growth');
+    emailHTML = emailHTML.replace(/\{\{resource\.type\}\}/g, resource.type || 'Resource');
+    emailHTML = emailHTML.replace(/\{\{resource\.title\}\}/g, resource.title || '');
+    emailHTML = emailHTML.replace(/\{\{resource\.description\}\}/g, resource.description || '');
+    emailHTML = emailHTML.replace(/\{\{resource\.how_resource_helps\}\}/g, resource.how_resource_helps || 'This resource can help you improve this area of your life.');
+    emailHTML = emailHTML.replace(/\{\{resource\.url\}\}/g, resource.url || '#');
   } else {
-    emailHTML = emailHTML.replace(/\{\{resource_section\}\}/g, '');
+    // Remove the entire resource section if no resource
+    const resourceBlockRegex = /\{\{#if resource\}\}[\s\S]*?\{\{\/if\}\}/g;
+    emailHTML = emailHTML.replace(resourceBlockRegex, '');
   }
   
   return emailHTML;
