@@ -141,25 +141,7 @@ const Contact = () => {
             </CardContent>
           </Card>
 
-          {/* Contact Info */}
-          <div className="mt-12 text-center">
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-center gap-2 text-muted-foreground">
-                  <Mail className="h-5 w-5" />
-                  <p>
-                    You can also reach us directly at{' '}
-                    <a 
-                      href="mailto:hello@sunday4k.com"
-                      className="text-primary hover:text-primary/80 font-medium"
-                    >
-                      hello@sunday4k.com
-                    </a>
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+
         </div>
       </main>
 
