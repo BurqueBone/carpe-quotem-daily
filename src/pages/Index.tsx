@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Zap, ArrowRight, Flower2, RefreshCw, User, LogIn, Compass } from "lucide-react";
+import { Zap, ArrowRight, Flower2, RefreshCw, User, LogIn, Compass, Lightbulb } from "lucide-react";
 import NavigationTabs from "@/components/NavigationTabs";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
