@@ -5,6 +5,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, RefreshCw, Zap, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import React from 'react';
+import { Link } from 'react-router-dom';
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
