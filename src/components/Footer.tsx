@@ -15,7 +15,7 @@ const Footer = () => {
               <span className="font-bold text-lg text-foreground">Sunday4K</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              Daily inspiration for life's purpose. Make every Sunday count.
+              Your Life in Weeks. Your Weeks in Focus.
             </p>
           </div>
 
@@ -91,7 +91,7 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-border mt-8 pt-8 text-center">
           <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} Sunday4K. All rights reserved. Seize your every day.
+            © {new Date().getFullYear()} Sunday4K. All rights reserved. Your Life in Weeks. Your Weeks in Focus.
           </p>
         </div>
       </div>
