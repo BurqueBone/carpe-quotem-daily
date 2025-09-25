@@ -36,12 +36,12 @@ const QuoteCard = ({
             Provide your email and Sunday4k will send daily inspirational quotes and resources
           </p>
           <div className="flex justify-center">
-            <a href="/profile" className="inline-flex items-center gap-2 bg-secondary text-black px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
+            <Link to="/profile" className="inline-flex items-center gap-2 bg-secondary text-black px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
               <div className="flex items-center justify-center gap-2 font-semibold text-black">
               <Lightbulb className="w-4 h-4"/>
-                Get Your Daily Inspiration
+              Get Your Daily Inspiration
               </div>
-            </a>
+            </Link>
           </div>
         </div>
         
