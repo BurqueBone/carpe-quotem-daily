@@ -29,7 +29,7 @@ const CarpeDiem = () => {
         </h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Life is finite and precious. These resources will help you seize each day and grow across 
-          every dimension of your human experience. Choose an area to focus on today.
+          every dimension of your  experience. Choose an area to focus on today.
         </p>
       </div>
 
@@ -80,10 +80,11 @@ const CarpeDiem = () => {
 
       <div className="bg-gradient-subtle rounded-xl p-8 border border-border/50 shadow-card text-center">
         <div className="space-y-4">
-          <div className="flex items-center justify-center gap-2 text-primary">
-            <ArrowRight className="w-5 h-5" />
-            <span className="font-semibold">Start Today</span>
-          </div>
+            <Link to="/auth" className="flex items-center justify-center gap-2 text-primary">
+              <Zap className="font-semibold" />
+              <ArrowRight className="w-5 h-5" />
+              Start Today
+            </Link>
           <h3 className="text-xl font-semibold text-foreground">
             "The best time to plant a tree was 20 years ago. The second best time is now."
           </h3>
