@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { Clock, Heart, Eye } from "lucide-react";
+import { Clock, Heart, Eye, Lightbulb } from "lucide-react";
 interface QuoteCardProps {
   quote: string;
   author: string;
