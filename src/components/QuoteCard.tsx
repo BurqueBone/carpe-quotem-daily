@@ -1,5 +1,8 @@
 import { Card } from "@/components/ui/card";
 import { Clock, Heart, Eye, Lightbulb } from "lucide-react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+
 interface QuoteCardProps {
   quote: string;
   author: string;
