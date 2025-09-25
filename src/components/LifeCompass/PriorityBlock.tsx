@@ -20,6 +20,7 @@ interface PriorityBlockProps {
   onRemove?: () => void;
   className?: string;
   isPriority?: boolean;
+  iconOnly?: boolean;
 }
 
 const getColorClasses = (areaId: string, isPriority: boolean = false) => {
@@ -64,7 +65,8 @@ const PriorityBlock: React.FC<PriorityBlockProps> = ({
   isPlaced = false,
   onRemove,
   className,
-  isPriority = false
+  isPriority = false,
+  iconOnly = false
 }) => {
   const colorClasses = getColorClasses(area.id, isPriority);
 
@@ -92,23 +94,40 @@ const PriorityBlock: React.FC<PriorityBlockProps> = ({
               e.currentTarget.style.opacity = '1';
             }}
           >
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 flex-1 min-w-0">
+            {iconOnly ? (
+              <div className="flex items-center justify-center">
                 <div className="flex-shrink-0">
                   {area.icon}
                 </div>
-                <span className="text-sm font-medium truncate">{area.name}</span>
+                {isPlaced && onRemove && (
+                  <button
+                    onClick={onRemove}
+                    className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-black/10 rounded-full bg-background border border-border"
+                    aria-label="Remove block"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
               </div>
-              {isPlaced && onRemove && (
-                <button
-                  onClick={onRemove}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-black/10 rounded-full"
-                  aria-label="Remove block"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              )}
-            </div>
+            ) : (
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 flex-1 min-w-0">
+                  <div className="flex-shrink-0">
+                    {area.icon}
+                  </div>
+                  <span className="text-sm font-medium truncate">{area.name}</span>
+                </div>
+                {isPlaced && onRemove && (
+                  <button
+                    onClick={onRemove}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-black/10 rounded-full"
+                    aria-label="Remove block"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+            )}
           </Card>
         </TooltipTrigger>
         <TooltipContent side="right" className="max-w-xs">

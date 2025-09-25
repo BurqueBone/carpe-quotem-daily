@@ -335,6 +335,7 @@ const LifeCompass = () => {
               placedBlocks={placedBlocks}
               onBlockPlaced={handleBlockPlaced}
               onBlockRemoved={handleBlockRemoved}
+              selectedPriorities={selectedPriorities}
             />
           </div>
         </div>

@@ -21,12 +21,14 @@ interface CalendarGridProps {
   placedBlocks: PlacedBlock[];
   onBlockPlaced: (area: LifeArea, day: string, hour: number) => void;
   onBlockRemoved: (blockId: string) => void;
+  selectedPriorities: string[];
 }
 
 const CalendarGrid: React.FC<CalendarGridProps> = ({
   placedBlocks,
   onBlockPlaced,
-  onBlockRemoved
+  onBlockRemoved,
+  selectedPriorities
 }) => {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   const timeSlots = Array.from({ length: 16 }, (_, i) => i + 6); // 6 AM to 10 PM
@@ -95,6 +97,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                         isPlaced={true}
                         onRemove={() => onBlockRemoved(placedBlock.id)}
                         className="h-full min-h-[46px] m-0"
+                        isPriority={selectedPriorities.includes(placedBlock.area.id)}
+                        iconOnly={true}
                       />
                     ) : (
                       <div className="h-full flex items-center justify-center text-xs text-muted-foreground/50 opacity-0 hover:opacity-100 transition-opacity">
