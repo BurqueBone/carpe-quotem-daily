@@ -40,12 +40,12 @@ const Index = () => {
                  <p className="text-black/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6 text-center">Every one of them is a chance to live with purpose, create meaningful memories, and make lasting progress. But in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that awareness is the first step toward action. We'll deliver daily inspiration to your inbox, along with a curated collection of resources designed to help you transform your awareness into a life of intention. Stop waiting for the right moment. Start living a life with no regrets.</p>
                 </div>
                 <div className="flex justify-center">
-                 <a href="/life-compass" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
-                  <div className="inline-flex items-center justify-center gap-2 font-semibold text-white">
+                  <Link to="/life-compass" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
+                    <div className="inline-flex items-center justify-center gap-2 font-semibold text-white">
                     <Compass className="w-4 h-4" />
                     Calibrate Your Compass
-                  </div>
-                 </a>
+                    </div>
+                  </Link>
                 </div>
               </div>
                   
