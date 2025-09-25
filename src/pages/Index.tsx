@@ -35,18 +35,16 @@ const Index = () => {
                     <p className="text-2xl font-bold text-white">You only have around 4,000 Sundays in your life.</p>
                   </div>
                   
-                  <div className="p-8 rounded-2xl bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
+                  <div className="p-8 rounded-2xl items-center bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
                     <div>
                       <p className="text-black/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6 text-center">Every one of them is a chance to live with purpose, create meaningful memories, and make lasting progress. But in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that awareness is the first step toward action. We'll deliver daily inspiration to your inbox, along with a curated collection of resources designed to help you transform your awareness into a life of intention. Stop waiting for the right moment. Start living a life with no regrets.</p>
                     </div>
-                    <a href="/life-compass" className="inline-flex items-center gap-2 bg-secondary text-black px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
+                    <a href="/life-compass" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
                      <div className="flex items-center justify-center gap-2 font-semibold text-black">
-                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                    Calibrate Your Compass
-                  </div>
-            </a>
+                     <Compass className="w-4 h-4" />
+                       Calibrate Your Compass
+                     </div>
+                    </a>
                   </div>
                   
                   {/* Quote Section */}
