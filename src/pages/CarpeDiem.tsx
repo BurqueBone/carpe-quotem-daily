@@ -81,14 +81,12 @@ const CarpeDiem = () => {
       <div className="bg-gradient-subtle rounded-xl p-8 border border-border/50 shadow-card text-center">
         <div className="space-y-4">
           <div className="flex items-center justify-center gap-2 text-primary">
-            <a href="/profile" className="inline-flex items-center gap-2 bg-secondary text-black px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
+            <Link to="/profile" className="inline-flex items-center gap-2 bg-secondary text-black px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
               <div className="flex items-center justify-center gap-2 font-semibold text-black">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <ArrowRight className="w-4 h-4"/>
                 Start Today
               </div>
-            </a>
+            </Link>
           </div>
           <h3 className="text-xl font-semibold text-foreground">
             "The best time to plant a tree was 20 years ago. The second best time is now."
