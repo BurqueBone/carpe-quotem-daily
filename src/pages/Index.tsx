@@ -41,7 +41,7 @@ const Index = () => {
                     </div>
                     <a href="/life-compass" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
                      <div className="flex items-center justify-center gap-2 font-semibold text-black">
-                     <Compass className="w-4 h-4" />
+                     <FaCompass className="w-4 h-4" />
                        Calibrate Your Compass
                      </div>
                     </a>
