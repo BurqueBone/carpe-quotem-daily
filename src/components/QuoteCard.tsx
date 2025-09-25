@@ -33,7 +33,7 @@ const QuoteCard = ({
         
         <div className="space-y-4 mt-6">
           <p className="text-sm text-muted-foreground text-center px-4">
-            If you would like join us in using reminders of death as inspiration, provide your email and Sunday4k will send daily inspirational quotes
+            Provide your email and Sunday4k will send daily inspirational quotes and resources
           </p>
           <div className="flex justify-center">
             <a href="/profile" className="inline-flex items-center gap-2 bg-secondary text-black px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
