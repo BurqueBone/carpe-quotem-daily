@@ -110,7 +110,7 @@ const LifeCompass = () => {
   const getPrioritySelectionStep = () => {
     const lowestRated = lifeAreas
       .sort((a, b) => a.rating - b.rating)
-      .slice(0, 5);
+      .slice(0, 4);
 
     const togglePriority = (areaId: string) => {
       setSelectedPriorities(prev => 
