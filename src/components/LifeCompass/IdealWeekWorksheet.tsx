@@ -34,68 +34,94 @@ const IdealWeekWorksheet: React.FC<IdealWeekWorksheetProps> = ({ placedBlocks })
   };
 
   return (
-    <Card className="print:shadow-none print:border-2 print:border-black">
-      <CardHeader className="text-center">
-        <CardTitle className="print:text-xl">My Ideal Week Worksheet</CardTitle>
-        <CardDescription className="print:text-base print:text-black">
+    <div className="print-worksheet">
+      {/* Header - clean and professional for print */}
+      <div className="text-center mb-8 print:mb-6">
+        <h1 className="text-3xl font-bold mb-2 print:text-2xl text-foreground print:text-black">
+          My Ideal Week Worksheet
+        </h1>
+        <p className="text-muted-foreground print:text-gray-700 text-lg print:text-base">
           Your personalized time blocks for achieving life balance
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {/* Summary section */}
-        <div className="mb-6 print:mb-4">
-          <h3 className="font-semibold mb-3 print:text-lg">Weekly Overview</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 print:gap-2">
-            <div className="space-y-2">
-              <p className="text-sm print:text-base">
-                <strong>Total Time Blocks:</strong> {placedBlocks.length}
-              </p>
-              <p className="text-sm print:text-base">
-                <strong>Total Weekly Hours:</strong> {placedBlocks.length} hours
-              </p>
+        </p>
+        <div className="w-24 h-1 bg-primary print:bg-black mx-auto mt-4 print:mt-3"></div>
+      </div>
+
+      {/* Summary section - optimized for print */}
+      <div className="mb-8 print:mb-6">
+        <h2 className="text-xl font-semibold mb-4 print:text-lg print:text-black border-b pb-2 print:border-black">
+          Weekly Overview
+        </h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 print:gap-4 text-center">
+          <div className="bg-card print:bg-transparent p-4 print:p-2 rounded-lg print:rounded-none border print:border-gray-300">
+            <div className="text-2xl print:text-xl font-bold text-primary print:text-black">
+              {placedBlocks.length}
             </div>
-            <div className="space-y-2">
-              <p className="text-sm print:text-base">
-                <strong>Life Areas Covered:</strong> {new Set(placedBlocks.map(block => block.area.id)).size}
-              </p>
-              <p className="text-sm print:text-base">
-                <strong>Average per Day:</strong> {(placedBlocks.length / 7).toFixed(1)} hours
-              </p>
+            <div className="text-sm print:text-xs text-muted-foreground print:text-gray-600 font-medium">
+              Total Time Blocks
+            </div>
+          </div>
+          <div className="bg-card print:bg-transparent p-4 print:p-2 rounded-lg print:rounded-none border print:border-gray-300">
+            <div className="text-2xl print:text-xl font-bold text-primary print:text-black">
+              {placedBlocks.length}
+            </div>
+            <div className="text-sm print:text-xs text-muted-foreground print:text-gray-600 font-medium">
+              Weekly Hours
+            </div>
+          </div>
+          <div className="bg-card print:bg-transparent p-4 print:p-2 rounded-lg print:rounded-none border print:border-gray-300">
+            <div className="text-2xl print:text-xl font-bold text-primary print:text-black">
+              {new Set(placedBlocks.map(block => block.area.id)).size}
+            </div>
+            <div className="text-sm print:text-xs text-muted-foreground print:text-gray-600 font-medium">
+              Life Areas Covered
+            </div>
+          </div>
+          <div className="bg-card print:bg-transparent p-4 print:p-2 rounded-lg print:rounded-none border print:border-gray-300">
+            <div className="text-2xl print:text-xl font-bold text-primary print:text-black">
+              {(placedBlocks.length / 7).toFixed(1)}
+            </div>
+            <div className="text-sm print:text-xs text-muted-foreground print:text-gray-600 font-medium">
+              Average per Day
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Calendar Grid */}
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse border border-gray-300 print:border-2 print:border-black">
+      {/* Calendar Grid - optimized for print layout */}
+      <div className="mb-8 print:mb-6">
+        <h2 className="text-xl font-semibold mb-4 print:text-lg print:text-black border-b pb-2 print:border-black">
+          Weekly Schedule
+        </h2>
+        <div className="overflow-x-auto print:overflow-visible">
+          <table className="w-full border-collapse border-2 border-border print:border-black bg-background print:bg-white">
             <thead>
               <tr>
-                <th className="border border-gray-300 print:border-black p-2 bg-muted print:bg-gray-100 text-sm font-semibold">
-                  Time
+                <th className="border border-border print:border-black p-3 print:p-2 bg-muted print:bg-gray-50 text-sm print:text-xs font-bold print:text-black min-w-[80px] print:min-w-[60px]">
+                  TIME
                 </th>
                 {daysOfWeek.map(day => (
-                  <th key={day} className="border border-gray-300 print:border-black p-2 bg-muted print:bg-gray-100 text-sm font-semibold">
-                    {day}
+                  <th key={day} className="border border-border print:border-black p-3 print:p-2 bg-muted print:bg-gray-50 text-sm print:text-xs font-bold print:text-black min-w-[100px] print:min-w-[70px]">
+                    {day.toUpperCase()}
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {timeSlots.map((time, hourIndex) => (
-                <tr key={time}>
-                  <td className="border border-gray-300 print:border-black p-2 text-xs print:text-sm font-medium bg-muted/50 print:bg-gray-50">
+                <tr key={time} className="print:break-inside-avoid">
+                  <td className="border border-border print:border-black p-3 print:p-2 text-xs print:text-xs font-semibold bg-muted/30 print:bg-gray-25 print:text-black text-center">
                     {time}
                   </td>
                   {daysOfWeek.map(day => {
                     const block = getBlockForSlot(day, hourIndex);
                     return (
-                      <td key={day} className="border border-gray-300 print:border-black p-1 h-12 print:h-8">
+                      <td key={day} className="border border-border print:border-black p-2 print:p-1 h-10 print:h-8 text-center">
                         {block ? (
-                          <div className="text-xs print:text-sm font-medium text-center p-1 rounded print:bg-gray-200">
+                          <div className="text-xs print:text-xs font-semibold text-foreground print:text-black bg-primary/10 print:bg-gray-100 p-1 print:p-0.5 rounded print:rounded-none border print:border-gray-400">
                             {block.area.name}
                           </div>
                         ) : (
-                          <div className="h-full"></div>
+                          <div className="h-full bg-background print:bg-white"></div>
                         )}
                       </td>
                     );
@@ -105,56 +131,78 @@ const IdealWeekWorksheet: React.FC<IdealWeekWorksheetProps> = ({ placedBlocks })
             </tbody>
           </table>
         </div>
+      </div>
 
-        {/* Legend */}
-        {placedBlocks.length > 0 && (
-          <div className="mt-6 print:mt-4">
-            <h3 className="font-semibold mb-3 print:text-lg">Life Areas in Your Week</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 print:gap-2">
-              {Array.from(new Set(placedBlocks.map(block => block.area.id)))
-                .map(areaId => {
-                  const area = placedBlocks.find(block => block.area.id === areaId)?.area;
-                  const count = placedBlocks.filter(block => block.area.id === areaId).length;
-                  if (!area) return null;
-                  
-                  return (
-                    <div key={areaId} className="flex items-center gap-2 p-2 rounded-lg border print:border-black">
-                      <div className="print:hidden" style={{ color: `hsl(var(--${area.color}))` }}>
-                        {area.icon}
-                      </div>
-                      <div className="flex-1">
-                        <div className="font-medium text-sm print:text-base">{area.name}</div>
-                        <div className="text-xs print:text-sm text-muted-foreground print:text-black">
-                          {count} hour{count !== 1 ? 's' : ''}
-                        </div>
-                      </div>
+      {/* Life Areas Summary - print-optimized */}
+      {placedBlocks.length > 0 && (
+        <div className="mb-8 print:mb-4">
+          <h2 className="text-xl font-semibold mb-4 print:text-lg print:text-black border-b pb-2 print:border-black">
+            Life Areas Summary
+          </h2>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 print:gap-3 print:grid-cols-3">
+            {Array.from(new Set(placedBlocks.map(block => block.area.id)))
+              .sort((a, b) => {
+                const countA = placedBlocks.filter(block => block.area.id === a).length;
+                const countB = placedBlocks.filter(block => block.area.id === b).length;
+                return countB - countA; // Sort by most hours first
+              })
+              .map(areaId => {
+                const area = placedBlocks.find(block => block.area.id === areaId)?.area;
+                const count = placedBlocks.filter(block => block.area.id === areaId).length;
+                if (!area) return null;
+                
+                return (
+                  <div key={areaId} className="bg-card print:bg-transparent p-4 print:p-3 rounded-lg print:rounded-none border print:border-gray-300 text-center">
+                    <div className="print:hidden mb-2 flex justify-center" style={{ color: `hsl(var(--${area.color}))` }}>
+                      {area.icon}
                     </div>
-                  );
-                })}
-            </div>
+                    <div className="font-bold text-lg print:text-base print:text-black mb-1">
+                      {count} hour{count !== 1 ? 's' : ''}
+                    </div>
+                    <div className="text-sm print:text-xs text-muted-foreground print:text-gray-600 font-medium">
+                      {area.name}
+                    </div>
+                  </div>
+                );
+              })}
           </div>
-        )}
-
-        {/* Empty state */}
-        {placedBlocks.length === 0 && (
-          <div className="text-center py-8 text-muted-foreground">
-            <p>No time blocks have been placed yet.</p>
-            <p className="text-sm mt-2">Go back to the Ideal Week Designer to create your schedule.</p>
-          </div>
-        )}
-
-        {/* Print instructions */}
-        <div className="mt-6 p-4 bg-muted/50 rounded-lg print:hidden">
-          <h4 className="font-semibold mb-2">Print Instructions:</h4>
-          <ul className="text-sm space-y-1 text-muted-foreground">
-            <li>• Click "Print This Worksheet" to generate a clean, printable version</li>
-            <li>• Use landscape orientation for better formatting</li>
-            <li>• Consider printing in black & white to save ink</li>
-            <li>• The worksheet is designed to fit on a single page</li>
-          </ul>
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      {/* Empty state */}
+      {placedBlocks.length === 0 && (
+        <div className="text-center py-12 print:py-8 text-muted-foreground print:text-gray-500">
+          <div className="text-6xl print:text-4xl mb-4 print:hidden">📅</div>
+          <h3 className="text-xl print:text-lg font-semibold mb-2 print:text-black">No Schedule Created</h3>
+          <p className="print:text-black">No time blocks have been placed yet.</p>
+          <p className="text-sm mt-2 print:text-xs print:text-gray-600">Go back to the Ideal Week Designer to create your schedule.</p>
+        </div>
+      )}
+
+      {/* Print instructions - hidden when printing */}
+      <div className="mt-8 p-6 bg-muted/50 print:bg-transparent rounded-lg print:rounded-none print:hidden border print:border-none">
+        <h3 className="font-semibold text-lg mb-3">📄 Print Instructions</h3>
+        <div className="grid md:grid-cols-2 gap-4 text-sm text-muted-foreground">
+          <div>
+            <h4 className="font-semibold text-foreground mb-2">Recommended Settings:</h4>
+            <ul className="space-y-1">
+              <li>• <strong>Orientation:</strong> Portrait (recommended) or Landscape</li>
+              <li>• <strong>Paper:</strong> Letter (8.5" × 11") or A4</li>
+              <li>• <strong>Margins:</strong> Normal (1 inch)</li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="font-semibold text-foreground mb-2">Print Quality:</h4>
+            <ul className="space-y-1">
+              <li>• Black & white printing recommended</li>
+              <li>• Ensure "Print backgrounds" is enabled</li>
+              <li>• Use "More settings" → "Print as image" if needed</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
   );
 };
 
