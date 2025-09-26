@@ -86,7 +86,7 @@ const PriorityBlock: React.FC<PriorityBlockProps> = ({
             draggable={!isPlaced}
             onDragStart={(e) => {
               if (!isPlaced) {
-                e.dataTransfer.setData('text/plain', JSON.stringify(area));
+                e.dataTransfer.setData('text/plain', area.id);
                 e.currentTarget.style.opacity = '0.5';
               }
             }}

@@ -20,7 +20,7 @@ interface PlacedBlock {
 
 interface CalendarGridProps {
   placedBlocks: PlacedBlock[];
-  onBlockPlaced: (area: LifeArea, day: string, hour: number) => void;
+  onBlockPlaced: (areaId: string, day: string, hour: number) => void;
   onBlockRemoved: (blockId: string) => void;
   selectedPriorities: string[];
 }
@@ -49,11 +49,9 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
       return;
     }
 
-    try {
-      const areaData = JSON.parse(e.dataTransfer.getData('text/plain'));
-      onBlockPlaced(areaData, day, hour);
-    } catch (error) {
-      console.error('Error parsing dropped data:', error);
+    const areaId = e.dataTransfer.getData('text/plain');
+    if (areaId) {
+      onBlockPlaced(areaId, day, hour);
     }
   };
 

@@ -68,7 +68,10 @@ const LifeCompass = () => {
     ));
   };
 
-  const handleBlockPlaced = (area: LifeArea, day: string, hour: number) => {
+  const handleBlockPlaced = (areaId: string, day: string, hour: number) => {
+    const area = lifeAreas.find(a => a.id === areaId);
+    if (!area) return;
+    
     const newBlock: PlacedBlock = {
       id: `block-${nextBlockId}`,
       area,
