@@ -8,6 +8,7 @@ import Footer from "@/components/Footer";
 import PriorityBlock from "@/components/LifeCompass/PriorityBlock";
 import CalendarGrid from "@/components/LifeCompass/CalendarGrid";
 import IdealWeekProfiles from "@/components/LifeCompass/IdealWeekProfiles";
+import IdealWeekWorksheet from "@/components/LifeCompass/IdealWeekWorksheet";
 import { 
   Briefcase, 
   Heart, 
@@ -598,7 +599,23 @@ const LifeCompass = () => {
 
                   <Separator />
 
-                  {/* Suggested Resources */}
+                  {/* Printable Ideal Week Worksheet */}
+                  <div>
+                    <div className="flex items-center justify-between mb-4">
+                      <h3 className="font-semibold text-indigo-600">📋 Your Ideal Week Worksheet</h3>
+                      <Button 
+                        onClick={() => window.print()}
+                        variant="outline"
+                        size="sm"
+                        className="print:hidden"
+                      >
+                        Print This Worksheet
+                      </Button>
+                    </div>
+                    <IdealWeekWorksheet placedBlocks={placedBlocks} />
+                  </div>
+
+                  <Separator />
                   {selectedPriorities.length > 0 && (
                     <div>
                       <h3 className="font-semibold mb-4 text-purple-600">📚 Recommended Resources for Your Growth</h3>
