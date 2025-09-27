@@ -11,10 +11,16 @@ import {
   Edit3, 
   Trash2, 
   Eye,
-  Mail
+  Mail,
+  Search,
+  Filter,
+  SortAsc,
+  SortDesc
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,6 +52,10 @@ const AdminTemplates = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [editingTemplate, setEditingTemplate] = useState<EmailTemplate | null>(null);
   const [isCreating, setIsCreating] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'active' | 'inactive'>('all');
+  const [sortBy, setSortBy] = useState<'name' | 'created' | 'updated'>('created');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   useEffect(() => {
     if (!loading && (!user || !isAdmin)) {
@@ -146,6 +156,48 @@ const AdminTemplates = () => {
     }
   };
 
+  const filteredAndSortedTemplates = templates
+    .filter((template) => {
+      const matchesSearch = searchTerm === '' || 
+        template.template_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        template.subject.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (template.description || '').toLowerCase().includes(searchTerm.toLowerCase());
+      
+      const matchesStatus = statusFilter === 'all' || 
+        (statusFilter === 'active' && template.is_active) ||
+        (statusFilter === 'inactive' && !template.is_active);
+      
+      return matchesSearch && matchesStatus;
+    })
+    .sort((a, b) => {
+      let aValue: string | Date;
+      let bValue: string | Date;
+      
+      switch (sortBy) {
+        case 'name':
+          aValue = a.template_name.toLowerCase();
+          bValue = b.template_name.toLowerCase();
+          break;
+        case 'created':
+          aValue = new Date(a.created_at);
+          bValue = new Date(b.created_at);
+          break;
+        case 'updated':
+          aValue = new Date(a.updated_at);
+          bValue = new Date(b.updated_at);
+          break;
+        default:
+          return 0;
+      }
+      
+      const comparison = aValue > bValue ? 1 : aValue < bValue ? -1 : 0;
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+  const toggleSortOrder = () => {
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+  };
+
   if (loading || isLoading) {
     return (
       <AdminLayout>
@@ -191,8 +243,68 @@ const AdminTemplates = () => {
           </Button>
         </div>
 
+        {/* Filter and Sort Controls */}
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
+              <div className="flex-1 min-w-0">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search templates..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-2 items-center">
+                <Filter className="h-4 w-4 text-muted-foreground" />
+                <Select value={statusFilter} onValueChange={(value: 'all' | 'active' | 'inactive') => setStatusFilter(value)}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">All Status</SelectItem>
+                    <SelectItem value="active">Active</SelectItem>
+                    <SelectItem value="inactive">Inactive</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Select value={sortBy} onValueChange={(value: 'name' | 'created' | 'updated') => setSortBy(value)}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="name">Name</SelectItem>
+                    <SelectItem value="created">Created</SelectItem>
+                    <SelectItem value="updated">Updated</SelectItem>
+                  </SelectContent>
+                </Select>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleSortOrder}
+                  className="gap-2"
+                >
+                  {sortOrder === 'asc' ? <SortAsc className="h-4 w-4" /> : <SortDesc className="h-4 w-4" />}
+                  {sortOrder === 'asc' ? 'Asc' : 'Desc'}
+                </Button>
+              </div>
+            </div>
+            
+            {filteredAndSortedTemplates.length !== templates.length && (
+              <div className="mt-3 text-sm text-muted-foreground">
+                Showing {filteredAndSortedTemplates.length} of {templates.length} templates
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
         <div className="grid gap-6">
-          {templates.map((template) => (
+          {filteredAndSortedTemplates.map((template) => (
             <Card key={template.id}>
               <CardHeader>
                 <div className="flex items-start justify-between">
@@ -273,6 +385,27 @@ const AdminTemplates = () => {
               </p>
               <Button onClick={() => setIsCreating(true)}>
                 Create Template
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
+        {templates.length > 0 && filteredAndSortedTemplates.length === 0 && (
+          <Card>
+            <CardContent className="py-16 text-center">
+              <Search className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+              <h3 className="text-lg font-semibold mb-2">No templates match your filters</h3>
+              <p className="text-muted-foreground mb-4">
+                Try adjusting your search terms or filters to find templates.
+              </p>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setSearchTerm('');
+                  setStatusFilter('all');
+                }}
+              >
+                Clear Filters
               </Button>
             </CardContent>
           </Card>
