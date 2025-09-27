@@ -303,72 +303,73 @@ const AdminTemplates = () => {
           </CardContent>
         </Card>
 
-        <div className="grid gap-6">
+        <div className="grid gap-3">
           {filteredAndSortedTemplates.map((template) => (
-            <Card key={template.id}>
-              <CardHeader>
-                <div className="flex items-start justify-between">
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      <Mail className="h-5 w-5" />
-                      {template.template_name}
-                    </CardTitle>
-                    <CardDescription className="mt-1">
-                      {template.description}
-                    </CardDescription>
+            <Card key={template.id} className="hover:shadow-md transition-shadow">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Mail className="h-4 w-4 text-muted-foreground flex-shrink-0" />
+                      <h3 className="font-semibold text-base truncate">{template.template_name}</h3>
+                      <Badge 
+                        variant={template.is_active ? "default" : "secondary"} 
+                        className="text-xs px-2 py-0.5 flex-shrink-0"
+                      >
+                        {template.is_active ? "Active" : "Inactive"}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-muted-foreground mb-1 truncate">
+                      <span className="font-medium">Subject:</span> {template.subject}
+                    </p>
+                    {template.description && (
+                      <p className="text-xs text-muted-foreground truncate">
+                        {template.description}
+                      </p>
+                    )}
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Updated {new Date(template.updated_at).toLocaleDateString()}
+                    </p>
                   </div>
-                  <Badge variant={template.is_active ? "default" : "secondary"}>
-                    {template.is_active ? "Active" : "Inactive"}
-                  </Badge>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <p className="text-sm">
-                    <span className="font-medium">Subject:</span> {template.subject}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    Last updated: {new Date(template.updated_at).toLocaleDateString()}
-                  </p>
-                </div>
-                
-                <div className="flex gap-2 mt-4">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setEditingTemplate(template)}
-                    className="gap-2"
-                  >
-                    <Edit3 className="h-4 w-4" />
-                    Edit
-                  </Button>
                   
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Trash2 className="h-4 w-4" />
-                        Delete
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Delete Email Template</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          Are you sure you want to delete "{template.template_name}"? 
-                          This action cannot be undone.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction 
-                          onClick={() => handleDelete(template.id)}
-                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
+                  <div className="flex gap-2 flex-shrink-0">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setEditingTemplate(template)}
+                      className="gap-1 px-3"
+                    >
+                      <Edit3 className="h-3 w-3" />
+                      Edit
+                    </Button>
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-1 px-3">
+                          <Trash2 className="h-3 w-3" />
                           Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Email Template</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{template.template_name}"? 
+                            This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction 
+                            onClick={() => handleDelete(template.id)}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
                 </div>
               </CardContent>
             </Card>
