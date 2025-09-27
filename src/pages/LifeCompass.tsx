@@ -9,6 +9,7 @@ import PriorityBlock from "@/components/LifeCompass/PriorityBlock";
 import CalendarGrid from "@/components/LifeCompass/CalendarGrid";
 import IdealWeekProfiles from "@/components/LifeCompass/IdealWeekProfiles";
 import IdealWeekWorksheet from "@/components/LifeCompass/IdealWeekWorksheet";
+import { useCarpeDiemData } from "@/hooks/useCarpeDiemData";
 import { 
   Briefcase, 
   Heart, 
@@ -24,7 +25,8 @@ import {
   MessageCircle,
   Leaf,
   Globe,
-  CheckCircle2
+  CheckCircle2,
+  ExternalLink
 } from "lucide-react";
 
 interface LifeArea {
@@ -47,6 +49,71 @@ const LifeCompass = () => {
   const [placedBlocks, setPlacedBlocks] = useState<PlacedBlock[]>([]);
   const [nextBlockId, setNextBlockId] = useState(1);
   const [selectedPriorities, setSelectedPriorities] = useState<string[]>([]);
+  const { categories, loading: resourcesLoading } = useCarpeDiemData();
+  
+  // Map life compass areas to category titles in the resources database
+  const categoryMapping: { [key: string]: string } = {
+    'physical': 'Physical',
+    'mental': 'Mental', 
+    'emotional': 'Emotional',
+    'family': 'Family',
+    'financial': 'Financial',
+    'career': 'Career',
+    'learning': 'Learning',
+    'creative': 'Creative',
+    'social': 'Social',
+    'spiritual': 'Spiritual',
+    'environment': 'Environment',
+    'community': 'Community'
+  };
+
+  // Get relevant resources for selected priority areas
+  const getRelevantResources = () => {
+    if (resourcesLoading || !categories.length || !selectedPriorities.length) {
+      return [];
+    }
+
+    const relevantResources: any[] = [];
+    
+    selectedPriorities.forEach(priorityId => {
+      const categoryTitle = categoryMapping[priorityId];
+      if (categoryTitle) {
+        const category = categories.find(cat => cat.title === categoryTitle);
+        if (category && category.resources.length > 0) {
+          // Add first resource from this category
+          relevantResources.push({
+            ...category.resources[0],
+            categoryTitle: category.title,
+            areaId: priorityId
+          });
+        }
+      }
+    });
+
+    // If we have less than 3 resources, fill with additional resources from priority categories
+    if (relevantResources.length < 3) {
+      selectedPriorities.forEach(priorityId => {
+        const categoryTitle = categoryMapping[priorityId];
+        if (categoryTitle) {
+          const category = categories.find(cat => cat.title === categoryTitle);
+          if (category && category.resources.length > 1) {
+            // Add second resource from this category if not already included
+            const secondResource = category.resources[1];
+            if (!relevantResources.find(r => r.id === secondResource.id)) {
+              relevantResources.push({
+                ...secondResource,
+                categoryTitle: category.title,
+                areaId: priorityId
+              });
+            }
+          }
+        }
+      });
+    }
+
+    // Return first 3 resources
+    return relevantResources.slice(0, 3);
+  };
   
   const [lifeAreas, setLifeAreas] = useState<LifeArea[]>([
     { id: 'physical', name: 'Physical', icon: <Dumbbell className="w-5 h-5" />, rating: 5, color: 'life-area-physical' },
@@ -619,26 +686,39 @@ const LifeCompass = () => {
                   {selectedPriorities.length > 0 && (
                     <div>
                       <h3 className="font-semibold mb-4 text-purple-600">📚 Recommended Resources for Your Growth</h3>
+                      
+                      {/* Display 3 relevant resources */}
+                      {getRelevantResources().length > 0 && (
+                        <div className="mb-6">
+                          <h4 className="text-sm font-medium text-purple-700 mb-3">Featured Resources:</h4>
+                          <div className="space-y-3">
+                            {getRelevantResources().map((resource) => (
+                              <div key={resource.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200 hover:border-purple-300 transition-colors">
+                                <div className="flex-1 min-w-0">
+                                  <h5 className="font-medium text-purple-900 truncate">{resource.title}</h5>
+                                  <p className="text-sm text-purple-700 truncate">{resource.description}</p>
+                                  <span className="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">
+                                    {resource.categoryTitle}
+                                  </span>
+                                </div>
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  onClick={() => window.open(resource.url, '_blank')}
+                                  className="text-purple-700 hover:text-purple-900 flex-shrink-0 ml-3"
+                                >
+                                  <ExternalLink className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {selectedPriorities.slice(0, 4).map(priorityId => {
                           const area = lifeAreas.find(a => a.id === priorityId);
                           if (!area) return null;
-                          
-                          // Map area IDs to resource categories
-                          const categoryMapping: { [key: string]: string } = {
-                            'physical': 'Physical',
-                            'mental': 'Mental', 
-                            'emotional': 'Emotional',
-                            'family': 'Family',
-                            'financial': 'Financial',
-                            'career': 'Career',
-                            'learning': 'Learning',
-                            'creative': 'Creative',
-                            'social': 'Social',
-                            'spiritual': 'Spiritual',
-                            'environment': 'Environment',
-                            'community': 'Community'
-                          };
                           
                           return (
                             <div key={priorityId} className="p-4 rounded-lg border bg-purple-50 border-purple-200">
