@@ -13,7 +13,9 @@ import {
   Eye, 
   Code, 
   Smartphone, 
-  Monitor 
+  Monitor,
+  Sun,
+  Moon
 } from 'lucide-react';
 
 interface EmailTemplate {
@@ -41,6 +43,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
   });
 
   const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+  const [previewTheme, setPreviewTheme] = useState<'light' | 'dark'>('light');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -164,37 +167,70 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
                 <Eye className="h-4 w-4" />
                 Preview
               </CardTitle>
-              <div className="flex gap-2">
-                <Button
-                  variant={previewMode === 'desktop' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setPreviewMode('desktop')}
-                  className="gap-2"
-                >
-                  <Monitor className="h-3 w-3" />
-                  Desktop
-                </Button>
-                <Button
-                  variant={previewMode === 'mobile' ? 'default' : 'outline'}
-                  size="sm"
-                  onClick={() => setPreviewMode('mobile')}
-                  className="gap-2"
-                >
-                  <Smartphone className="h-3 w-3" />
-                  Mobile
-                </Button>
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <Button
+                    variant={previewMode === 'desktop' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setPreviewMode('desktop')}
+                    className="gap-2"
+                  >
+                    <Monitor className="h-3 w-3" />
+                    Desktop
+                  </Button>
+                  <Button
+                    variant={previewMode === 'mobile' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setPreviewMode('mobile')}
+                    className="gap-2"
+                  >
+                    <Smartphone className="h-3 w-3" />
+                    Mobile
+                  </Button>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant={previewTheme === 'light' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setPreviewTheme('light')}
+                    className="gap-2"
+                  >
+                    <Sun className="h-3 w-3" />
+                    Light Mode
+                  </Button>
+                  <Button
+                    variant={previewTheme === 'dark' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setPreviewTheme('dark')}
+                    className="gap-2"
+                  >
+                    <Moon className="h-3 w-3" />
+                    Dark Mode
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className={`border rounded-lg overflow-hidden ${
                 previewMode === 'mobile' ? 'max-w-sm' : 'w-full'
-              }`}>
-                <div className="bg-muted px-3 py-2 text-xs font-medium border-b">
+              } ${previewTheme === 'dark' ? 'border-gray-600' : 'border-border'}`}>
+                <div className={`px-3 py-2 text-xs font-medium border-b ${
+                  previewTheme === 'dark' 
+                    ? 'bg-gray-800 text-gray-200 border-gray-600' 
+                    : 'bg-muted border-b'
+                }`}>
                   {formData.subject || 'Email Subject'}
                 </div>
                 <div 
-                  className="p-4 bg-white text-black overflow-auto max-h-96"
-                  style={{ fontSize: previewMode === 'mobile' ? '14px' : '16px' }}
+                  className={`p-4 overflow-auto max-h-96 ${
+                    previewTheme === 'dark' 
+                      ? 'bg-gray-900 text-gray-100' 
+                      : 'bg-white text-black'
+                  }`}
+                  style={{ 
+                    fontSize: previewMode === 'mobile' ? '14px' : '16px',
+                    colorScheme: previewTheme === 'dark' ? 'dark' : 'light'
+                  }}
                   dangerouslySetInnerHTML={{ __html: formData.html_content }}
                 />
               </div>
