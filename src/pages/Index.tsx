@@ -59,11 +59,11 @@ const Index = () => {
           <section className="max-w-4xl mx-auto text-center mb-20">
             <div className="bg-white rounded-3xl p-12 shadow-lg border border-border/10">
               <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
-                Every one of them is a chance to live with purpose, create meaningful memories, and make lasting progress. 
-                But in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that 
-                awareness is the first step toward action. We'll deliver daily inspiration to your inbox, along with a 
+                Sunday's are a day of reflection. They represent both the end and the beginning of a week, which gives you the opportunity to examine your past and prepare for your future. 
+                Often in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that 
+                awareness is the first step toward action. Use Sunday4k to assess your priorities in life, receive daily inspiration to your inbox, and utilize a 
                 curated collection of resources designed to help you transform your awareness into a life of intention. 
-                <span className="block font-semibold text-primary"> Stop waiting for the right moment. Start living a life with no regrets.</span>
+                <span className="block font-semibold text-primary"> Your life in weeks. Your weeks in focus.</span>
               </p>
             </div>
           </section>
