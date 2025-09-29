@@ -57,7 +57,7 @@ Your weeks in focus.</span>
 
       
       {/* Main Content */}
-      <div className="py-20">
+      <div className="py-0">
         <div className="container mx-auto px-6">
           {/* Mission Statement */}
           <section className="max-w-4xl mx-auto text-center mb-20">
