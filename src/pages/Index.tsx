@@ -8,28 +8,24 @@ import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import heroSkyBackground from "@/assets/hero-sky-background.png";
-
 const Index = () => {
-  const { user } = useAuth();
+  const {
+    user
+  } = useAuth();
   const {
     quote,
     loading: quoteLoading,
     error,
     refetch
   } = useQuoteOfTheDay();
-
-  return (
-    <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background">
       <Header />
       
       {/* Hero Section */}
-      <section 
-        className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat"
-        style={{ 
-          backgroundImage: `url(${heroSkyBackground})`,
-          backgroundPosition: 'center center'
-        }}
-      >
+      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat" style={{
+      backgroundImage: `url(${heroSkyBackground})`,
+      backgroundPosition: 'center center'
+    }}>
         {/* Overlay for text readability */}
         <div className="absolute inset-0 bg-black/20"></div>
         
@@ -42,10 +38,7 @@ const Index = () => {
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
             Make them count.
           </p>
-          <Link 
-            to="/life-compass" 
-            className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-          >
+          <Link to="/life-compass" className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
             <Compass className="w-6 h-6" />
             Calibrate Your Compass
           </Link>
@@ -56,7 +49,8 @@ const Index = () => {
       <section className="py-12">
         <div className="container mx-auto px-6 bg-transparent">
           <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
-            <span className="block font-semibold text-primary"> Your life in weeks. Your weeks in focus.</span>
+            <span className="block text-primary font-extrabold text-center text-5xl">Your life in weeks. 
+Your weeks in focus.</span>
           </p>
         </div>
       </section>
@@ -79,17 +73,14 @@ const Index = () => {
 
           {/* Quote Section */}
           <section className="max-w-4xl mx-auto mb-20">
-            {quoteLoading ? (
-              <Card className="p-12 bg-gradient-to-br from-accent to-secondary/20 shadow-lg border border-border/10">
+            {quoteLoading ? <Card className="p-12 bg-gradient-to-br from-accent to-secondary/20 shadow-lg border border-border/10">
                 <div className="text-center space-y-6">
                   <div className="w-20 h-20 mx-auto rounded-full bg-primary flex items-center justify-center shadow-lg">
                     <RefreshCw className="w-10 h-10 text-primary-foreground animate-spin" />
                   </div>
                   <p className="text-muted-foreground text-lg">Loading today's inspiration...</p>
                 </div>
-              </Card>
-            ) : error ? (
-              <Card className="p-12 bg-white shadow-lg border border-border/10">
+              </Card> : error ? <Card className="p-12 bg-white shadow-lg border border-border/10">
                 <div className="text-center space-y-6">
                   <p className="text-destructive text-lg">Failed to load quote: {error}</p>
                   <Button onClick={refetch} variant="outline" size="lg">
@@ -97,16 +88,7 @@ const Index = () => {
                     Try Again
                   </Button>
                 </div>
-              </Card>
-            ) : quote ? (
-              <QuoteCard 
-                quote={quote.quote} 
-                author={quote.author} 
-                source={quote.source} 
-                displayCount={quote.display_count} 
-                lastDisplayedAt={quote.last_displayed_at} 
-              />
-            ) : null}
+              </Card> : quote ? <QuoteCard quote={quote.quote} author={quote.author} source={quote.source} displayCount={quote.display_count} lastDisplayedAt={quote.last_displayed_at} /> : null}
           </section>
 
           {/* Resources Section */}
@@ -138,10 +120,7 @@ const Index = () => {
                   </div>
                 </div>
                 
-                <Link 
-                  to="/carpe-diem" 
-                  className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
-                >
+                <Link to="/carpe-diem" className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
                   <Zap className="w-6 h-6" />
                   Explore Resources
                   <ArrowRight className="w-6 h-6" />
@@ -153,8 +132,6 @@ const Index = () => {
       </div>
       
       <Footer />
-    </div>
-  );
+    </div>;
 };
-
 export default Index;
