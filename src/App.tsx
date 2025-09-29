@@ -17,6 +17,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import NotFound from "./pages/NotFound";
 import Admin from "./pages/Admin";
 import AdminTemplates from "./pages/AdminTemplates";
+import AdminTemplateVariables from "./pages/AdminTemplateVariables";
 import AdminBlog from "./pages/AdminBlog";
 import AdminBlogNew from "./pages/AdminBlogNew";
 import AdminBlogEdit from "./pages/AdminBlogEdit";
@@ -53,6 +54,7 @@ const App = () => (
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/templates" element={<AdminTemplates />} />
+            <Route path="/admin/template-variables" element={<AdminTemplateVariables />} />
             <Route path="/admin/blog" element={<AdminBlog />} />
             <Route path="/admin/blog/new" element={<AdminBlogNew />} />
             <Route path="/admin/blog/edit/:id" element={<AdminBlogEdit />} />

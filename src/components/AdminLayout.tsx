@@ -43,6 +43,11 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
       href: '/admin/templates',
       icon: Mail,
     },
+    {
+      title: 'Template Variables',
+      href: '/admin/template-variables',
+      icon: Settings,
+    },
   ];
 
   return (

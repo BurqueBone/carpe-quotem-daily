@@ -414,6 +414,48 @@ export type Database = {
         }
         Relationships: []
       }
+      template_variables: {
+        Row: {
+          category: Database["public"]["Enums"]["template_variable_category"]
+          created_at: string
+          data_type: Database["public"]["Enums"]["template_variable_data_type"]
+          default_value: string | null
+          description: string | null
+          display_name: string
+          id: string
+          is_active: boolean
+          is_system: boolean
+          updated_at: string
+          variable_name: string
+        }
+        Insert: {
+          category?: Database["public"]["Enums"]["template_variable_category"]
+          created_at?: string
+          data_type?: Database["public"]["Enums"]["template_variable_data_type"]
+          default_value?: string | null
+          description?: string | null
+          display_name: string
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          updated_at?: string
+          variable_name: string
+        }
+        Update: {
+          category?: Database["public"]["Enums"]["template_variable_category"]
+          created_at?: string
+          data_type?: Database["public"]["Enums"]["template_variable_data_type"]
+          default_value?: string | null
+          description?: string | null
+          display_name?: string
+          id?: string
+          is_active?: boolean
+          is_system?: boolean
+          updated_at?: string
+          variable_name?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -477,6 +519,13 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      template_variable_category: "system" | "user" | "content" | "custom"
+      template_variable_data_type:
+        | "text"
+        | "url"
+        | "date"
+        | "boolean"
+        | "number"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -605,6 +654,8 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      template_variable_category: ["system", "user", "content", "custom"],
+      template_variable_data_type: ["text", "url", "date", "boolean", "number"],
     },
   },
 } as const

@@ -131,14 +131,14 @@ serve(async (req) => {
       const { data: categoryData } = await supabase
         .from('categories')
         .select('title')
-        .eq('id', resourceData.category_id)
+        .eq('id', (resourceData as any).category_id)
         .maybeSingle();
 
       randomResource = {
         ...resourceData,
         categories: categoryData ? { title: categoryData.title } : { title: 'Personal Growth' }
       };
-      console.log('Got scheduled resource:', randomResource.title);
+      console.log('Got scheduled resource:', (randomResource as any).title);
     } else {
       console.warn('No resources found or error fetching resources:', resourceError);
     }
