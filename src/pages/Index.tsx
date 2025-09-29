@@ -53,13 +53,13 @@ const Index = () => {
       </section>
   
       {/* Main Content Header */}
-      <div className="py-20">
-        <div className="container mx-auto px-6 bg-transparent">
+      <section 
+      <div className="container mx-auto px-6 bg-transparent">
               <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
                 <span className="block font-semibold text-primary"> Your life in weeks. Your weeks in focus.</span>
               </p>
-            </div>
-          </section>
+       </div>
+       </section>
 
       
       {/* Main Content */}
