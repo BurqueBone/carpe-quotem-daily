@@ -63,7 +63,7 @@ const Index = () => {
                 But in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that 
                 awareness is the first step toward action. We'll deliver daily inspiration to your inbox, along with a 
                 curated collection of resources designed to help you transform your awareness into a life of intention. 
-                <span className="block text-primary-foreground font-semibold text-primary"> Stop waiting for the right moment. Start living a life with no regrets.</span>
+                <span className="block font-semibold text-primary"> Stop waiting for the right moment. Start living a life with no regrets.</span>
               </p>
             </div>
           </section>
