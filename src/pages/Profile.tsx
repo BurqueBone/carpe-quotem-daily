@@ -6,7 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Bell, User, LogOut, Mail, Lock, Copy, Heart } from "lucide-react";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Bell, User, LogOut, Mail, Lock, Copy, Heart, Calendar as CalendarIcon, Sparkles } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
 import { Navigate } from "react-router-dom";
@@ -14,8 +16,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useSecurityValidation } from "@/hooks/useSecurityValidation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { maskEmail } from "@/lib/utils";
+import { maskEmail, cn } from "@/lib/utils";
 import { useQuoteOfTheDay } from "@/hooks/useQuoteOfTheDay";
+import { format, differenceInDays, eachDayOfInterval, getDay } from "date-fns";
 const Profile = () => {
   const {
     user,
@@ -39,6 +42,9 @@ const Profile = () => {
   const [emailShareOpen, setEmailShareOpen] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
+  
+  // Sunday counter state
+  const [birthdate, setBirthdate] = useState<Date>();
   
   // Get today's quote for sharing
   const { quote, loading: quoteLoading } = useQuoteOfTheDay();
@@ -202,6 +208,25 @@ const Profile = () => {
       setSendingEmail(false);
     }
   };
+
+  // Calculate Sundays experienced
+  const calculateSundays = () => {
+    if (!birthdate) return null;
+    
+    const today = new Date();
+    const allDays = eachDayOfInterval({ start: birthdate, end: today });
+    const sundays = allDays.filter(day => getDay(day) === 0); // Sunday is 0
+    const sundaysExperienced = sundays.length;
+    const sundaysRemaining = Math.max(0, 4000 - sundaysExperienced);
+    
+    return {
+      experienced: sundaysExperienced,
+      remaining: sundaysRemaining,
+      isOver4000: sundaysExperienced >= 4000
+    };
+  };
+
+  const sundayData = calculateSundays();
   return <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-2xl flex-1">
@@ -301,6 +326,104 @@ const Profile = () => {
                     </div>
                   )}
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="border-border/50 shadow-card bg-gradient-subtle">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5 text-primary" />
+                <CardTitle>Your Sunday Counter</CardTitle>
+              </div>
+              <CardDescription>
+                Track your Sundays experienced and celebrate the gift of time
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Your Birthdate</Label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !birthdate && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {birthdate ? format(birthdate, "PPP") : "Select your birthdate"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={birthdate}
+                        onSelect={setBirthdate}
+                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+
+                {sundayData && (
+                  <div className="space-y-4 pt-4 border-t border-border/50">
+                    {sundayData.isOver4000 ? (
+                      <div className="text-center space-y-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+                          <h3 className="text-lg font-semibold text-foreground">Congratulations!</h3>
+                          <Sparkles className="h-6 w-6 text-primary animate-pulse" />
+                        </div>
+                        <div className="bg-primary/10 rounded-lg p-6 space-y-2">
+                          <p className="text-3xl font-bold text-primary">
+                            {sundayData.experienced.toLocaleString()}
+                          </p>
+                          <p className="text-sm text-muted-foreground">Sundays experienced</p>
+                          <p className="text-foreground font-medium">
+                            You've experienced more Sundays than the typical 4,000! 
+                            You're living a beautifully full life. 🎉
+                          </p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                            <p className="text-2xl font-bold text-primary">
+                              {sundayData.experienced.toLocaleString()}
+                            </p>
+                            <p className="text-sm text-muted-foreground">Sundays experienced</p>
+                          </div>
+                          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                            <p className="text-2xl font-bold text-accent">
+                              {sundayData.remaining.toLocaleString()}
+                            </p>
+                            <p className="text-sm text-muted-foreground">Sundays remaining</p>
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="w-full bg-muted rounded-full h-3">
+                            <div 
+                              className="h-3 bg-gradient-primary rounded-full transition-all duration-500"
+                              style={{ width: `${Math.min((sundayData.experienced / 4000) * 100, 100)}%` }}
+                            />
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            {((sundayData.experienced / 4000) * 100).toFixed(1)}% of 4,000 Sundays
+                          </p>
+                        </div>
+                        <p className="text-sm text-foreground">
+                          Each Sunday is a gift. Make them count. ✨
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
