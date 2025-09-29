@@ -454,6 +454,19 @@ export type Database = {
           source: string
         }[]
       }
+      get_scheduled_resource: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          affiliate_url: string
+          category_id: string
+          description: string
+          has_affiliate: boolean
+          id: string
+          title: string
+          type: string
+          url: string
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

@@ -120,20 +120,25 @@ serve(async (req) => {
 
     console.log('Got quote:', (quote as any).id);
 
-    // Get a random resource to include as a "seize the day" suggestion
-    const { data: resource, error: resourceError } = await supabase
-      .from('resources')
-      .select('title, description, url, type, categories(title)')
-      .eq('ispublished', true)
-      .order('id', { ascending: false }) // Use a simple order to make it deterministic
-      .limit(10);
+    // Get scheduled resource based on display queue date (similar to quotes)
+    const { data: resourceData, error: resourceError } = await supabase
+      .rpc('get_scheduled_resource')
+      .maybeSingle();
 
     let randomResource = null;
-    if (!resourceError && resource && resource.length > 0) {
-      // Pick a random resource from the first 10
-      const randomIndex = Math.floor(Math.random() * resource.length);
-      randomResource = resource[randomIndex];
-      console.log('Got resource:', randomResource.title);
+    if (!resourceError && resourceData) {
+      // Fetch category information for the resource
+      const { data: categoryData } = await supabase
+        .from('categories')
+        .select('title')
+        .eq('id', resourceData.category_id)
+        .maybeSingle();
+
+      randomResource = {
+        ...resourceData,
+        categories: categoryData ? { title: categoryData.title } : { title: 'Personal Growth' }
+      };
+      console.log('Got scheduled resource:', randomResource.title);
     } else {
       console.warn('No resources found or error fetching resources:', resourceError);
     }
