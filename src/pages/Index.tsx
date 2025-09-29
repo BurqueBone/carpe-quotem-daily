@@ -51,7 +51,17 @@ const Index = () => {
           </Link>
         </div>
       </section>
+  
+      {/* Main Content Header */}
+      <div className="py-20">
+        <div className="container mx-auto px-6 bg-transparent">
+              <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
+                <span className="block font-semibold text-primary"> Your life in weeks. Your weeks in focus.</span>
+              </p>
+            </div>
+          </section>
 
+      
       {/* Main Content */}
       <div className="py-20">
         <div className="container mx-auto px-6">
@@ -63,7 +73,6 @@ const Index = () => {
                 Often in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that 
                 awareness is the first step toward action. Use Sunday4k to assess your priorities in life, receive daily inspiration to your inbox, and utilize a 
                 curated collection of resources designed to help you transform your awareness into a life of intention. 
-                <span className="block font-semibold text-primary"> Your life in weeks. Your weeks in focus.</span>
               </p>
             </div>
           </section>
