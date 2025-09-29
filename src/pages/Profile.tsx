@@ -45,6 +45,9 @@ const Profile = () => {
   
   // Sunday counter state
   const [birthdate, setBirthdate] = useState<Date>();
+  const [selectedDay, setSelectedDay] = useState<string>("");
+  const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const [selectedYear, setSelectedYear] = useState<string>("");
   
   // Get today's quote for sharing
   const { quote, loading: quoteLoading } = useQuoteOfTheDay();
@@ -227,6 +230,35 @@ const Profile = () => {
   };
 
   const sundayData = calculateSundays();
+
+  // Update birthdate when all three selectors have values
+  useEffect(() => {
+    if (selectedDay && selectedMonth && selectedYear) {
+      const date = new Date(parseInt(selectedYear), parseInt(selectedMonth), parseInt(selectedDay));
+      if (!isNaN(date.getTime())) {
+        setBirthdate(date);
+      }
+    }
+  }, [selectedDay, selectedMonth, selectedYear]);
+
+  // Generate arrays for dropdowns
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  const months = [
+    { value: "0", label: "January" },
+    { value: "1", label: "February" },
+    { value: "2", label: "March" },
+    { value: "3", label: "April" },
+    { value: "4", label: "May" },
+    { value: "5", label: "June" },
+    { value: "6", label: "July" },
+    { value: "7", label: "August" },
+    { value: "8", label: "September" },
+    { value: "9", label: "October" },
+    { value: "10", label: "November" },
+    { value: "11", label: "December" }
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => (currentYear - i).toString());
   return <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-2xl flex-1">
@@ -344,30 +376,55 @@ const Profile = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>Your Birthdate</Label>
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "w-full justify-start text-left font-normal",
-                          !birthdate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-2 h-4 w-4" />
-                        {birthdate ? format(birthdate, "PPP") : "Select your birthdate"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={birthdate}
-                        onSelect={setBirthdate}
-                        disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
-                        initialFocus
-                        className={cn("p-3 pointer-events-auto")}
-                      />
-                    </PopoverContent>
-                  </Popover>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="space-y-2">
+                      <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {months.map((month) => (
+                            <SelectItem key={month.value} value={month.value}>
+                              {month.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Select value={selectedDay} onValueChange={setSelectedDay}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Day" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {days.map((day) => (
+                            <SelectItem key={day} value={day}>
+                              {day}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Select value={selectedYear} onValueChange={setSelectedYear}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Year" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {years.map((year) => (
+                            <SelectItem key={year} value={year}>
+                              {year}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  {birthdate && (
+                    <p className="text-sm text-muted-foreground text-center">
+                      {format(birthdate, "MMMM d, yyyy")}
+                    </p>
+                  )}
                 </div>
 
                 {sundayData && (
