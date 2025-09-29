@@ -46,7 +46,7 @@ const Index = () => {
       </section>
   
       {/* Main Content Header */}
-      <section className="py-12">
+      <section className="py-[20px]">
         <div className="container mx-auto px-6 bg-transparent">
           <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
             <span className="block text-primary font-extrabold text-center text-5xl">Your life in weeks. 
