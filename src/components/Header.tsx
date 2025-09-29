@@ -41,8 +41,8 @@ const Header = () => {
     : "text-foreground hover:text-primary";
     
   const loginButtonClasses = isHomePage 
-    ? "text-white border-white/30 hover:bg-white/10"
-    : "text-foreground border-border hover:bg-accent";
+    ? "text-black border-white/30 hover:bg-white/10"
+    : "text-black border-border hover:bg-accent";
 
   return <header className={headerClasses}>
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
