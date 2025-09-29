@@ -21,21 +21,19 @@ const Header = () => {
   const handleSignOut = async () => {
     await signOut();
   };
-  return <header className="border-b border-border/30 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+  return <header className="absolute top-0 left-0 right-0 z-50 bg-background/10 backdrop-blur-sm">
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-          
-          <h1 className="text-2xl font-bold bg-gradient-warm bg-clip-text text-transparent">
-            Sunday4K
-          </h1>
-          
-        </Link>
+        <div className="flex items-center gap-8">
+          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <h1 className="text-2xl font-bold text-white">
+              Sunday4K
+            </h1>
+          </Link>
 
-        <div className="flex items-center gap-4">
           <NavigationMenu>
             <NavigationMenuList>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-foreground hover:text-primary bg-transparent hover:bg-accent/50">
+                <NavigationMenuTrigger className="text-white hover:text-white/80 bg-transparent hover:bg-white/10">
                   Carpe Diem
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -70,7 +68,7 @@ const Header = () => {
                 </NavigationMenuContent>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <NavigationMenuTrigger className="text-foreground hover:text-primary bg-transparent hover:bg-accent/50">
+                <NavigationMenuTrigger className="text-white hover:text-white/80 bg-transparent hover:bg-white/10">
                   About
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
@@ -119,19 +117,22 @@ const Header = () => {
               </NavigationMenuItem>
             </NavigationMenuList>
           </NavigationMenu>
+        </div>
+
+        <div className="flex items-center gap-4">
           {user && isAdmin && (
             <Link to="/admin">
-              <Button variant="ghost" className="text-foreground hover:text-primary">
+              <Button variant="ghost" className="text-white hover:text-white/80 hover:bg-white/10">
                 Admin
               </Button>
             </Link>
           )}
           {user ? <Link to="/profile">
-              <Button variant="ghost" size="icon" className="rounded-full" title="Profile">
+              <Button variant="ghost" size="icon" className="rounded-full text-white hover:text-white/80 hover:bg-white/10" title="Profile">
                 <User className="h-5 w-5" />
               </Button>
             </Link> : <Link to="/auth">
-              <Button variant="outline">Login</Button>
+              <Button variant="outline" className="text-white border-white/30 hover:bg-white/10">Login</Button>
             </Link>}
         </div>
       </div>
