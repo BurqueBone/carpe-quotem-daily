@@ -19,7 +19,7 @@ const QuoteCard = ({
   return <Card className="bg-gradient-to-br from-[#FFEEDD] to-[#B8B8FF] rounded-2xl p-6 border border-[#F8F7FF] shadow-glow hover:shadow-xl transition-smooth text-center">
       <div className="text-center space-y-6">
         <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-full bg-gradient from-[#FFEEDD] to-[#FFD8BE] flex items-center justify-center shadow-glow">
+          <div className="w-16 h-16 rounded-full bg-gradient from-[#B8B8FF] to-[#FFD8BE] flex items-center justify-center shadow-glow">
             <Heart className="w-8 h-8 text-white" fill="currentColor" />
           </div>
         </div>
