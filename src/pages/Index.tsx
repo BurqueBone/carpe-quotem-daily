@@ -91,7 +91,7 @@ Your weeks in focus.</span>
           </section>
 
           {/* Resources Section */}
-          <section className="max-w-5xl mx-auto">
+          <section className="max-w-4xl mx-auto">
             <div className="bg-gradient-to-br from-secondary/10 to-accent/10 rounded-3xl p-12 border border-secondary/20">
               <div className="text-center max-w-3xl mx-auto">
                 <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-xl mb-8">
