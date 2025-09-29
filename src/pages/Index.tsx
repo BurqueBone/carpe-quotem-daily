@@ -35,7 +35,7 @@ const Index = () => {
         
         <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            You only have around
+            You have
             <span className="block text-primary-foreground">4,000 Sundays</span>
             in your life.
           </h1>
