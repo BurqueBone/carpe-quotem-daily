@@ -22,14 +22,17 @@ All colors MUST be HSL.
     --primary-foreground: 0 0% 98%;
     --primary-glow: 249 85% 85%;
 
-    --secondary: 25 100% 87%; /* #FFD8BE */
+    --secondary: 249 60% 85%; /* #B8B8FF */
     --secondary-foreground: 20 14% 12%;
 
     --muted: 249 30% 92%;
     --muted-foreground: 25 8% 45%;
 
-    --accent: 249 60% 85%; /* #B8B8FF */
+    --accent: 30 100% 93%; /* #FFEEDD */
     --accent-foreground: 20 14% 12%;
+
+    --warm: 25 100% 87%; /* #FFD8BE */
+    --warm-foreground: 20 14% 12%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;

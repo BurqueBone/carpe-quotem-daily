@@ -1,7 +1,5 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Zap, ArrowRight, Flower2, RefreshCw, User, LogIn, Compass, Lightbulb } from "lucide-react";
-import NavigationTabs from "@/components/NavigationTabs";
+import { Zap, ArrowRight, RefreshCw, Compass, Lightbulb } from "lucide-react";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -9,10 +7,10 @@ import { useQuoteOfTheDay } from "@/hooks/useQuoteOfTheDay";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import heroSkyBackground from "@/assets/hero-sky-background.png";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("home");
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
   const {
     quote,
     loading: quoteLoading,
@@ -23,92 +21,128 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="space-y-6">
-            <NavigationTabs activeTab={activeTab} onTabChange={setActiveTab} />
-            
-            <div className="tab-content">
-              {activeTab === "home" && (
-                <div className="space-y-6">
-                  <div className="bg-gradient-warm rounded-2xl p-6 border border-primary/20 shadow-glow hover:shadow-xl transition-smooth text-center">
-                    <p className="text-2xl font-bold text-white">You only have around 4,000 Sundays in your life.</p>
-                  </div>
-             {/* Explainer */}
-              <div className="p-8 rounded-2xl items-center bg-gradient-subtle shadow-card border-border/50 hover:shadow-warm transition-smooth">
-                <div>
-                 <p className="text-black/90 max-w-2xl mx-auto text-lg leading-relaxed mb-6 text-center">Every one of them is a chance to live with purpose, create meaningful memories, and make lasting progress. But in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that awareness is the first step toward action. We'll deliver daily inspiration to your inbox, along with a curated collection of resources designed to help you transform your awareness into a life of intention. Stop waiting for the right moment. Start living a life with no regrets.</p>
-                </div>
-                <div className="flex justify-center">
-                  <Link to="/life-compass" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
-                    <div className="inline-flex items-center justify-center gap-2 font-semibold text-white">
-                    <Compass className="w-4 h-4" />
-                    Calibrate Your Compass
-                    </div>
-                  </Link>
-                </div>
-              </div>
-                  
-                  {/* Quote Section */}
-                  {quoteLoading ? (
-                    <Card className="p-8 bg-gradient-to-br from-#FFEEDD to-#B8B8FF shadow-card border-border/50">
-                      <div className="text-center space-y-4">
-                        <div className="w-16 h-16 mx-auto rounded-full bg-gradient-warm flex items-center justify-center shadow-glow">
-                          <RefreshCw className="w-8 h-8 text-white animate-spin" />
-                        </div>
-                        <p className="text-muted-foreground">Loading today's inspiration...</p>
-                      </div>
-                    </Card>
-                  ) : error ? (
-                    <Card className="p-8 bg-gradient-subtle shadow-card border-border/50">
-                      <div className="text-center space-y-4">
-                        <p className="text-destructive">Failed to load quote: {error}</p>
-                        <Button onClick={refetch} variant="outline" size="sm">
-                          <RefreshCw className="w-4 h-4 mr-2" />
-                          Try Again
-                        </Button>
-                      </div>
-                    </Card>
-                  ) : quote ? (
-                    <QuoteCard 
-                      quote={quote.quote} 
-                      author={quote.author} 
-                      source={quote.source} 
-                      displayCount={quote.display_count} 
-                      lastDisplayedAt={quote.last_displayed_at} 
-                    />
-                  ) : null}
-                  
-                  <div className="bg-gradient-to-br from-secondary/20 to-accent/20 rounded-2xl p-6 border border-secondary/30 shadow-card hover:shadow-warm transition-smooth">
-                    <div className="text-center space-y-4">
-                      <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-lg">
-                        <Zap className="w-8 h-8 text-white" />
-                      </div>
-                      <h3 className="text-2xl font-bold text-foreground">Carpe Diem Resources</h3>
-                      <p className="text-muted-foreground leading-relaxed">Discover a curated collection of resources across 12 life categories from Physical and Mental wellness to Career, Creative, and Spiritual growth. Each resource is carefully selected to help you seize the day and make meaningful progress in every area of your life.</p>
-                      <div className="text-primary/80 font-medium mb-2">
-                        ✨ Transform awareness into action ✨
-                      </div>
-                      <div className="flex items-center justify-center gap-2 text-primary font-medium">
-                        <span>12 Categories</span>
-                        <span>•</span>
-                        <span>100+ Resources</span>
-                        <span>•</span>
-                        <span>Lifetime Access</span>
-                      </div>
-                      <Link to="/carpe-diem" className="inline-flex items-center gap-2 bg-primary text-white px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
-                        <Zap className="w-4 h-4" />
-                        Explore Resources
-                        <ArrowRight className="w-4 h-4" />
-                      </Link>
-                    </div>
-                  </div>
-                </div>
-              )}
+      
+      {/* Hero Section */}
+      <section 
+        className="relative min-h-[80vh] flex items-center justify-center overflow-hidden bg-cover bg-center bg-no-repeat"
+        style={{ 
+          backgroundImage: `url(${heroSkyBackground})`,
+          backgroundPosition: 'center center'
+        }}
+      >
+        {/* Overlay for text readability */}
+        <div className="absolute inset-0 bg-black/20"></div>
+        
+        <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
+          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
+            You only have around
+            <span className="block text-primary-foreground">4,000 Sundays</span>
+            in your life.
+          </h1>
+          <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
+            Your life in weeks. Your purpose in focus.
+          </p>
+          <Link 
+            to="/life-compass" 
+            className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+          >
+            <Compass className="w-6 h-6" />
+            Calibrate Your Compass
+          </Link>
+        </div>
+      </section>
+
+      {/* Main Content */}
+      <div className="py-20">
+        <div className="container mx-auto px-6">
+          {/* Mission Statement */}
+          <section className="max-w-4xl mx-auto text-center mb-20">
+            <div className="bg-white rounded-3xl p-12 shadow-lg border border-border/10">
+              <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
+                Every one of them is a chance to live with purpose, create meaningful memories, and make lasting progress. 
+                But in the rush of daily life, it's easy to lose sight of what truly matters. At Sunday4K, we believe that 
+                awareness is the first step toward action. We'll deliver daily inspiration to your inbox, along with a 
+                curated collection of resources designed to help you transform your awareness into a life of intention. 
+                <span className="font-semibold text-primary"> Stop waiting for the right moment. Start living a life with no regrets.</span>
+              </p>
             </div>
-          </div>
+          </section>
+
+          {/* Quote Section */}
+          <section className="max-w-4xl mx-auto mb-20">
+            {quoteLoading ? (
+              <Card className="p-12 bg-gradient-to-br from-accent to-secondary/20 shadow-lg border border-border/10">
+                <div className="text-center space-y-6">
+                  <div className="w-20 h-20 mx-auto rounded-full bg-primary flex items-center justify-center shadow-lg">
+                    <RefreshCw className="w-10 h-10 text-primary-foreground animate-spin" />
+                  </div>
+                  <p className="text-muted-foreground text-lg">Loading today's inspiration...</p>
+                </div>
+              </Card>
+            ) : error ? (
+              <Card className="p-12 bg-white shadow-lg border border-border/10">
+                <div className="text-center space-y-6">
+                  <p className="text-destructive text-lg">Failed to load quote: {error}</p>
+                  <Button onClick={refetch} variant="outline" size="lg">
+                    <RefreshCw className="w-5 h-5 mr-2" />
+                    Try Again
+                  </Button>
+                </div>
+              </Card>
+            ) : quote ? (
+              <QuoteCard 
+                quote={quote.quote} 
+                author={quote.author} 
+                source={quote.source} 
+                displayCount={quote.display_count} 
+                lastDisplayedAt={quote.last_displayed_at} 
+              />
+            ) : null}
+          </section>
+
+          {/* Resources Section */}
+          <section className="max-w-6xl mx-auto">
+            <div className="bg-gradient-to-br from-secondary/10 to-accent/10 rounded-3xl p-12 border border-secondary/20">
+              <div className="text-center max-w-3xl mx-auto">
+                <div className="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-xl mb-8">
+                  <Zap className="w-12 h-12 text-white" />
+                </div>
+                
+                <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
+                  Carpe Diem Resources
+                </h2>
+                
+                <p className="text-lg md:text-xl text-muted-foreground leading-relaxed mb-8">
+                  Discover a curated collection of resources across 12 life categories from Physical and Mental 
+                  wellness to Career, Creative, and Spiritual growth. Each resource is carefully selected to help 
+                  you seize the day and make meaningful progress in every area of your life.
+                </p>
+                
+                <div className="bg-primary/10 rounded-2xl p-6 mb-8">
+                  <p className="text-primary font-semibold text-lg mb-4">
+                    ✨ Transform awareness into action ✨
+                  </p>
+                  <div className="flex flex-wrap justify-center gap-6 text-primary font-medium">
+                    <span className="bg-white/50 px-4 py-2 rounded-full">12 Categories</span>
+                    <span className="bg-white/50 px-4 py-2 rounded-full">100+ Resources</span>
+                    <span className="bg-white/50 px-4 py-2 rounded-full">Lifetime Access</span>
+                  </div>
+                </div>
+                
+                <Link 
+                  to="/carpe-diem" 
+                  className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+                >
+                  <Zap className="w-6 h-6" />
+                  Explore Resources
+                  <ArrowRight className="w-6 h-6" />
+                </Link>
+              </div>
+            </div>
+          </section>
         </div>
       </div>
+      
       <Footer />
     </div>
   );
