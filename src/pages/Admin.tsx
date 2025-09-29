@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/components/AuthContext';
+import { useAdminStats } from '@/hooks/useAdminStats';
 import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import { Link } from 'react-router-dom';
 
 const Admin = () => {
   const { user, isAdmin, loading } = useAuth();
+  const { stats, loading: statsLoading, error: statsError } = useAdminStats();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,7 +19,7 @@ const Admin = () => {
     }
   }, [user, isAdmin, loading, navigate]);
 
-  if (loading) {
+  if (loading || statsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
@@ -29,29 +31,37 @@ const Admin = () => {
     return null;
   }
 
-  const stats = [
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat().format(num);
+  };
+
+  const dashboardStats = [
     {
       title: "Active Templates",
-      value: "3",
+      value: formatNumber(stats.activeTemplates),
       description: "Email templates in use",
       icon: Mail,
       color: "text-blue-600"
     },
     {
       title: "Total Users", 
-      value: "1,247",
+      value: formatNumber(stats.totalUsers),
       description: "Registered users",
       icon: Users,
       color: "text-green-600"
     },
     {
       title: "Emails Sent",
-      value: "15,234",
+      value: formatNumber(stats.emailsSentThisMonth),
       description: "This month",
       icon: TrendingUp,
       color: "text-purple-600"
     }
   ];
+
+  if (statsError) {
+    console.error('Stats error:', statsError);
+  }
 
   return (
     <AdminLayout>
@@ -64,7 +74,7 @@ const Admin = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {stats.map((stat) => {
+          {dashboardStats.map((stat) => {
             const Icon = stat.icon;
             return (
               <Card key={stat.title}>
