@@ -40,7 +40,7 @@ const Index = () => {
             in your life.
           </h1>
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
-            Your life in weeks. Your purpose in focus.
+            Make them count.
           </p>
           <Link 
             to="/life-compass" 
