@@ -2,7 +2,6 @@ import { Card } from "@/components/ui/card";
 import { Clock, Heart, Eye, Lightbulb } from "lucide-react";
 import React from 'react';
 import { Link } from 'react-router-dom';
-
 interface QuoteCardProps {
   quote: string;
   author: string;
@@ -20,7 +19,7 @@ const QuoteCard = ({
   return <Card className="bg-gradient-to-br from-[#FFEEDD] to-[#B8B8FF] rounded-2xl p-6 border border-[#F8F7FF] shadow-glow hover:shadow-xl transition-smooth text-center">
       <div className="text-center space-y-6">
         <div className="flex justify-center">
-          <div className="w-16 h-16 rounded-full bg-gradient-warm flex items-center justify-center shadow-glow">
+          <div className="w-16 h-16 rounded-full bg-gradient from-[#FFEEDD] to-[#FFD8BE] flex items-center justify-center shadow-glow">
             <Heart className="w-8 h-8 text-white" fill="currentColor" />
           </div>
         </div>
@@ -40,7 +39,7 @@ const QuoteCard = ({
           </p>
           <div className="flex justify-center">
             <Link to="/profile" className="inline-flex items-center gap-2 bg-[#FFD8BE] text-black px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth">
-              <Lightbulb className="w-4 h-4 mr-2"/>
+              <Lightbulb className="w-4 h-4 mr-2" />
               Get Your Daily Inspiration
             </Link>
           </div>
