@@ -18,11 +18,17 @@ const AuthUrlHandler = () => {
     const exchangeAndClean = async () => {
       console.log("🔐 AuthUrlHandler: Detected auth params. Exchanging code for session...");
       try {
-        const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
-        if (error) {
-          console.error("❌ AuthUrlHandler: exchangeCodeForSession error:", error);
+        if (hasCode) {
+          const { data, error } = await supabase.auth.exchangeCodeForSession(window.location.href);
+          if (error) {
+            console.error("❌ AuthUrlHandler: exchangeCodeForSession error:", error);
+          } else {
+            console.log("✅ AuthUrlHandler: Session established for:", data.session?.user?.email);
+          }
         } else {
-          console.log("✅ AuthUrlHandler: Session established for:", data.session?.user?.email);
+          // Magic link implicit flow: tokens in URL hash are auto-processed by Supabase
+          await supabase.auth.getSession();
+          console.log("✅ AuthUrlHandler: Session processed from URL hash.");
         }
       } catch (e) {
         console.error("💥 AuthUrlHandler: Unexpected error during exchange:", e);
