@@ -29,7 +29,7 @@ const Index = () => {
         {/* Overlay for text readability */}
         <div className="absolute inset-0 bg-black/20"></div>
         
-        <div className="relative z-10 text-center max-w-4xl mx-auto px-6">
+        <div className="relative z-10 text-center max-w-4xl px-6 mx-0 py-[50px]">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
             You have
             <span className="block text-primary-foreground">4,000 Sundays</span>
