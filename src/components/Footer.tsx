@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Home, User, Settings, Heart, Shield } from "lucide-react";
+import { Home, User, Settings, Heart, Shield, Compass } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -41,7 +41,7 @@ const Footer = () => {
                 to="/life-compass" 
                 className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-smooth text-sm"
               >
-                <Heart className="w-4 h-4" />
+                <Compass className="w-4 h-4" />
                 Life Compass
               </Link>
             </nav>
