@@ -61,7 +61,7 @@ Your weeks in focus.</span>
         <div className="container mx-auto px-[24px] py-[30px]">
           {/* Mission Statement */}
           <section className="max-w-4xl mx-auto text-center mb-20">
-            <div className="bg-white rounded-3xl p-12 shadow-lg border border-border/10">
+            <div className="rounded-3xl p-12 shadow-lg border border-border/10 bg-[#ffeedd]">
               <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
                 Sunday's are a day of reflection. They represent both the end and the beginning of a week, which gives you the opportunity to examine your past and prepare for your future. 
                 Use Sunday4k to assess your life's priorities, receive daily inspiration to your inbox, and utilize a 
