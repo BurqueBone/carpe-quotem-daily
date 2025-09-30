@@ -37,7 +37,6 @@ const Footer = () => {
                 <Heart className="w-4 h-4" />
                 Carpe Diem Resources
               </Link>
-            </nav>
             <Link 
                 to="/life-compass" 
                 className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-smooth text-sm"
