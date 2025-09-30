@@ -65,6 +65,9 @@ serve(async (req) => {
       throw new Error('No user email found in webhook data');
     }
 
+    // Detect if this is an OTP code (6-digit token) vs magic link
+    const isOtpCode = token && /^\d{6}$/.test(token);
+    
     // Map email action types to template names
     let templateName: string;
     switch (email_action_type) {
@@ -79,7 +82,8 @@ serve(async (req) => {
         break;
       case 'magiclink':
       case 'magic_link':
-        templateName = 'magic_link';
+        // Use login_code template for OTP codes, magic_link for actual links
+        templateName = isOtpCode ? 'login_code' : 'magic_link';
         break;
       default:
         // Fallback to a generic template or use signup
@@ -116,27 +120,32 @@ serve(async (req) => {
     } else {
       // Fallback to hardcoded templates if not found
       console.warn(`No template found for ${templateName}, using fallback`);
-      switch (email_action_type) {
-        case 'signup':
-          subject = 'Welcome to Sunday4k - Confirm Your Email';
-          html = generateSignupEmailHTML(token, token_hash, redirect_to, site_url);
-          break;
-        case 'recovery':
-          subject = 'Reset Your Sunday4k Password';
-          html = generatePasswordResetEmailHTML(token, token_hash, redirect_to, site_url);
-          break;
-        case 'invite':
-          subject = 'You\'re Invited to Join Sunday4k';
-          html = generateInviteEmailHTML(token, token_hash, redirect_to, site_url);
-          break;
-        case 'magiclink':
-        case 'magic_link':
-          subject = 'Your Sunday4k Magic Link';
-          html = generateMagicLinkEmailHTML(token, token_hash, redirect_to, site_url);
-          break;
-        default:
-          subject = 'Sunday4k Authentication';
-          html = generateGenericAuthEmailHTML(token, token_hash, redirect_to, site_url, email_action_type);
+      if (templateName === 'login_code') {
+        subject = 'Your Sunday4k Login Code';
+        html = generateLoginCodeEmailHTML(token);
+      } else {
+        switch (email_action_type) {
+          case 'signup':
+            subject = 'Welcome to Sunday4k - Confirm Your Email';
+            html = generateSignupEmailHTML(token, token_hash, redirect_to, site_url);
+            break;
+          case 'recovery':
+            subject = 'Reset Your Sunday4k Password';
+            html = generatePasswordResetEmailHTML(token, token_hash, redirect_to, site_url);
+            break;
+          case 'invite':
+            subject = 'You\'re Invited to Join Sunday4k';
+            html = generateInviteEmailHTML(token, token_hash, redirect_to, site_url);
+            break;
+          case 'magiclink':
+          case 'magic_link':
+            subject = 'Your Sunday4k Magic Link';
+            html = generateMagicLinkEmailHTML(token, token_hash, redirect_to, site_url);
+            break;
+          default:
+            subject = 'Sunday4k Authentication';
+            html = generateGenericAuthEmailHTML(token, token_hash, redirect_to, site_url, email_action_type);
+        }
       }
     }
 
@@ -215,11 +224,43 @@ function generateEmailFromTemplate(
   emailHTML = emailHTML.replace(/\{\{login_url\}\}/g, actionUrl);
   emailHTML = emailHTML.replace(/\{\{invite_url\}\}/g, actionUrl);
   emailHTML = emailHTML.replace(/\{\{action_url\}\}/g, actionUrl);
+  emailHTML = emailHTML.replace(/\{\{code\}\}/g, token);
+  emailHTML = emailHTML.replace(/\{\{token\}\}/g, token);
   
   return emailHTML;
 }
 
 // Fallback functions (kept for backward compatibility)
+function generateLoginCodeEmailHTML(token: string): string {
+  return `
+    ${getEmailHeader()}
+    <div class="content">
+      <h1 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">Your Sunday4k Login Code</h1>
+      
+      <p class="message">
+        Use the code below to complete your sign in:
+      </p>
+      
+      <div style="text-align: center; margin: 30px 0;">
+        <div style="display: inline-block; background: linear-gradient(135deg, #9381FF 0%, #B8B8FF 100%); padding: 20px 40px; border-radius: 12px; box-shadow: 0 4px 16px rgba(147, 129, 255, 0.3);">
+          <div style="font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+            ${token}
+          </div>
+        </div>
+      </div>
+      
+      <p class="message" style="font-size: 14px; color: #6b7280; text-align: center;">
+        This code will expire in 5 minutes for security reasons.
+      </p>
+      
+      <p class="message" style="font-size: 14px; color: #6b7280; text-align: center;">
+        If you didn't request this code, you can safely ignore this email.
+      </p>
+    </div>
+    ${getEmailFooter()}
+  `;
+}
+
 function generateSignupEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
   const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
   const confirmUrl = `${authBase}/verify?token=${token_hash}&type=signup&redirect_to=${encodeURIComponent(redirect_to)}`;
