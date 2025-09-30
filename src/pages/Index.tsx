@@ -49,7 +49,7 @@ const Index = () => {
       <section className="py-[20px]">
         <div className="container mx-auto px-6 bg-transparent">
           <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
-            <span className="block text-primary font-extrabold text-center text-5xl">Your life in weeks. 
+            <span className="block text-primary font-extrabold text-center text-5xl py-[30px]">Your life in weeks. 
 Your weeks in focus.</span>
           </p>
         </div>
