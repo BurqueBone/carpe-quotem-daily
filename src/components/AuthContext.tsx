@@ -8,6 +8,8 @@ interface AuthContextType {
   loading: boolean;
   isAdmin: boolean;
   signInWithMagicLink: (email: string) => Promise<{ error: any }>;
+  requestEmailOtp: (email: string) => Promise<{ error: any }>;
+  verifyEmailOtp: (email: string, token: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
 }
 
@@ -142,6 +144,47 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return { error };
   };
 
+  const requestEmailOtp = async (email: string) => {
+    console.log('📧 AuthContext: Requesting email OTP for:', email);
+    
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return { error: new Error('Invalid email format') };
+    }
+    
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        shouldCreateUser: true
+      }
+    });
+    
+    if (error) {
+      console.error('❌ AuthContext: Email OTP error:', error);
+    } else {
+      console.log('✉️ AuthContext: Email OTP sent successfully');
+    }
+    
+    return { error };
+  };
+
+  const verifyEmailOtp = async (email: string, token: string) => {
+    console.log('🔑 AuthContext: Verifying email OTP...');
+    
+    const { error } = await supabase.auth.verifyOtp({
+      email,
+      token,
+      type: 'email'
+    });
+    
+    if (error) {
+      console.error('❌ AuthContext: OTP verification error:', error);
+    } else {
+      console.log('✅ AuthContext: OTP verified successfully');
+    }
+    
+    return { error };
+  };
+
   const signOut = async () => {
     console.log('👋 AuthContext: Signing out...');
     await supabase.auth.signOut();
@@ -153,6 +196,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     loading,
     isAdmin,
     signInWithMagicLink,
+    requestEmailOtp,
+    verifyEmailOtp,
     signOut,
   };
 

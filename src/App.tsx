@@ -26,6 +26,7 @@ import AdminContact from "./pages/AdminContact";
 import Blog from "./pages/Blog";
 import BlogPost from "./pages/BlogPost";
 import Contact from "./pages/Contact";
+import DebugAuth from "./pages/DebugAuth";
 import AuthUrlHandler from "./components/AuthUrlHandler";
 
 const queryClient = new QueryClient();
@@ -50,6 +51,7 @@ const App = () => (
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/debug/auth" element={<DebugAuth />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/privacy" element={<PrivacyPolicy />} />
             <Route path="/admin" element={<Admin />} />
