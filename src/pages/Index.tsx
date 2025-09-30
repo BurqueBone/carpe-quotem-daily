@@ -62,11 +62,7 @@ Your weeks in focus.</span>
           {/* Mission Statement */}
           <section className="max-w-4xl mx-auto text-center mb-20">
             <div className="rounded-3xl p-12 shadow-lg border border-border/10 bg-[#ffeedd]">
-              <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">
-                Sunday's are a day of reflection. They represent both the end and the beginning of a week, which gives you the opportunity to examine your past and prepare for your future. 
-                Use Sunday4k to assess your life's priorities, receive daily inspiration to your inbox, and utilize a 
-                curated collection of resources designed to help you transform your awareness into a life of intention. 
-              </p>
+              <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">Sundays are a day of reflection. They represent both the end and the beginning of a week, giving you the opportunity to examine your past and prepare for your future. Use Sunday4k to assess your life's priorities, receive daily inspiration in your inbox, and utilize a curated collection of resources designed to help you transform your awareness into a life of intention.</p>
             </div>
           </section>
 
