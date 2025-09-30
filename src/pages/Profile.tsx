@@ -450,13 +450,13 @@ const Profile = () => {
                     ) : (
                       <div className="text-center space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-#FFEEDD rounded-lg p-4 space-y-2">
+                          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                             <p className="text-2xl font-bold text-primary">
                               {sundayData.experienced.toLocaleString()}
                             </p>
                             <p className="text-sm text-muted-foreground">Sundays experienced</p>
                           </div>
-                          <div className="bg-#B8B8FF rounded-lg p-4 space-y-2">
+                          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                             <p className="text-2xl font-bold text-accent">
                               {sundayData.remaining.toLocaleString()}
                             </p>
@@ -517,9 +517,30 @@ const Profile = () => {
                   You'll need to confirm your new email address before the change takes effect.
                 </p>
               </div>
-             </CardContent>
+
+              {/* Password Update Section */}
+              
+            </CardContent>
           </Card>
+
+
+          <Card className="border-border/50 shadow-card bg-gradient-subtle">
+            <CardHeader>
+              <CardTitle>About Sunday4K</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground leading-relaxed">
+                Sunday4K sends gentle reminders about life's preciousness to inspire meaningful action. 
+                Our notifications are designed to uplift and motivate, not to create anxiety. Each message 
+                is carefully chosen to help you appreciate the present moment and live with intention.
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+
+        
       </div>
+      <Footer />
       
       {/* Email Share Modal */}
       <Dialog open={emailShareOpen} onOpenChange={setEmailShareOpen}>
