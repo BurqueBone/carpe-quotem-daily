@@ -450,13 +450,13 @@ const Profile = () => {
                     ) : (
                       <div className="text-center space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                          <div className="bg-#FFEEDD rounded-lg p-4 space-y-2">
                             <p className="text-2xl font-bold text-primary">
                               {sundayData.experienced.toLocaleString()}
                             </p>
                             <p className="text-sm text-muted-foreground">Sundays experienced</p>
                           </div>
-                          <div className="bg-muted/50 rounded-lg p-4 space-y-2">
+                          <div className="bg-#B8B8FF rounded-lg p-4 space-y-2">
                             <p className="text-2xl font-bold text-accent">
                               {sundayData.remaining.toLocaleString()}
                             </p>
@@ -517,13 +517,9 @@ const Profile = () => {
                   You'll need to confirm your new email address before the change takes effect.
                 </p>
               </div>
-
-              {/* Password Update Section */}
-              
-            </CardContent>
+             </CardContent>
           </Card>
       </div>
-      <Footer />
       
       {/* Email Share Modal */}
       <Dialog open={emailShareOpen} onOpenChange={setEmailShareOpen}>
