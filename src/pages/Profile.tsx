@@ -522,23 +522,6 @@ const Profile = () => {
               
             </CardContent>
           </Card>
-
-
-          <Card className="border-border/50 shadow-card bg-gradient-subtle">
-            <CardHeader>
-              <CardTitle>About Sunday4K</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground leading-relaxed">
-                Sunday4K sends gentle reminders about life's preciousness to inspire meaningful action. 
-                Our notifications are designed to uplift and motivate, not to create anxiety. Each message 
-                is carefully chosen to help you appreciate the present moment and live with intention.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        
       </div>
       <Footer />
       
