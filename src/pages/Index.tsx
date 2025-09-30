@@ -38,7 +38,7 @@ const Index = () => {
           <p className="text-xl md:text-2xl text-white/90 mb-8 max-w-2xl mx-auto leading-relaxed">
             Make them count.
           </p>
-          <Link to="/life-compass" className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105">
+          <Link to="/life-compass" className="inline-flex items-center gap-3 mt-10 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 mx-0">
             <Compass className="w-6 h-6" />
             Calibrate Your Compass
           </Link>
