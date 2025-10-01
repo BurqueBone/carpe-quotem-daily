@@ -224,15 +224,24 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
                 <div 
                   className={`p-4 overflow-auto max-h-96 ${
                     previewTheme === 'dark' 
-                      ? 'bg-gray-900 text-gray-100' 
-                      : 'bg-white text-black'
+                      ? 'bg-[#1a1a1a]' 
+                      : 'bg-white'
                   }`}
                   style={{ 
                     fontSize: previewMode === 'mobile' ? '14px' : '16px',
-                    colorScheme: previewTheme === 'dark' ? 'dark' : 'light'
+                    colorScheme: previewTheme === 'dark' ? 'dark' : 'light',
+                    ...(previewTheme === 'dark' && {
+                      filter: 'invert(0.9) hue-rotate(180deg)',
+                    })
                   }}
-                  dangerouslySetInnerHTML={{ __html: formData.html_content }}
-                />
+                >
+                  <div
+                    style={previewTheme === 'dark' ? {
+                      filter: 'invert(1) hue-rotate(180deg)',
+                    } : undefined}
+                    dangerouslySetInnerHTML={{ __html: formData.html_content }}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
