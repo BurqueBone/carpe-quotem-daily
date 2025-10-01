@@ -71,7 +71,7 @@ const AdminTemplateVariables: React.FC = () => {
   const fetchVariables = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('admin-template-variables', {
-        method: 'GET'
+        body: { method: 'GET' }
       });
 
       if (error) throw error;
@@ -90,8 +90,7 @@ const AdminTemplateVariables: React.FC = () => {
   const handleCreateVariable = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('admin-template-variables', {
-        method: 'POST',
-        body: formData
+        body: { method: 'POST', ...formData }
       });
 
       if (error) throw error;
@@ -116,9 +115,8 @@ const AdminTemplateVariables: React.FC = () => {
     if (!editingVariable) return;
 
     try {
-      const { data, error } = await supabase.functions.invoke(`admin-template-variables?id=${editingVariable.id}`, {
-        method: 'PUT',
-        body: formData
+      const { data, error } = await supabase.functions.invoke('admin-template-variables', {
+        body: { method: 'PUT', id: editingVariable.id, ...formData }
       });
 
       if (error) throw error;
@@ -141,8 +139,8 @@ const AdminTemplateVariables: React.FC = () => {
 
   const handleDeleteVariable = async (variable: TemplateVariable) => {
     try {
-      const { error } = await supabase.functions.invoke(`admin-template-variables?id=${variable.id}`, {
-        method: 'DELETE'
+      const { error } = await supabase.functions.invoke('admin-template-variables', {
+        body: { method: 'DELETE', id: variable.id }
       });
 
       if (error) throw error;

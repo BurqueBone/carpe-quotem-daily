@@ -59,10 +59,12 @@ serve(async (req) => {
       throw new Error('Admin access required');
     }
 
-    const url = new URL(req.url);
-    const id = url.searchParams.get('id');
+    // Get request body to determine method and parameters
+    const requestBody = await req.json();
+    const method = requestBody.method || 'GET';
+    const id = requestBody.id;
 
-    switch (req.method) {
+    switch (method) {
       case 'GET':
         if (id) {
           // Get specific template variable
@@ -94,29 +96,27 @@ serve(async (req) => {
 
       case 'POST':
         // Create new template variable
-        const createData = await req.json();
-        
         // Validate required fields
-        if (!createData.variable_name || !createData.display_name) {
+        if (!requestBody.variable_name || !requestBody.display_name) {
           throw new Error('variable_name and display_name are required');
         }
 
         // Validate variable_name format (alphanumeric, dots, underscores only)
-        if (!/^[a-zA-Z0-9._]+$/.test(createData.variable_name)) {
+        if (!/^[a-zA-Z0-9._]+$/.test(requestBody.variable_name)) {
           throw new Error('variable_name can only contain letters, numbers, dots, and underscores');
         }
 
         const { data, error: createError } = await supabase
           .from('template_variables')
           .insert([{
-            variable_name: createData.variable_name,
-            display_name: createData.display_name,
-            description: createData.description,
-            category: createData.category || 'custom',
-            data_type: createData.data_type || 'text',
-            default_value: createData.default_value,
+            variable_name: requestBody.variable_name,
+            display_name: requestBody.display_name,
+            description: requestBody.description,
+            category: requestBody.category || 'custom',
+            data_type: requestBody.data_type || 'text',
+            default_value: requestBody.default_value,
             is_system: false, // User-created variables are never system variables
-            is_active: createData.is_active !== undefined ? createData.is_active : true
+            is_active: requestBody.is_active !== undefined ? requestBody.is_active : true
           }])
           .select()
           .single();
@@ -133,11 +133,9 @@ serve(async (req) => {
         if (!id) {
           throw new Error('ID is required for updates');
         }
-
-        const updateData = await req.json();
         
         // Validate variable_name format if provided
-        if (updateData.variable_name && !/^[a-zA-Z0-9._]+$/.test(updateData.variable_name)) {
+        if (requestBody.variable_name && !/^[a-zA-Z0-9._]+$/.test(requestBody.variable_name)) {
           throw new Error('variable_name can only contain letters, numbers, dots, and underscores');
         }
 
@@ -151,8 +149,8 @@ serve(async (req) => {
         if (existingVar?.is_system) {
           // Only allow updating description and is_active for system variables
           const allowedUpdates: any = {};
-          if (updateData.description !== undefined) allowedUpdates.description = updateData.description;
-          if (updateData.is_active !== undefined) allowedUpdates.is_active = updateData.is_active;
+          if (requestBody.description !== undefined) allowedUpdates.description = requestBody.description;
+          if (requestBody.is_active !== undefined) allowedUpdates.is_active = requestBody.is_active;
           
           const { data, error: updateError1 } = await supabase
             .from('template_variables')
@@ -171,13 +169,13 @@ serve(async (req) => {
           const { data, error: updateError2 } = await supabase
             .from('template_variables')
             .update({
-              variable_name: updateData.variable_name,
-              display_name: updateData.display_name,
-              description: updateData.description,
-              category: updateData.category,
-              data_type: updateData.data_type,
-              default_value: updateData.default_value,
-              is_active: updateData.is_active
+              variable_name: requestBody.variable_name,
+              display_name: requestBody.display_name,
+              description: requestBody.description,
+              category: requestBody.category,
+              data_type: requestBody.data_type,
+              default_value: requestBody.default_value,
+              is_active: requestBody.is_active
             })
             .eq('id', id)
             .select()
@@ -220,7 +218,7 @@ serve(async (req) => {
         });
 
       default:
-        throw new Error(`Method ${req.method} not allowed`);
+        throw new Error(`Method ${method} not allowed`);
     }
   } catch (error: any) {
     console.error('Error in admin-template-variables function:', error);
