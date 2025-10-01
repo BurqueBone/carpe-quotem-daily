@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { processTemplateVariables, buildTemplateContext } from '@/utils/templateVariables';
 
 interface EmailTemplate {
   id: string;
@@ -69,6 +70,30 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
   const [templateVariables, setTemplateVariables] = useState<TemplateVariable[]>([]);
   const [copiedVariable, setCopiedVariable] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
+
+  // Sample data for preview
+  const sampleContext = buildTemplateContext(
+    {
+      quote: "The only way to do great work is to love what you do.",
+      author: "Steve Jobs",
+      source: "Stanford Commencement Speech"
+    },
+    {
+      title: "LinkedIn Learning",
+      description: "Professional development courses",
+      url: "https://www.linkedin.com/learning",
+      category: { title: "Learning" },
+      how_resource_helps: "Expand your skills with thousands of expert-led courses"
+    },
+    "user@example.com"
+  );
+
+  // Processed HTML content for preview
+  const processedHtmlContent = processTemplateVariables(
+    formData.html_content,
+    sampleContext,
+    templateVariables
+  );
 
   useEffect(() => {
     fetchTemplateVariables();
@@ -313,7 +338,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
                       style={previewTheme === 'dark' ? {
                         filter: 'invert(1) hue-rotate(180deg)',
                       } : undefined}
-                      dangerouslySetInnerHTML={{ __html: formData.html_content }}
+                      dangerouslySetInnerHTML={{ __html: processedHtmlContent }}
                     />
                   </div>
                 </div>

@@ -24,6 +24,7 @@ interface TemplateContext {
     title: string;
     description: string;
     url: string;
+    how_resource_helps?: string;
     category?: {
       title: string;
     };
@@ -222,6 +223,7 @@ export function buildTemplateContext(
       title: resource.title || '',
       description: resource.description || '',
       url: resource.url || '',
+      how_resource_helps: resource.how_resource_helps || '',
       category: resource.category ? {
         title: resource.category.title || ''
       } : undefined
