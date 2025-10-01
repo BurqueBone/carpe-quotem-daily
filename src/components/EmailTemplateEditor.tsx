@@ -285,7 +285,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
               </CardHeader>
               <CardContent>
                 <div className={`border rounded-lg overflow-hidden ${
-                  previewMode === 'mobile' ? 'max-w-sm mx-auto' : 'w-full'
+                  previewMode === 'mobile' ? 'max-w-md mx-auto' : 'w-full'
                 } ${previewTheme === 'dark' ? 'border-gray-600' : 'border-border'}`}>
                   <div className={`px-3 py-2 text-xs font-medium border-b ${
                     previewTheme === 'dark' 
