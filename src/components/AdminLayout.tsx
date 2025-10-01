@@ -1,11 +1,13 @@
-import { ReactNode } from 'react';
+import { ReactNode, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { 
   Settings, 
   Mail, 
   LayoutDashboard, 
-  ChevronLeft 
+  ChevronLeft,
+  PanelLeftClose,
+  PanelLeftOpen
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -14,6 +16,7 @@ interface AdminLayoutProps {
 
 const AdminLayout = ({ children }: AdminLayoutProps) => {
   const location = useLocation();
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -71,31 +74,44 @@ const AdminLayout = ({ children }: AdminLayoutProps) => {
 
       <div className="flex">
         {/* Sidebar */}
-        <aside className="w-64 min-h-screen bg-card border-r border-border p-6">
-          <nav className="space-y-2">
-            {navItems.map((item) => {
-              const Icon = item.icon;
-              return (
-                <Link key={item.href} to={item.href}>
-                  <Button
-                    variant={isActive(item.href) ? "secondary" : "ghost"}
-                    className={`w-full justify-start gap-2 ${
-                      isActive(item.href) 
-                        ? "bg-accent text-accent-foreground" 
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <Icon className="h-4 w-4" />
-                    {item.title}
-                  </Button>
-                </Link>
-              );
-            })}
-          </nav>
+        <aside className={`${sidebarCollapsed ? 'w-16' : 'w-64'} min-h-screen bg-card border-r border-border transition-all duration-300`}>
+          <div className="p-4">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+              className="w-full justify-center mb-4"
+            >
+              {sidebarCollapsed ? <PanelLeftOpen className="h-4 w-4" /> : <PanelLeftClose className="h-4 w-4" />}
+            </Button>
+            <nav className="space-y-2">
+              {navItems.map((item) => {
+                const Icon = item.icon;
+                return (
+                  <Link key={item.href} to={item.href}>
+                    <Button
+                      variant={isActive(item.href) ? "secondary" : "ghost"}
+                      className={`w-full gap-2 ${
+                        sidebarCollapsed ? 'justify-center px-2' : 'justify-start'
+                      } ${
+                        isActive(item.href) 
+                          ? "bg-accent text-accent-foreground" 
+                          : "text-muted-foreground hover:text-foreground"
+                      }`}
+                      title={sidebarCollapsed ? item.title : undefined}
+                    >
+                      <Icon className="h-4 w-4 flex-shrink-0" />
+                      {!sidebarCollapsed && <span>{item.title}</span>}
+                    </Button>
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 p-6">
+        <main className="flex-1 p-6 overflow-auto">
           {children}
         </main>
       </div>
