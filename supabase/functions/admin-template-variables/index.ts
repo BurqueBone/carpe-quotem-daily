@@ -13,9 +13,22 @@ serve(async (req) => {
   }
 
   try {
-    const supabase = createClient(
+    // Create client for auth check with anon key
+    const anonClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false
+        }
+      }
+    );
+
+    // Create service role client for admin operations (bypasses RLS)
+    const supabase = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
       {
         auth: {
           autoRefreshToken: false,
@@ -32,13 +45,13 @@ serve(async (req) => {
 
     // Get the current user using the JWT token directly
     const token = authHeader.replace('Bearer ', '');
-    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
+    const { data: { user }, error: userError } = await anonClient.auth.getUser(token);
     if (userError || !user) {
       console.error('Auth error:', userError);
       throw new Error('Unauthorized');
     }
 
-    // Check if user is admin
+    // Check if user is admin using service role client
     const { data: adminCheck, error: adminError } = await supabase
       .rpc('has_role', { _user_id: user.id, _role: 'admin' });
     
