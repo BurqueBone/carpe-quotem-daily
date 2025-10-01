@@ -226,7 +226,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
                 value={formData.html_content}
                 onChange={(e) => setFormData({ ...formData, html_content: e.target.value })}
                 placeholder="Enter your HTML content here..."
-                className="min-h-[500px] font-mono text-sm resize-none"
+                className="min-h-[800px] font-mono text-sm resize-y"
               />
             </CardContent>
           </Card>
