@@ -167,7 +167,7 @@ const handler = async (req: Request): Promise<Response> => {
     // Get a random resource from the database to include in the email
     const { data: randomResource } = await supabase
       .from('resources')
-      .select('id, title, description, url, type, category_id')
+      .select('id, title, description, url, type, how_resource_helps, category_id')
       .eq('ispublished', true)
       .limit(1)
       .single();
@@ -183,7 +183,7 @@ const handler = async (req: Request): Promise<Response> => {
 
       resourceWithCategory = {
         ...randomResource,
-        category: category?.title || ''
+        category: { title: category?.title || '' }
       };
     }
 

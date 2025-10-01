@@ -23,6 +23,8 @@ interface TemplateContext {
     title: string;
     description: string;
     url: string;
+    type?: string;
+    how_resource_helps?: string;
     category?: {
       title: string;
     };
@@ -157,6 +159,15 @@ function formatVariableValue(value: any, dataType: string): string {
       
     case 'text':
     default:
+      if (value && typeof value === 'object') {
+        // Gracefully handle objects used in text fields (e.g., category objects)
+        // Prefer common display fields if present
+        // @ts-ignore - runtime safeguard
+        if ('title' in value && typeof (value as any).title !== 'object') return String((value as any).title);
+        // @ts-ignore
+        if ('name' in value && typeof (value as any).name !== 'object') return String((value as any).name);
+        try { return JSON.stringify(value); } catch { return String(value); }
+      }
       return String(value);
   }
 }
@@ -224,9 +235,13 @@ export function buildTemplateContext(
       title: resource.title || '',
       description: resource.description || '',
       url: resource.url || '',
-      category: resource.category ? {
-        title: resource.category.title || ''
-      } : undefined
+      type: resource.type || '',
+      how_resource_helps: resource.how_resource_helps || '',
+      category: (() => {
+        if (!resource.category) return undefined;
+        if (typeof resource.category === 'string') return { title: resource.category };
+        return { title: resource.category?.title || '' };
+      })()
     } : undefined,
     
     user: userEmail ? {
