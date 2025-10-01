@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
+import { processTemplateVariables, buildTemplateContext } from "../shared/template-processor.ts";
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -194,18 +195,36 @@ const handler = async (req: Request): Promise<Response> => {
       .eq('is_active', true)
       .maybeSingle();
 
+    // Fetch template variables
+    const { data: templateVariables } = await supabase
+      .from('template_variables')
+      .select('*')
+      .eq('is_active', true);
+
     let emailHTML: string;
     let subject: string;
 
     if (emailTemplate) {
-      // Use template from database
+      // Use template from database with proper variable processing
       subject = emailTemplate.subject;
-      emailHTML = generateEmailFromTemplate(emailTemplate.html_content, {
-        quote: sanitizedQuote,
-        author: sanitizedAuthor,
-        source: sanitizedSource,
-        resource: resourceWithCategory
-      });
+      
+      // Build template context with nested structure
+      const context = buildTemplateContext(
+        {
+          quote: sanitizedQuote,
+          author: sanitizedAuthor,
+          source: sanitizedSource
+        },
+        resourceWithCategory,
+        sanitizedEmail
+      );
+      
+      // Process template variables
+      emailHTML = processTemplateVariables(
+        emailTemplate.html_content,
+        context,
+        templateVariables || []
+      );
     } else {
       // Fallback to hardcoded template
       console.warn('No share_quote template found, using fallback');
@@ -264,47 +283,8 @@ const handler = async (req: Request): Promise<Response> => {
   }
 };
 
-function generateEmailFromTemplate(
-  template: string, 
-  data: { 
-    quote: string; 
-    author: string; 
-    source?: string; 
-    resource?: any;
-  }
-): string {
-  let emailHTML = template;
-  
-  // Replace basic placeholders
-  emailHTML = emailHTML.replace(/\{\{quote\}\}/g, data.quote);
-  emailHTML = emailHTML.replace(/\{\{author\}\}/g, data.author);
-  emailHTML = emailHTML.replace(/\{\{source\}\}/g, data.source ? `, ${data.source}` : '');
-  
-  // Handle base_url placeholder
-  emailHTML = emailHTML.replace(/\{\{base_url\}\}/g, 'https://sunday4k.life');
-  
-  // Handle resource conditional blocks
-  if (data.resource) {
-    // Replace {{#if resource}} and {{/if}} blocks - keep the content
-    emailHTML = emailHTML.replace(/\{\{#if resource\}\}/g, '');
-    emailHTML = emailHTML.replace(/\{\{\/if\}\}/g, '');
-    
-    // Replace resource placeholders
-    emailHTML = emailHTML.replace(/\{\{resource\.title\}\}/g, data.resource.title || '');
-    emailHTML = emailHTML.replace(/\{\{resource\.description\}\}/g, data.resource.description || '');
-    emailHTML = emailHTML.replace(/\{\{resource\.url\}\}/g, data.resource.url || '');
-    emailHTML = emailHTML.replace(/\{\{resource\.type\}\}/g, data.resource.type || '');
-    emailHTML = emailHTML.replace(/\{\{resource\.category\}\}/g, data.resource.category || '');
-  } else {
-    // Remove the entire conditional block if no resource
-    emailHTML = emailHTML.replace(/\{\{#if resource\}\}[\s\S]*?\{\{\/if\}\}/g, '');
-  }
-  
-  // Handle unsubscribe token (placeholder for now)
-  emailHTML = emailHTML.replace(/\{\{unsubscribe_token\}\}/g, 'placeholder-token');
-  
-  return emailHTML;
-}
+// Legacy function - no longer used, kept for reference
+// Template processing now handled by shared/template-processor.ts
 
 // Fallback function (kept for backward compatibility)
 function generateFallbackEmailHTML(sanitizedQuote: string, sanitizedAuthor: string, sanitizedSource?: string): string {
