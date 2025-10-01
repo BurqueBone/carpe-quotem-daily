@@ -30,15 +30,11 @@ serve(async (req) => {
       throw new Error('No authorization header');
     }
 
-    // Set the auth context
-    await supabase.auth.setSession({
-      access_token: authHeader.replace('Bearer ', ''),
-      refresh_token: ''
-    });
-
-    // Get the current user
-    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    // Get the current user using the JWT token directly
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     if (userError || !user) {
+      console.error('Auth error:', userError);
       throw new Error('Unauthorized');
     }
 
