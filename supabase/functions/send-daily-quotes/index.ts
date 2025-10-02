@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
 import { Resend } from "https://esm.sh/resend@2.0.0";
+import { processTemplateVariables, buildTemplateContext } from '../shared/template-processor.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -93,6 +94,12 @@ serve(async (req) => {
       .eq('template_name', 'daily_inspiration')
       .eq('is_active', true)
       .maybeSingle();
+    
+    // Fetch template variables for processing
+    const { data: templateVariables } = await supabase
+      .from('template_variables')
+      .select('*')
+      .eq('is_active', true);
 
     if (templateError) {
       console.error('Error fetching email template:', templateError);
@@ -136,7 +143,7 @@ serve(async (req) => {
 
       randomResource = {
         ...resourceData,
-        categories: categoryData ? { title: categoryData.title } : { title: 'Personal Growth' }
+        category: categoryData ? { title: categoryData.title } : { title: 'Personal Growth' }
       };
       console.log('Got scheduled resource:', (randomResource as any).title);
     } else {
@@ -187,8 +194,15 @@ serve(async (req) => {
         // Ensure contact exists in Resend audience
         await ensureContactInAudience(userEmail, audienceId);
 
-        // Generate email HTML using template
-        const emailHTML = generateEmailFromTemplate(emailTemplate.html_content, quote, randomResource);
+        // Build template context
+        const context = buildTemplateContext(quote, randomResource, userEmail);
+        
+        // Generate email HTML using proper template processor
+        const emailHTML = processTemplateVariables(
+          emailTemplate.html_content,
+          context,
+          templateVariables || []
+        );
 
         // Send email using Resend
         const emailResponse = await resend.emails.send({
@@ -269,36 +283,4 @@ async function checkUserQuota(supabase: any, userId: string): Promise<boolean> {
   
   // Return true if no email sent today
   return !sends || sends.length === 0;
-}
-
-function generateEmailFromTemplate(template: string, quote: any, resource: any = null): string {
-  let emailHTML = template;
-  
-  // Replace quote placeholders
-  emailHTML = emailHTML.replace(/\{\{quote\}\}/g, (quote as any).quote || '');
-  emailHTML = emailHTML.replace(/\{\{author\}\}/g, (quote as any).author || '');
-  
-  // Replace base URL
-  emailHTML = emailHTML.replace(/\{\{base_url\}\}/g, 'https://sunday4k.life');
-  
-  // Handle resource section with Handlebars-style conditional
-  if (resource) {
-    // Remove the conditional wrapper
-    emailHTML = emailHTML.replace(/\{\{#if resource\}\}/g, '');
-    emailHTML = emailHTML.replace(/\{\{\/if\}\}/g, '');
-    
-    // Replace resource placeholders
-    emailHTML = emailHTML.replace(/\{\{resource\.category\}\}/g, resource.categories?.title || 'Personal Growth');
-    emailHTML = emailHTML.replace(/\{\{resource\.type\}\}/g, resource.type || 'Resource');
-    emailHTML = emailHTML.replace(/\{\{resource\.title\}\}/g, resource.title || '');
-    emailHTML = emailHTML.replace(/\{\{resource\.description\}\}/g, resource.description || '');
-    emailHTML = emailHTML.replace(/\{\{resource\.how_resource_helps\}\}/g, resource.how_resource_helps || 'This resource can help you improve this area of your life.');
-    emailHTML = emailHTML.replace(/\{\{resource\.url\}\}/g, resource.url || '#');
-  } else {
-    // Remove the entire resource section if no resource
-    const resourceBlockRegex = /\{\{#if resource\}\}[\s\S]*?\{\{\/if\}\}/g;
-    emailHTML = emailHTML.replace(resourceBlockRegex, '');
-  }
-  
-  return emailHTML;
 }
