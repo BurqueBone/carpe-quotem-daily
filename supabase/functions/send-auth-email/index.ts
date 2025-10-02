@@ -65,9 +65,6 @@ serve(async (req) => {
       throw new Error('No user email found in webhook data');
     }
 
-    // Detect if this is an OTP code (6-digit token) vs magic link
-    const isOtpCode = token && /^\d{6}$/.test(token);
-    
     // Map email action types to template names
     let templateName: string;
     switch (email_action_type) {
@@ -82,8 +79,13 @@ serve(async (req) => {
         break;
       case 'magiclink':
       case 'magic_link':
-        // Use login_code template for OTP codes, magic_link for actual links
-        templateName = isOtpCode ? 'login_code' : 'magic_link';
+        // Always send magic link template for magiclink events
+        templateName = 'magic_link';
+        break;
+      case 'email':
+      case 'otp':
+        // Explicit OTP/email code events
+        templateName = 'login_code';
         break;
       default:
         // Fallback to a generic template or use signup
