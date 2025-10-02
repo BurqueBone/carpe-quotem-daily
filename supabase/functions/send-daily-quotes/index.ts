@@ -137,13 +137,19 @@ serve(async (req) => {
       // Fetch category information for the resource
       const { data: categoryData } = await supabase
         .from('categories')
-        .select('title')
+        .select('title, icon_name')
         .eq('id', (resourceData as any).category_id)
         .maybeSingle();
 
       randomResource = {
         ...resourceData,
-        category: categoryData ? { title: categoryData.title } : { title: 'Personal Growth' }
+        category: categoryData ? { 
+          title: categoryData.title,
+          icon_name: categoryData.icon_name 
+        } : { 
+          title: 'Personal Growth',
+          icon_name: null 
+        }
       };
       console.log('Got scheduled resource:', (randomResource as any).title);
     } else {

@@ -27,6 +27,7 @@ interface TemplateContext {
     how_resource_helps?: string;
     category?: {
       title: string;
+      icon_name?: string;
     };
   };
   user?: {
@@ -239,8 +240,11 @@ export function buildTemplateContext(
       how_resource_helps: resource.how_resource_helps || '',
       category: (() => {
         if (!resource.category) return undefined;
-        if (typeof resource.category === 'string') return { title: resource.category };
-        return { title: resource.category?.title || '' };
+        if (typeof resource.category === 'string') return { title: resource.category, icon_name: null };
+        return { 
+          title: resource.category?.title || '',
+          icon_name: resource.category?.icon_name || null
+        };
       })()
     } : undefined,
     

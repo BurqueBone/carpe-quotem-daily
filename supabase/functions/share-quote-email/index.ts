@@ -177,13 +177,16 @@ const handler = async (req: Request): Promise<Response> => {
       // Get the category title for the resource
       const { data: category } = await supabase
         .from('categories')
-        .select('title')
+        .select('title, icon_name')
         .eq('id', randomResource.category_id)
         .single();
 
       resourceWithCategory = {
         ...randomResource,
-        category: { title: category?.title || '' }
+        category: { 
+          title: category?.title || '',
+          icon_name: category?.icon_name || null
+        }
       };
     }
 
