@@ -151,10 +151,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { error: new Error('Invalid email format') };
     }
     
+    // Use signInWithOtp with email type to explicitly request OTP code (not magic link)
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: true
+        shouldCreateUser: true,
+        // Don't include emailRedirectTo to ensure OTP is sent instead of magic link
       }
     });
     
