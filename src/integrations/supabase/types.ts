@@ -503,6 +503,7 @@ export type Database = {
           category_id: string
           description: string
           has_affiliate: boolean
+          how_resource_helps: string
           id: string
           title: string
           type: string

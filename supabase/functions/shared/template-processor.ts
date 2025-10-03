@@ -37,6 +37,7 @@ interface TemplateContext {
   system?: {
     current_date: string;
     unsubscribe_url: string;
+    app_url: string;
   };
   [key: string]: any;
 }
@@ -254,7 +255,8 @@ export function buildTemplateContext(
     
     system: {
       current_date: now.toLocaleDateString(),
-      unsubscribe_url: `https://aywuwyqscrtavulqijxm.supabase.co/functions/v1/unsubscribe`
+      unsubscribe_url: `https://aywuwyqscrtavulqijxm.supabase.co/functions/v1/unsubscribe`,
+      app_url: `https://sunday4k.life`
     }
   };
 }
