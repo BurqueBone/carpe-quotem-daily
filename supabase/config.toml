@@ -18,8 +18,9 @@ verify_jwt = true
 [functions.sync-resend-contacts]
 verify_jwt = true
 
-[functions.send-auth-email]
-verify_jwt = false
+# [functions.send-auth-email]
+# verify_jwt = false
+# Disabled - using Supabase native email templates with Go conditionals instead
 
 [functions.broadcast-email]
 verify_jwt = true
