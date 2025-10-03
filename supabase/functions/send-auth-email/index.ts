@@ -65,6 +65,10 @@ serve(async (req) => {
       throw new Error('No user email found in webhook data');
     }
 
+    // Determine if this is a magic link or OTP code request
+    // Magic links have redirect_to, OTP codes typically don't
+    const isMagicLink = redirect_to && redirect_to.length > 0 && email_action_type !== 'otp';
+    
     // Map email action types to template names
     let templateName: string;
     switch (email_action_type) {
@@ -79,13 +83,10 @@ serve(async (req) => {
         break;
       case 'magiclink':
       case 'magic_link':
-        // Always send magic link template for magiclink events
-        templateName = 'magic_link';
-        break;
       case 'email':
       case 'otp':
-        // Explicit OTP/email code events
-        templateName = 'login_code';
+        // Use unified auth template for both magic link and OTP code
+        templateName = 'magic_link';
         break;
       default:
         // Fallback to a generic template or use signup
@@ -117,14 +118,17 @@ serve(async (req) => {
         token_hash, 
         redirect_to, 
         site_url, 
-        email_action_type
+        email_action_type,
+        isMagicLink
       );
     } else {
       // Fallback to hardcoded templates if not found
       console.warn(`No template found for ${templateName}, using fallback`);
-      if (templateName === 'login_code') {
-        subject = 'Your Sunday4k Login Code';
-        html = generateLoginCodeEmailHTML(token);
+      
+      // Use unified auth template for both magic link and OTP
+      if (templateName === 'magic_link') {
+        subject = isMagicLink ? 'Your Sunday4k Login Link' : 'Your Sunday4k Login Code';
+        html = generateUnifiedAuthEmailHTML(token, token_hash, redirect_to, site_url, isMagicLink);
       } else {
         switch (email_action_type) {
           case 'signup':
@@ -136,13 +140,8 @@ serve(async (req) => {
             html = generatePasswordResetEmailHTML(token, token_hash, redirect_to, site_url);
             break;
           case 'invite':
-            subject = 'You\'re Invited to Join Sunday4k';
+            subject = "You're Invited to Join Sunday4k";
             html = generateInviteEmailHTML(token, token_hash, redirect_to, site_url);
-            break;
-          case 'magiclink':
-          case 'magic_link':
-            subject = 'Your Sunday4k Magic Link';
-            html = generateMagicLinkEmailHTML(token, token_hash, redirect_to, site_url);
             break;
           default:
             subject = 'Sunday4k Authentication';
@@ -195,7 +194,8 @@ function generateEmailFromTemplate(
   token_hash: string, 
   redirect_to: string, 
   site_url: string, 
-  email_action_type: string
+  email_action_type: string,
+  isMagicLink: boolean
 ): string {
   const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
   
@@ -232,36 +232,74 @@ function generateEmailFromTemplate(
   return emailHTML;
 }
 
-// Fallback functions (kept for backward compatibility)
-function generateLoginCodeEmailHTML(token: string): string {
-  return `
-    ${getEmailHeader()}
-    <div class="content">
-      <h1 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">Your Sunday4k Login Code</h1>
-      
-      <p class="message">
-        Use the code below to complete your sign in:
-      </p>
-      
-      <div style="text-align: center; margin: 30px 0;">
-        <div style="display: inline-block; background: linear-gradient(135deg, #9381FF 0%, #B8B8FF 100%); padding: 20px 40px; border-radius: 12px; box-shadow: 0 4px 16px rgba(147, 129, 255, 0.3);">
-          <div style="font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: 8px; font-family: 'Courier New', monospace;">
-            ${token}
+// Unified authentication email template that handles both magic link and OTP code
+function generateUnifiedAuthEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string, isMagicLink: boolean): string {
+  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  const loginUrl = `${authBase}/verify?token=${token_hash}&type=magiclink&redirect_to=${encodeURIComponent(redirect_to)}`;
+  
+  if (isMagicLink) {
+    // Magic Link version
+    return `
+      ${getEmailHeader()}
+      <div class="content">
+        <h1 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">Your Sunday4k Login Link</h1>
+        
+        <p class="message">
+          Click the button below to securely log in to your Sunday4k account:
+        </p>
+        
+        <div class="cta">
+          <a href="${loginUrl}" class="cta-button">Log In to Sunday4k</a>
+        </div>
+        
+        <p class="message" style="font-size: 14px; color: #6b7280;">
+          This link will expire in 1 hour for security reasons.
+        </p>
+        
+        <p class="message" style="font-size: 14px; color: #6b7280;">
+          Or copy and paste this link into your browser:<br>
+          <a href="${loginUrl}" style="color: #9381ff; word-break: break-all;">${loginUrl}</a>
+        </p>
+        
+        <p class="message" style="font-size: 14px; color: #6b7280;">
+          If you didn't request this login link, you can safely ignore this email.
+        </p>
+      </div>
+      ${getEmailFooter()}
+    `;
+  } else {
+    // OTP Code version
+    return `
+      ${getEmailHeader()}
+      <div class="content">
+        <h1 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">Your Sunday4k Login Code</h1>
+        
+        <p class="message">
+          Use the code below to complete your sign in:
+        </p>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <div style="display: inline-block; background: linear-gradient(135deg, #9381FF 0%, #B8B8FF 100%); padding: 20px 40px; border-radius: 12px; box-shadow: 0 4px 16px rgba(147, 129, 255, 0.3);">
+            <div style="font-size: 36px; font-weight: 800; color: #ffffff; letter-spacing: 8px; font-family: 'Courier New', monospace;">
+              ${token}
+            </div>
           </div>
         </div>
+        
+        <p class="message" style="font-size: 14px; color: #6b7280; text-align: center;">
+          This code will expire in 5 minutes for security reasons.
+        </p>
+        
+        <p class="message" style="font-size: 14px; color: #6b7280; text-align: center;">
+          If you didn't request this code, you can safely ignore this email.
+        </p>
       </div>
-      
-      <p class="message" style="font-size: 14px; color: #6b7280; text-align: center;">
-        This code will expire in 5 minutes for security reasons.
-      </p>
-      
-      <p class="message" style="font-size: 14px; color: #6b7280; text-align: center;">
-        If you didn't request this code, you can safely ignore this email.
-      </p>
-    </div>
-    ${getEmailFooter()}
-  `;
+      ${getEmailFooter()}
+    `;
+  }
 }
+
+// Fallback functions (kept for backward compatibility)
 
 function generateSignupEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
   const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
@@ -329,36 +367,6 @@ function generatePasswordResetEmailHTML(token: string, token_hash: string, redir
       <p class="message" style="font-size: 14px; color: #6b7280;">
         Or copy and paste this link into your browser:<br>
         <a href="${resetUrl}" style="color: #9381ff; word-break: break-all;">${resetUrl}</a>
-      </p>
-    </div>
-    ${getEmailFooter()}
-  `;
-}
-
-function generateMagicLinkEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
-  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
-  const loginUrl = `${authBase}/verify?token=${token_hash}&type=magiclink&redirect_to=${encodeURIComponent(redirect_to)}`;
-  
-  return `
-    ${getEmailHeader()}
-    <div class="content">
-      <h1 style="color: #1f2937; font-size: 24px; margin-bottom: 20px;">Your Sunday4k Login Link</h1>
-      
-      <p class="message">
-        Click the button below to securely log in to your Sunday4k account:
-      </p>
-      
-      <div class="cta">
-        <a href="${loginUrl}" class="cta-button">Log In to Sunday4k</a>
-      </div>
-      
-      <p class="message" style="font-size: 14px; color: #6b7280;">
-        This link will expire in 1 hour for security reasons.
-      </p>
-      
-      <p class="message" style="font-size: 14px; color: #6b7280;">
-        Or copy and paste this link into your browser:<br>
-        <a href="${loginUrl}" style="color: #9381ff; word-break: break-all;">${loginUrl}</a>
       </p>
     </div>
     ${getEmailFooter()}
