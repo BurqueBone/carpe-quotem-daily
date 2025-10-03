@@ -79,18 +79,18 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="font-semibold text-foreground">Legal</h3>
             <nav className="space-y-2">
-              <a 
-                href="/privacy" 
+              <Link 
+                to="/privacy" 
                 className="block text-muted-foreground hover:text-primary transition-smooth text-sm"
               >
                 Privacy Policy
-              </a>
-              <a 
-                href="/terms" 
+              </Link>
+              <Link 
+                to="/terms" 
                 className="block text-muted-foreground hover:text-primary transition-smooth text-sm"
               >
                 Terms of Service
-              </a>
+              </Link>
             </nav>
           </div>
         </div>
