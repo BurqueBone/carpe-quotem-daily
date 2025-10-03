@@ -110,8 +110,8 @@ serve(async (req) => {
     let html: string;
 
     if (emailTemplate) {
-      // Use template from database
-      subject = emailTemplate.subject;
+      // Use template from database - process subject conditionally too
+      subject = processConditionalBlocks(emailTemplate.subject, isMagicLink);
       html = generateEmailFromTemplate(
         emailTemplate.html_content, 
         token, 
@@ -188,6 +188,21 @@ serve(async (req) => {
   }
 });
 
+// Helper function to process conditional blocks based on magic link vs OTP
+function processConditionalBlocks(content: string, isMagicLink: boolean): string {
+  // Remove OTP blocks if this is a magic link
+  if (isMagicLink) {
+    content = content.replace(/\{\{#if_otp\}\}[\s\S]*?\{\{\/if_otp\}\}/g, '');
+    content = content.replace(/\{\{#if_magic_link\}\}([\s\S]*?)\{\{\/if_magic_link\}\}/g, '$1');
+  } 
+  // Remove magic link blocks if this is OTP
+  else {
+    content = content.replace(/\{\{#if_magic_link\}\}[\s\S]*?\{\{\/if_magic_link\}\}/g, '');
+    content = content.replace(/\{\{#if_otp\}\}([\s\S]*?)\{\{\/if_otp\}\}/g, '$1');
+  }
+  return content;
+}
+
 function generateEmailFromTemplate(
   template: string, 
   token: string, 
@@ -197,6 +212,10 @@ function generateEmailFromTemplate(
   email_action_type: string,
   isMagicLink: boolean
 ): string {
+  // Step 1: Process conditional blocks FIRST
+  let emailHTML = processConditionalBlocks(template, isMagicLink);
+  
+  // Step 2: Build action URL
   const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
   
   let actionUrl: string;
@@ -217,10 +236,8 @@ function generateEmailFromTemplate(
     default:
       actionUrl = `${authBase}/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${encodeURIComponent(redirect_to)}`;
   }
-
-  let emailHTML = template;
   
-  // Replace common placeholders
+  // Step 3: Replace all placeholders
   emailHTML = emailHTML.replace(/\{\{confirmation_url\}\}/g, actionUrl);
   emailHTML = emailHTML.replace(/\{\{reset_password_url\}\}/g, actionUrl);
   emailHTML = emailHTML.replace(/\{\{login_url\}\}/g, actionUrl);
