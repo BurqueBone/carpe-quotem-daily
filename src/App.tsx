@@ -12,6 +12,7 @@ import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import CarpeDiem from "./pages/CarpeDiem";
 import LifeCompass from "./pages/LifeCompass";
+import ResourceCollection from "./pages/ResourceCollection";
 import About from "./pages/About";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -47,8 +48,9 @@ const App = () => (
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/settings" element={<Settings />} />
-        <Route path="/carpe-diem" element={<CarpeDiem />} />
-        <Route path="/life-compass" element={<LifeCompass />} />
+            <Route path="/carpe-diem" element={<CarpeDiem />} />
+            <Route path="/resource-collection" element={<ResourceCollection />} />
+            <Route path="/life-compass" element={<LifeCompass />} />
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />

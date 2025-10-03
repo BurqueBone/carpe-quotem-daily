@@ -322,6 +322,35 @@ export type Database = {
         }
         Relationships: []
       }
+      resource_upvotes: {
+        Row: {
+          created_at: string
+          id: string
+          resource_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          resource_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          resource_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resource_upvotes_resource_id_fkey"
+            columns: ["resource_id"]
+            isOneToOne: false
+            referencedRelation: "resources"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       resources: {
         Row: {
           affiliate_url: string | null
@@ -494,6 +523,24 @@ export type Database = {
           last_displayed_at: string
           quote: string
           source: string
+        }[]
+      }
+      get_resources_with_upvotes: {
+        Args: { user_id_param?: string }
+        Returns: {
+          affiliate_url: string
+          category_id: string
+          created_at: string
+          description: string
+          has_affiliate: boolean
+          how_resource_helps: string
+          id: string
+          ispublished: boolean
+          title: string
+          type: string
+          upvote_count: number
+          url: string
+          user_has_upvoted: boolean
         }[]
       }
       get_scheduled_resource: {
