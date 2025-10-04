@@ -226,6 +226,12 @@ export function buildTemplateContext(
 ): TemplateContext {
   const now = new Date();
   
+  const categoryTitle = (() => {
+    if (!resource?.category) return '';
+    if (typeof resource.category === 'string') return resource.category;
+    return resource.category?.title || '';
+  })();
+  
   return {
     quote: quote ? {
       quote: quote.quote || '',
@@ -252,6 +258,23 @@ export function buildTemplateContext(
     user: userEmail ? {
       email: userEmail
     } : undefined,
+    
+    contact: {
+      firstname: userEmail?.split('@')[0] || 'Friend'
+    },
+    
+    custom: {
+      daily_quote: quote?.quote || '',
+      quote_author: quote?.author || '',
+      resource_category: categoryTitle,
+      resource_type: resource?.type || '',
+      resource_title: resource?.title || '',
+      resource_description: resource?.description || '',
+      resource_url: resource?.url || '',
+      app_url: 'https://sunday4k.life',
+      website_url: 'https://sunday4k.life',
+      support_email: 'info@sunday4k.life'
+    },
     
     system: {
       current_date: now.toLocaleDateString(),
