@@ -25,14 +25,14 @@ const TodaysResourceCard = ({ resource }: TodaysResourceCardProps) => {
     : resource.url;
 
   return (
-    <Card className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-background to-secondary/10 border-2 border-primary/20 shadow-lg">
-      <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-40 h-40 bg-secondary/5 rounded-full blur-3xl" />
+    <Card className="relative overflow-hidden bg-gradient-to-br from-warm/10 via-background to-accent/10 border-2 border-warm/30 shadow-lg">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-warm/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 left-0 w-40 h-40 bg-accent/5 rounded-full blur-3xl" />
       
       <div className="relative p-8 space-y-6">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-6 w-6 text-primary animate-pulse" />
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <Sparkles className="h-6 w-6 text-warm animate-pulse" />
+          <h2 className="text-2xl font-bold bg-gradient-to-r from-warm to-accent bg-clip-text text-transparent">
             Today's Featured Resource
           </h2>
         </div>
@@ -55,8 +55,8 @@ const TodaysResourceCard = ({ resource }: TodaysResourceCardProps) => {
               </div>
             </div>
             
-            <div className="flex flex-col items-center gap-1 bg-background/50 backdrop-blur-sm rounded-lg p-3 border">
-              <ChevronUp className="h-6 w-6 text-primary" />
+            <div className="flex flex-col items-center gap-1 bg-background/50 backdrop-blur-sm rounded-lg p-3 border border-warm/20">
+              <ChevronUp className="h-6 w-6 text-warm" />
               <span className="text-lg font-bold text-foreground">{resource.upvote_count}</span>
               <span className="text-xs text-muted-foreground">votes</span>
             </div>
@@ -67,8 +67,8 @@ const TodaysResourceCard = ({ resource }: TodaysResourceCardProps) => {
           </p>
 
           {resource.how_resource_helps && (
-            <div className="bg-background/50 backdrop-blur-sm rounded-lg p-4 border border-primary/10">
-              <p className="text-sm font-semibold text-primary mb-1">How this helps:</p>
+            <div className="bg-warm/5 backdrop-blur-sm rounded-lg p-4 border border-warm/20">
+              <p className="text-sm font-semibold text-warm-foreground mb-1">How this helps:</p>
               <p className="text-sm text-foreground">{resource.how_resource_helps}</p>
             </div>
           )}
