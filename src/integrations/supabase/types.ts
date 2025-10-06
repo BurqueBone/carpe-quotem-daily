@@ -206,6 +206,24 @@ export type Database = {
         }
         Relationships: []
       }
+      email_webhook_dedup: {
+        Row: {
+          created_at: string
+          email_action_type: string | null
+          token_hash: string
+        }
+        Insert: {
+          created_at?: string
+          email_action_type?: string | null
+          token_hash: string
+        }
+        Update: {
+          created_at?: string
+          email_action_type?: string | null
+          token_hash?: string
+        }
+        Relationships: []
+      }
       notification_sends: {
         Row: {
           id: string
