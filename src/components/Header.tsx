@@ -45,7 +45,7 @@ const Header = () => {
     : "text-black border-border hover:bg-accent";
 
   return <header className={headerClasses}>
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <div className="w-full max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
         <div className="flex items-center gap-8">
           <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
             <h1 className={`text-2xl font-bold ${logoClasses}`}>

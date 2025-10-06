@@ -56,10 +56,10 @@ const ResourceCollection = () => {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col overflow-x-hidden w-full">
       <Header />
       
-      <main className="flex-1 container mx-auto px-4 py-8 space-y-8">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 space-y-8">
         {/* Page Header */}
         <div className="space-y-2">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">

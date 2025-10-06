@@ -18,7 +18,7 @@ const Index = () => {
     error,
     refetch
   } = useQuoteOfTheDay();
-  return <div className="min-h-screen bg-background">
+  return <div className="min-h-screen bg-background overflow-x-hidden w-full">
       <Header />
       
       {/* Hero Section */}

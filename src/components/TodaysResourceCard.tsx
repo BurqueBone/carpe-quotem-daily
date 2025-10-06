@@ -38,9 +38,9 @@ const TodaysResourceCard = ({ resource }: TodaysResourceCardProps) => {
         </div>
 
         <div className="space-y-4">
-          <div className="flex items-start justify-between gap-4">
-            <div className="space-y-2 flex-1">
-              <h3 className="text-3xl font-bold text-foreground leading-tight">
+          <div className="flex flex-col sm:flex-row items-start justify-between gap-4">
+            <div className="space-y-2 flex-1 w-full sm:w-auto">
+              <h3 className="text-2xl sm:text-3xl font-bold text-foreground leading-tight break-words">
                 {resource.title}
               </h3>
               <div className="flex flex-wrap gap-2">
@@ -73,8 +73,8 @@ const TodaysResourceCard = ({ resource }: TodaysResourceCardProps) => {
             </div>
           )}
 
-          <div className="flex gap-3 pt-2">
-            <Button asChild size="lg" className="flex-1 group">
+          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+            <Button asChild size="lg" className="flex-1 group w-full sm:w-auto">
               <a 
                 href={resourceUrl} 
                 target="_blank" 
