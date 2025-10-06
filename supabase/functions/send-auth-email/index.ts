@@ -66,8 +66,16 @@ serve(async (req) => {
     }
 
     // Determine if this is a magic link or OTP code request
-    // Magic links have redirect_to, OTP codes typically don't
-    const isMagicLink = redirect_to && redirect_to.length > 0 && email_action_type !== 'otp';
+    // The ONLY reliable way to differentiate is by checking if redirect_to is present
+    // Supabase sends email_action_type: 'magiclink' for BOTH flows when using signInWithOtp()
+    const isMagicLink = !!(redirect_to && redirect_to.trim().length > 0);
+    
+    console.log('🔍 Detection logic:', {
+      redirect_to: redirect_to || '(empty)',
+      email_action_type,
+      isMagicLink,
+      flow: isMagicLink ? '🔗 MAGIC LINK' : '🔢 OTP CODE'
+    });
     
     // Map email action types to template names
     let templateName: string;
