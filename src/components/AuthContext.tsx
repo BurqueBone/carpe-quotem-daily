@@ -120,7 +120,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signInWithMagicLink = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/auth/callback`;
+    const redirectUrl = `${window.location.origin}/auth/callback?flow=magic`;
     console.log('📧 AuthContext: Sending magic link to:', email, 'with redirect:', redirectUrl);
     
     // Enforce email format validation before hitting auth
@@ -156,7 +156,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       options: {
         shouldCreateUser: true,
-        // Don't include emailRedirectTo to ensure OTP is sent instead of magic link
+        // Include a sentinel redirect with flow=otp so the email hook can differentiate
+        emailRedirectTo: `${window.location.origin}/auth/callback?flow=otp`
       }
     });
     

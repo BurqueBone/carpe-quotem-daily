@@ -6,6 +6,9 @@ import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 const hookSecret = Deno.env.get('SUPABASE_AUTH_WEBHOOK_SECRET') || '';
 
+// In-memory dedupe for rapid retries (best-effort, not persistent)
+const seenTokenHashes = new Set<string>();
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -65,14 +68,39 @@ serve(async (req) => {
       throw new Error('No user email found in webhook data');
     }
 
+    // Best-effort in-memory dedupe to avoid double sends on rapid retries
+    if (token_hash) {
+      if (seenTokenHashes.has(token_hash)) {
+        console.log('🟡 Duplicate webhook suppressed for token_hash:', token_hash.slice(0, 8) + '...');
+        return new Response(
+          JSON.stringify({ success: true, deduped: true }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      seenTokenHashes.add(token_hash);
+      // Prevent unbounded growth
+      if (seenTokenHashes.size > 2000) {
+        const [first] = seenTokenHashes.values();
+        first && seenTokenHashes.delete(first);
+      }
+    }
+
     // Determine if this is a magic link or OTP code request
-    // The ONLY reliable way to differentiate is by checking if redirect_to is present
-    // Supabase sends email_action_type: 'magiclink' for BOTH flows when using signInWithOtp()
-    const isMagicLink = !!(redirect_to && redirect_to.trim().length > 0);
+    // Prefer client hint via redirect_to query param: ?flow=magic|otp
+    let flowParam = '';
+    try {
+      if (redirect_to) {
+        const u = new URL(redirect_to);
+        flowParam = u.searchParams.get('flow') || '';
+      }
+    } catch (_e) { /* ignore malformed URL */ }
+
+    const isMagicLink = flowParam !== 'otp' && !!(redirect_to && redirect_to.trim().length > 0);
     
     console.log('🔍 Detection logic:', {
       redirect_to: redirect_to || '(empty)',
       email_action_type,
+      flowParam,
       isMagicLink,
       flow: isMagicLink ? '🔗 MAGIC LINK' : '🔢 OTP CODE'
     });
