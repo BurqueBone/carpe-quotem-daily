@@ -127,13 +127,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log("📧 AuthContext: Requesting email OTP for:", email);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return { error: new Error("Invalid email format") };
-    } // FIX: Removed the invalid 'emailActionType'.
-    // The correct way to request an OTP code for email is to OMIT emailRedirectTo.
+    } // The correct way to request an Email OTP is to provide the email and OMIT emailRedirectTo.
+    // The 'channel' option is only for 'sms' or 'whatsapp'.
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: true,
-        channel: "email", // <--- ADDED: Explicitly requests the short code via email
+        shouldCreateUser: true, // channel: 'email', // Removed to fix TypeScript error
       },
     });
     if (error) {
