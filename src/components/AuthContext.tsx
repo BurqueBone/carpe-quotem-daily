@@ -127,15 +127,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log("📧 AuthContext: Requesting email OTP for:", email);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return { error: new Error("Invalid email format") };
-    } // FIX: Enforce OTP flow by explicitly setting the type.
-    // Omitting emailRedirectTo is necessary, but adding type: 'signup' (or 'magiclink')
-    // can override the default magiclink behavior for passwordless flows.
+    } // FIX: Removed the invalid 'emailActionType'.
+    // The correct way to request an OTP code for email is to OMIT emailRedirectTo.
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: true, // Setting the email action type to 'signup' ensures a code is generated
-        // when emailRedirectTo is absent, overriding default link behavior if present.
-        emailActionType: "signup",
+        shouldCreateUser: true,
       },
     });
     if (error) {
@@ -147,7 +144,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const verifyEmailOtp = async (email: string, token: string) => {
-    console.log("🔑 AuthContext: Verifying email OTP...");
+    console.log("🔑 AuthContext: Verifying email OTP..."); // The type must be 'email' (or 'signup') to successfully verify a code sent
+    // via email when emailRedirectTo was omitted in signInWithOtp.
     const { error } = await supabase.auth.verifyOtp({
       email,
       token,
