@@ -133,6 +133,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       email,
       options: {
         shouldCreateUser: true,
+        channel: "email", // <--- ADDED: Explicitly requests the short code via email
       },
     });
     if (error) {
