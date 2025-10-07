@@ -145,9 +145,14 @@ serve(async (req) => {
     let subject: string;
     let html: string;
 
-    if (emailTemplate) {
-      // Use template from database - process subject conditionally too
-      subject = processConditionalBlocks(emailTemplate.subject, isMagicLink);
+    // If the user requested an OTP code, ALWAYS send the code-only email via Resend
+    if (!isMagicLink) {
+      subject = 'Your Sunday4k Login Code';
+      html = generateUnifiedAuthEmailHTML(token, token_hash, redirect_to, site_url, false);
+      console.log('✳️ Forcing OTP code email (no magic link button)');
+    } else if (emailTemplate) {
+      // Use template from database for magic link
+      subject = processConditionalBlocks(emailTemplate.subject, true);
       html = generateEmailFromTemplate(
         emailTemplate.html_content, 
         token, 
@@ -155,16 +160,15 @@ serve(async (req) => {
         redirect_to, 
         site_url, 
         email_action_type,
-        isMagicLink
+        true
       );
     } else {
       // Fallback to hardcoded templates if not found
       console.warn(`No template found for ${templateName}, using fallback`);
       
-      // Use unified auth template for both magic link and OTP
       if (templateName === 'magic_link') {
-        subject = isMagicLink ? 'Your Sunday4k Login Link' : 'Your Sunday4k Login Code';
-        html = generateUnifiedAuthEmailHTML(token, token_hash, redirect_to, site_url, isMagicLink);
+        subject = 'Your Sunday4k Login Link';
+        html = generateUnifiedAuthEmailHTML(token, token_hash, redirect_to, site_url, true);
       } else {
         switch (email_action_type) {
           case 'signup':

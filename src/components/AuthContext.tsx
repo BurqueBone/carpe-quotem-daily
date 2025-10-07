@@ -155,9 +155,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        shouldCreateUser: true,
-        // Include a sentinel redirect with flow=otp so the email hook can differentiate
-        emailRedirectTo: `${window.location.origin}/auth/callback?flow=otp`
+        shouldCreateUser: true
       }
     });
     
