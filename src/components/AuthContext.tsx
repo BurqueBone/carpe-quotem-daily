@@ -127,11 +127,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log("📧 AuthContext: Requesting email OTP for:", email);
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return { error: new Error("Invalid email format") };
-    } // FIX: Explicitly set channel: 'email' to force the code flow (which sets email_action_type='email' in the webhook).
+    } // FIX: Removed 'channel: email' because it is not supported for email in TypeScript definitions,
+    // and omitting emailRedirectTo already correctly triggers the OTP code flow for email.
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        channel: "email", // <--- ADDED THIS LINE
         shouldCreateUser: true,
       },
     });
