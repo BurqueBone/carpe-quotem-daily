@@ -11,6 +11,8 @@ export interface Resource {
   description: string;
   url: string;
   type: 'article' | 'book' | 'app' | 'course' | 'video';
+  affiliate_url?: string;
+  has_affiliate: boolean;
 }
 
 export interface Category {
@@ -78,6 +80,8 @@ export const useCarpeDiemData = () => {
             description: resource.description,
             url: resource.url,
             type: resource.type as 'article' | 'book' | 'app' | 'course' | 'video',
+            affiliate_url: resource.affiliate_url,
+            has_affiliate: resource.has_affiliate,
           });
           return acc;
         }, {});

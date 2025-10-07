@@ -242,7 +242,7 @@ export function buildTemplateContext(
     resource: resource ? {
       title: resource.title || '',
       description: resource.description || '',
-      url: resource.url || '',
+      url: (resource.has_affiliate && resource.affiliate_url) ? resource.affiliate_url : (resource.url || ''),
       type: resource.type || '',
       how_resource_helps: resource.how_resource_helps || '',
       category: (() => {
@@ -270,7 +270,7 @@ export function buildTemplateContext(
       resource_type: resource?.type || '',
       resource_title: resource?.title || '',
       resource_description: resource?.description || '',
-      resource_url: resource?.url || '',
+      resource_url: (resource?.has_affiliate && resource?.affiliate_url) ? resource.affiliate_url : (resource?.url || ''),
       app_url: 'https://sunday4k.life',
       website_url: 'https://sunday4k.life',
       support_email: 'info@sunday4k.life'

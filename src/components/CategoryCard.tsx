@@ -7,6 +7,8 @@ interface Resource {
   description: string;
   url: string;
   type: 'article' | 'book' | 'app' | 'course' | 'video';
+  affiliate_url?: string;
+  has_affiliate: boolean;
 }
 
 interface CategoryCardProps {
@@ -44,30 +46,36 @@ const CategoryCard = ({ title, icon, description, resources }: CategoryCardProps
         </AccordionTrigger>
         <AccordionContent className="px-6 pb-4">
           <div className="space-y-3">
-            {resources.map((resource, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-background/50 border border-border/30 hover:bg-background transition-smooth">
-                <div className="flex-1">
-                  <h4 className="font-medium text-sm text-foreground">{resource.title}</h4>
-                  <p className="text-xs text-muted-foreground mt-1">{resource.description}</p>
-                  <div className="flex items-center gap-2 mt-2">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(resource.type)}`}>
-                      {resource.type}
-                    </span>
-                    <Button 
-                      variant="ghost" 
-                      size="sm" 
-                      asChild
-                      className="h-6 px-2 text-xs hover:bg-primary/10"
-                    >
-                      <a href={resource.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
-                        <ExternalLink className="w-3 h-3" />
-                        Visit
-                      </a>
-                    </Button>
+            {resources.map((resource, index) => {
+              const resourceUrl = resource.has_affiliate && resource.affiliate_url 
+                ? resource.affiliate_url 
+                : resource.url;
+              
+              return (
+                <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-background/50 border border-border/30 hover:bg-background transition-smooth">
+                  <div className="flex-1">
+                    <h4 className="font-medium text-sm text-foreground">{resource.title}</h4>
+                    <p className="text-xs text-muted-foreground mt-1">{resource.description}</p>
+                    <div className="flex items-center gap-2 mt-2">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${getTypeColor(resource.type)}`}>
+                        {resource.type}
+                      </span>
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        asChild
+                        className="h-6 px-2 text-xs hover:bg-primary/10"
+                      >
+                        <a href={resourceUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1">
+                          <ExternalLink className="w-3 h-3" />
+                          Visit
+                        </a>
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </AccordionContent>
       </AccordionItem>
