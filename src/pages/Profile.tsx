@@ -48,25 +48,47 @@ const Profile = () => {
   const [selectedDay, setSelectedDay] = useState<string>("");
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
+  const [isSavingBirthdate, setIsSavingBirthdate] = useState(false);
+  const [isEditingBirthdate, setIsEditingBirthdate] = useState(false);
   
   // Get today's quote for sharing
   const { quote, loading: quoteLoading } = useQuoteOfTheDay();
 
-  // Load existing notification setting for the current user
+  // Load existing notification setting and birthdate for the current user
   useEffect(() => {
     const loadSettings = async () => {
       if (!user?.id) return;
-      const { data, error } = await supabase
+      
+      // Load notification settings
+      const { data: notifData, error: notifError } = await supabase
         .from('notification_settings')
         .select('enabled')
         .eq('user_id', user.id)
         .maybeSingle();
-      if (error) {
-        console.warn('Failed to load notification settings:', error);
-        return;
+      if (notifError) {
+        console.warn('Failed to load notification settings:', notifError);
+      } else if (notifData) {
+        setEnabled(!!notifData.enabled);
       }
-      if (data) {
-        setEnabled(!!data.enabled);
+      
+      // Load birthdate from profile
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('birthdate')
+        .eq('id', user.id)
+        .maybeSingle();
+      
+      if (profileError) {
+        console.warn('Failed to load profile:', profileError);
+      } else if (profileData?.birthdate) {
+        const savedDate = new Date(profileData.birthdate);
+        setBirthdate(savedDate);
+        setSelectedDay(savedDate.getDate().toString());
+        setSelectedMonth(savedDate.getMonth().toString());
+        setSelectedYear(savedDate.getFullYear().toString());
+        setIsEditingBirthdate(false);
+      } else {
+        setIsEditingBirthdate(true);
       }
     };
     loadSettings();
@@ -241,6 +263,71 @@ const Profile = () => {
     }
   }, [selectedDay, selectedMonth, selectedYear]);
 
+  // Save birthdate to profile
+  const handleSaveBirthdate = async () => {
+    if (!birthdate || !user?.id) return;
+    
+    setIsSavingBirthdate(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ birthdate: format(birthdate, 'yyyy-MM-dd') })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      
+      setIsEditingBirthdate(false);
+      toast({
+        title: "Birthdate saved",
+        description: "Your birthdate has been saved successfully.",
+      });
+    } catch (error: any) {
+      console.error('Save birthdate error:', error);
+      toast({
+        title: "Failed to save",
+        description: error.message || "Unable to save your birthdate. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingBirthdate(false);
+    }
+  };
+
+  // Remove birthdate from profile
+  const handleRemoveBirthdate = async () => {
+    if (!user?.id) return;
+    
+    setIsSavingBirthdate(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ birthdate: null })
+        .eq('id', user.id);
+      
+      if (error) throw error;
+      
+      setBirthdate(undefined);
+      setSelectedDay("");
+      setSelectedMonth("");
+      setSelectedYear("");
+      setIsEditingBirthdate(true);
+      
+      toast({
+        title: "Birthdate removed",
+        description: "Your birthdate has been removed.",
+      });
+    } catch (error: any) {
+      console.error('Remove birthdate error:', error);
+      toast({
+        title: "Failed to remove",
+        description: error.message || "Unable to remove your birthdate. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSavingBirthdate(false);
+    }
+  };
+
   // Generate arrays for dropdowns
   const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
   const months = [
@@ -375,55 +462,98 @@ const Profile = () => {
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Your Birthdate</Label>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="space-y-2">
-                      <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Month" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {months.map((month) => (
-                            <SelectItem key={month.value} value={month.value}>
-                              {month.label}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Select value={selectedDay} onValueChange={setSelectedDay}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Day" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {days.map((day) => (
-                            <SelectItem key={day} value={day}>
-                              {day}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Select value={selectedYear} onValueChange={setSelectedYear}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Year" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {years.map((year) => (
-                            <SelectItem key={year} value={year}>
-                              {year}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
+                  <div className="flex items-center justify-between">
+                    <Label>Your Birthdate</Label>
+                    {birthdate && !isEditingBirthdate && (
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setIsEditingBirthdate(true)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={handleRemoveBirthdate}
+                          disabled={isSavingBirthdate}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    )}
                   </div>
-                  {birthdate && (
-                    <p className="text-sm text-muted-foreground text-center">
-                      {format(birthdate, "MMMM d, yyyy")}
-                    </p>
+                  
+                  {isEditingBirthdate ? (
+                    <>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="space-y-2">
+                          <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Month" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {months.map((month) => (
+                                <SelectItem key={month.value} value={month.value}>
+                                  {month.label}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Select value={selectedDay} onValueChange={setSelectedDay}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Day" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {days.map((day) => (
+                                <SelectItem key={day} value={day}>
+                                  {day}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div className="space-y-2">
+                          <Select value={selectedYear} onValueChange={setSelectedYear}>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Year" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              {years.map((year) => (
+                                <SelectItem key={year} value={year}>
+                                  {year}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                      {birthdate && (
+                        <>
+                          <p className="text-sm text-muted-foreground text-center">
+                            {format(birthdate, "MMMM d, yyyy")}
+                          </p>
+                          <Button
+                            onClick={handleSaveBirthdate}
+                            disabled={isSavingBirthdate || !selectedDay || !selectedMonth || !selectedYear}
+                            className="w-full"
+                          >
+                            {isSavingBirthdate ? "Saving..." : "Save Birthdate"}
+                          </Button>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    birthdate && (
+                      <div className="bg-muted/50 rounded-lg p-4 text-center">
+                        <p className="text-lg font-semibold">
+                          {format(birthdate, "MMMM d, yyyy")}
+                        </p>
+                      </div>
+                    )
                   )}
                 </div>
 
