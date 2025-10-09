@@ -32,6 +32,7 @@ export const useResourceCollection = () => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [sortBy, setSortBy] = useState("upvotes-desc");
+  const [showOnlyUpvoted, setShowOnlyUpvoted] = useState(false);
 
   // Fetch categories
   const fetchCategories = async () => {
@@ -203,6 +204,11 @@ export const useResourceCollection = () => {
   useEffect(() => {
     let filtered = [...resources];
 
+    // Filter by upvoted status
+    if (showOnlyUpvoted) {
+      filtered = filtered.filter((r) => r.user_has_upvoted);
+    }
+
     // Filter by categories
     if (selectedCategories.length > 0) {
       filtered = filtered.filter((r) => selectedCategories.includes(r.category_id));
@@ -236,7 +242,7 @@ export const useResourceCollection = () => {
     }
 
     setFilteredResources(filtered);
-  }, [resources, selectedCategories, selectedTypes, sortBy]);
+  }, [resources, selectedCategories, selectedTypes, sortBy, showOnlyUpvoted]);
 
   // Initial data fetch
   useEffect(() => {
@@ -258,6 +264,8 @@ export const useResourceCollection = () => {
     setSelectedTypes,
     sortBy,
     setSortBy,
+    showOnlyUpvoted,
+    setShowOnlyUpvoted,
     refetch: fetchResources,
   };
 };

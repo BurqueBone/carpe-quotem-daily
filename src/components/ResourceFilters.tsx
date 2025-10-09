@@ -8,6 +8,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { X, ChevronDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { useState } from "react";
@@ -17,9 +18,11 @@ interface ResourceFiltersProps {
   selectedCategories: string[];
   selectedTypes: string[];
   sortBy: string;
+  showOnlyUpvoted: boolean;
   onCategoryChange: (categories: string[]) => void;
   onTypeChange: (types: string[]) => void;
   onSortChange: (sort: string) => void;
+  onShowOnlyUpvotedChange: (value: boolean) => void;
 }
 
 const RESOURCE_TYPES = [
@@ -44,9 +47,11 @@ const ResourceFilters = ({
   selectedCategories,
   selectedTypes,
   sortBy,
+  showOnlyUpvoted,
   onCategoryChange,
   onTypeChange,
   onSortChange,
+  onShowOnlyUpvotedChange,
 }: ResourceFiltersProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -69,9 +74,10 @@ const ResourceFilters = ({
   const clearAllFilters = () => {
     onCategoryChange([]);
     onTypeChange([]);
+    onShowOnlyUpvotedChange(false);
   };
 
-  const hasActiveFilters = selectedCategories.length > 0 || selectedTypes.length > 0;
+  const hasActiveFilters = selectedCategories.length > 0 || selectedTypes.length > 0 || showOnlyUpvoted;
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen} className="space-y-4 bg-card border rounded-lg p-6">
@@ -88,8 +94,26 @@ const ResourceFilters = ({
       </div>
 
       <CollapsibleContent>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
-          {/* Category Filter */}
+        <div className="space-y-4 pt-2">
+          {/* Show Only Upvoted Filter */}
+          <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+            <div className="space-y-0.5">
+              <Label htmlFor="upvoted-filter" className="text-base cursor-pointer">
+                Show Only Upvoted Resources
+              </Label>
+              <p className="text-sm text-muted-foreground">
+                Display only resources you have upvoted
+              </p>
+            </div>
+            <Switch
+              id="upvoted-filter"
+              checked={showOnlyUpvoted}
+              onCheckedChange={onShowOnlyUpvotedChange}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Category Filter */}
           <div className="space-y-2">
             <Label>Category</Label>
             <div className="flex flex-wrap gap-2">
@@ -151,6 +175,7 @@ const ResourceFilters = ({
               </SelectContent>
             </Select>
           </div>
+        </div>
         </div>
       </CollapsibleContent>
     </Collapsible>

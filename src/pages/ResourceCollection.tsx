@@ -30,6 +30,8 @@ const ResourceCollection = () => {
     setSelectedTypes,
     sortBy,
     setSortBy,
+    showOnlyUpvoted,
+    setShowOnlyUpvoted,
     refetch
   } = useResourceCollection();
 
@@ -70,7 +72,7 @@ const ResourceCollection = () => {
 
         {/* Filters */}
         <div id="resources-list" className="scroll-mt-8">
-          <ResourceFilters categories={categories} selectedCategories={selectedCategories} selectedTypes={selectedTypes} sortBy={sortBy} onCategoryChange={setSelectedCategories} onTypeChange={setSelectedTypes} onSortChange={setSortBy} />
+          <ResourceFilters categories={categories} selectedCategories={selectedCategories} selectedTypes={selectedTypes} sortBy={sortBy} showOnlyUpvoted={showOnlyUpvoted} onCategoryChange={setSelectedCategories} onTypeChange={setSelectedTypes} onSortChange={setSortBy} onShowOnlyUpvotedChange={setShowOnlyUpvoted} />
         </div>
 
         {/* Error State */}
