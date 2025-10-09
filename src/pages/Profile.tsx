@@ -38,12 +38,12 @@ const Profile = () => {
   const [newEmail, setNewEmail] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
   const [sending, setSending] = useState(false);
-  
+
   // Email share modal state
   const [emailShareOpen, setEmailShareOpen] = useState(false);
   const [recipientEmail, setRecipientEmail] = useState("");
   const [sendingEmail, setSendingEmail] = useState(false);
-  
+
   // Sunday counter state
   const [birthdate, setBirthdate] = useState<Date>();
   const [selectedDay, setSelectedDay] = useState<string>("");
@@ -51,34 +51,34 @@ const Profile = () => {
   const [selectedYear, setSelectedYear] = useState<string>("");
   const [isSavingBirthdate, setIsSavingBirthdate] = useState(false);
   const [isEditingBirthdate, setIsEditingBirthdate] = useState(false);
-  
+
   // Get today's quote for sharing
-  const { quote, loading: quoteLoading } = useQuoteOfTheDay();
+  const {
+    quote,
+    loading: quoteLoading
+  } = useQuoteOfTheDay();
 
   // Load existing notification setting and birthdate for the current user
   useEffect(() => {
     const loadSettings = async () => {
       if (!user?.id) return;
-      
+
       // Load notification settings
-      const { data: notifData, error: notifError } = await supabase
-        .from('notification_settings')
-        .select('enabled')
-        .eq('user_id', user.id)
-        .maybeSingle();
+      const {
+        data: notifData,
+        error: notifError
+      } = await supabase.from('notification_settings').select('enabled').eq('user_id', user.id).maybeSingle();
       if (notifError) {
         console.warn('Failed to load notification settings:', notifError);
       } else if (notifData) {
         setEnabled(!!notifData.enabled);
       }
-      
+
       // Load birthdate from profile
-      const { data: profileData, error: profileError } = await supabase
-        .from('profiles')
-        .select('birthdate')
-        .eq('id', user.id)
-        .maybeSingle();
-      
+      const {
+        data: profileData,
+        error: profileError
+      } = await supabase.from('profiles').select('birthdate').eq('id', user.id).maybeSingle();
       if (profileError) {
         console.warn('Failed to load profile:', profileError);
       } else if (profileData?.birthdate) {
@@ -101,20 +101,25 @@ const Profile = () => {
   }
   const handleSave = async () => {
     try {
-      const { error } = await supabase
-        .from('notification_settings')
-        .upsert({ user_id: user.id, enabled }, { onConflict: 'user_id' });
+      const {
+        error
+      } = await supabase.from('notification_settings').upsert({
+        user_id: user.id,
+        enabled
+      }, {
+        onConflict: 'user_id'
+      });
       if (error) throw error;
       toast({
         title: "Settings saved",
-        description: "Your notification preferences have been updated.",
+        description: "Your notification preferences have been updated."
       });
     } catch (e: any) {
       console.error('Save settings error:', e);
       toast({
         title: "Failed to save",
         description: e?.message ?? "Unexpected error saving settings.",
-        variant: "destructive",
+        variant: "destructive"
       });
     }
   };
@@ -165,19 +170,16 @@ const Profile = () => {
       });
       return;
     }
-
     const shareText = `"${quote.quote}" - ${quote.author}${quote.source ? `, ${quote.source}` : ''}\n\nShared from Sunday4k - Daily inspiration for meaningful living\nhttps://sunday4k.life`;
-
     try {
       switch (method) {
         case 'copy':
           await navigator.clipboard.writeText(shareText);
           toast({
             title: "Quote copied!",
-            description: "The quote has been copied to your clipboard.",
+            description: "The quote has been copied to your clipboard."
           });
           break;
-        
         case 'email':
           setEmailShareOpen(true);
           break;
@@ -191,7 +193,6 @@ const Profile = () => {
       });
     }
   };
-
   const handleSendEmail = async () => {
     const emailValidation = validateEmail(recipientEmail);
     if (!emailValidation.isValid) {
@@ -202,10 +203,11 @@ const Profile = () => {
       });
       return;
     }
-
     setSendingEmail(true);
     try {
-      const { error } = await supabase.functions.invoke('share-quote-email', {
+      const {
+        error
+      } = await supabase.functions.invoke('share-quote-email', {
         body: {
           recipientEmail,
           quote: quote?.quote,
@@ -213,14 +215,11 @@ const Profile = () => {
           source: quote?.source
         }
       });
-
       if (error) throw error;
-
       toast({
         title: "Quote shared!",
-        description: `Daily quote sent to ${recipientEmail}`,
+        description: `Daily quote sent to ${recipientEmail}`
       });
-      
       setEmailShareOpen(false);
       setRecipientEmail("");
     } catch (error: any) {
@@ -238,20 +237,20 @@ const Profile = () => {
   // Calculate Sundays experienced
   const calculateSundays = () => {
     if (!birthdate) return null;
-    
     const today = new Date();
-    const allDays = eachDayOfInterval({ start: birthdate, end: today });
+    const allDays = eachDayOfInterval({
+      start: birthdate,
+      end: today
+    });
     const sundays = allDays.filter(day => getDay(day) === 0); // Sunday is 0
     const sundaysExperienced = sundays.length;
     const sundaysRemaining = Math.max(0, 4000 - sundaysExperienced);
-    
     return {
       experienced: sundaysExperienced,
       remaining: sundaysRemaining,
       isOver4000: sundaysExperienced >= 4000
     };
   };
-
   const sundayData = calculateSundays();
 
   // Update birthdate when all three selectors have values
@@ -267,27 +266,25 @@ const Profile = () => {
   // Save birthdate to profile
   const handleSaveBirthdate = async () => {
     if (!birthdate || !user?.id) return;
-    
     setIsSavingBirthdate(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ birthdate: format(birthdate, 'yyyy-MM-dd') })
-        .eq('id', user.id);
-      
+      const {
+        error
+      } = await supabase.from('profiles').update({
+        birthdate: format(birthdate, 'yyyy-MM-dd')
+      }).eq('id', user.id);
       if (error) throw error;
-      
       setIsEditingBirthdate(false);
       toast({
         title: "Birthdate saved",
-        description: "Your birthdate has been saved successfully.",
+        description: "Your birthdate has been saved successfully."
       });
     } catch (error: any) {
       console.error('Save birthdate error:', error);
       toast({
         title: "Failed to save",
         description: error.message || "Unable to save your birthdate. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSavingBirthdate(false);
@@ -297,32 +294,29 @@ const Profile = () => {
   // Remove birthdate from profile
   const handleRemoveBirthdate = async () => {
     if (!user?.id) return;
-    
     setIsSavingBirthdate(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({ birthdate: null })
-        .eq('id', user.id);
-      
+      const {
+        error
+      } = await supabase.from('profiles').update({
+        birthdate: null
+      }).eq('id', user.id);
       if (error) throw error;
-      
       setBirthdate(undefined);
       setSelectedDay("");
       setSelectedMonth("");
       setSelectedYear("");
       setIsEditingBirthdate(true);
-      
       toast({
         title: "Birthdate removed",
-        description: "Your birthdate has been removed.",
+        description: "Your birthdate has been removed."
       });
     } catch (error: any) {
       console.error('Remove birthdate error:', error);
       toast({
         title: "Failed to remove",
         description: error.message || "Unable to remove your birthdate. Please try again.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsSavingBirthdate(false);
@@ -330,23 +324,50 @@ const Profile = () => {
   };
 
   // Generate arrays for dropdowns
-  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
-  const months = [
-    { value: "0", label: "January" },
-    { value: "1", label: "February" },
-    { value: "2", label: "March" },
-    { value: "3", label: "April" },
-    { value: "4", label: "May" },
-    { value: "5", label: "June" },
-    { value: "6", label: "July" },
-    { value: "7", label: "August" },
-    { value: "8", label: "September" },
-    { value: "9", label: "October" },
-    { value: "10", label: "November" },
-    { value: "11", label: "December" }
-  ];
+  const days = Array.from({
+    length: 31
+  }, (_, i) => (i + 1).toString());
+  const months = [{
+    value: "0",
+    label: "January"
+  }, {
+    value: "1",
+    label: "February"
+  }, {
+    value: "2",
+    label: "March"
+  }, {
+    value: "3",
+    label: "April"
+  }, {
+    value: "4",
+    label: "May"
+  }, {
+    value: "5",
+    label: "June"
+  }, {
+    value: "6",
+    label: "July"
+  }, {
+    value: "7",
+    label: "August"
+  }, {
+    value: "8",
+    label: "September"
+  }, {
+    value: "9",
+    label: "October"
+  }, {
+    value: "10",
+    label: "November"
+  }, {
+    value: "11",
+    label: "December"
+  }];
   const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => (currentYear - i).toString());
+  const years = Array.from({
+    length: currentYear - 1900 + 1
+  }, (_, i) => (currentYear - i).toString());
   return <div className="min-h-screen bg-gradient-subtle flex flex-col">
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-2xl flex-1">
@@ -385,11 +406,9 @@ const Profile = () => {
                 <Switch checked={enabled} onCheckedChange={setEnabled} />
               </div>
 
-              {enabled && (
-                <p className="text-sm text-muted-foreground">
+              {enabled && <p className="text-sm text-muted-foreground">
                   You'll receive one inspiring quote each morning to start your day with purpose.
-                </p>
-              )}
+                </p>}
 
               <Button onClick={handleSave} className="w-full">
                 Save Settings
@@ -402,12 +421,9 @@ const Profile = () => {
                     Share Today's Inspiration
                   </h3>
                   
-                  {quoteLoading ? (
-                    <div className="text-sm text-muted-foreground text-center py-4">
+                  {quoteLoading ? <div className="text-sm text-muted-foreground text-center py-4">
                       Loading today's quote...
-                    </div>
-                  ) : quote ? (
-                    <>
+                    </div> : quote ? <>
                       <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                         <p className="text-sm italic text-foreground">"{quote.quote}"</p>
                         <p className="text-xs text-muted-foreground text-right">
@@ -416,21 +432,11 @@ const Profile = () => {
                       </div>
                       
                       <div className="grid grid-cols-2 gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleShareQuote('copy')}
-                          className="flex items-center gap-2"
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleShareQuote('copy')} className="flex items-center gap-2">
                           <Copy className="h-4 w-4" />
                           Copy
                         </Button>
-                        <Button 
-                          variant="outline" 
-                          size="sm" 
-                          onClick={() => handleShareQuote('email')}
-                          className="flex items-center gap-2"
-                        >
+                        <Button variant="outline" size="sm" onClick={() => handleShareQuote('email')} className="flex items-center gap-2">
                           <Mail className="h-4 w-4" />
                           Email
                         </Button>
@@ -439,12 +445,9 @@ const Profile = () => {
                       <p className="text-xs text-muted-foreground text-center">
                         Spread positivity by sharing this inspiring quote with a friend
                       </p>
-                    </>
-                  ) : (
-                    <div className="text-sm text-muted-foreground text-center py-4">
+                    </> : <div className="text-sm text-muted-foreground text-center py-4">
                       No quote available today
-                    </div>
-                  )}
+                    </div>}
                 </div>
               </div>
             </CardContent>
@@ -465,29 +468,17 @@ const Profile = () => {
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <Label>Your Birthdate</Label>
-                    {birthdate && !isEditingBirthdate && (
-                      <div className="flex gap-2">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setIsEditingBirthdate(true)}
-                        >
+                    {birthdate && !isEditingBirthdate && <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setIsEditingBirthdate(true)}>
                           Edit
                         </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleRemoveBirthdate}
-                          disabled={isSavingBirthdate}
-                        >
+                        <Button variant="outline" size="sm" onClick={handleRemoveBirthdate} disabled={isSavingBirthdate}>
                           Remove
                         </Button>
-                      </div>
-                    )}
+                      </div>}
                   </div>
                   
-                  {isEditingBirthdate ? (
-                    <>
+                  {isEditingBirthdate ? <>
                       <div className="grid grid-cols-3 gap-2">
                         <div className="space-y-2">
                           <Select value={selectedMonth} onValueChange={setSelectedMonth}>
@@ -495,11 +486,9 @@ const Profile = () => {
                               <SelectValue placeholder="Month" />
                             </SelectTrigger>
                             <SelectContent>
-                              {months.map((month) => (
-                                <SelectItem key={month.value} value={month.value}>
+                              {months.map(month => <SelectItem key={month.value} value={month.value}>
                                   {month.label}
-                                </SelectItem>
-                              ))}
+                                </SelectItem>)}
                             </SelectContent>
                           </Select>
                         </div>
@@ -509,11 +498,9 @@ const Profile = () => {
                               <SelectValue placeholder="Day" />
                             </SelectTrigger>
                             <SelectContent>
-                              {days.map((day) => (
-                                <SelectItem key={day} value={day}>
+                              {days.map(day => <SelectItem key={day} value={day}>
                                   {day}
-                                </SelectItem>
-                              ))}
+                                </SelectItem>)}
                             </SelectContent>
                           </Select>
                         </div>
@@ -523,45 +510,30 @@ const Profile = () => {
                               <SelectValue placeholder="Year" />
                             </SelectTrigger>
                             <SelectContent>
-                              {years.map((year) => (
-                                <SelectItem key={year} value={year}>
+                              {years.map(year => <SelectItem key={year} value={year}>
                                   {year}
-                                </SelectItem>
-                              ))}
+                                </SelectItem>)}
                             </SelectContent>
                           </Select>
                         </div>
                       </div>
-                      {birthdate && (
-                        <>
+                      {birthdate && <>
                           <p className="text-sm text-muted-foreground text-center">
                             {format(birthdate, "MMMM d, yyyy")}
                           </p>
-                          <Button
-                            onClick={handleSaveBirthdate}
-                            disabled={isSavingBirthdate || !selectedDay || !selectedMonth || !selectedYear}
-                            className="w-full"
-                          >
+                          <Button onClick={handleSaveBirthdate} disabled={isSavingBirthdate || !selectedDay || !selectedMonth || !selectedYear} className="w-full">
                             {isSavingBirthdate ? "Saving..." : "Save Birthdate"}
                           </Button>
-                        </>
-                      )}
-                    </>
-                  ) : (
-                    birthdate && (
-                      <div className="bg-muted/50 rounded-lg p-4 text-center">
+                        </>}
+                    </> : birthdate && <div className="bg-muted/50 rounded-lg p-4 text-center">
                         <p className="text-lg font-semibold">
                           {format(birthdate, "MMMM d, yyyy")}
                         </p>
-                      </div>
-                    )
-                  )}
+                      </div>}
                 </div>
 
-                {sundayData && (
-                  <div className="space-y-4 pt-4 border-t border-border/50">
-                    {sundayData.isOver4000 ? (
-                      <div className="text-center space-y-3">
+                {sundayData && <div className="space-y-4 pt-4 border-t border-border/50">
+                    {sundayData.isOver4000 ? <div className="text-center space-y-3">
                         <div className="flex items-center justify-center gap-2">
                           <Sparkles className="h-6 w-6 text-primary animate-pulse" />
                           <h3 className="text-lg font-semibold text-foreground">Congratulations!</h3>
@@ -577,9 +549,7 @@ const Profile = () => {
                             You're living a beautifully full life. 🎉
                           </p>
                         </div>
-                      </div>
-                    ) : (
-                      <div className="text-center space-y-4">
+                      </div> : <div className="text-center space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                           <div className="bg-muted/50 rounded-lg p-4 space-y-2">
                             <p className="text-2xl font-bold text-primary">
@@ -595,28 +565,17 @@ const Profile = () => {
                           </div>
                         </div>
                         <div className="space-y-2">
-                          <div className="w-full bg-muted rounded-full h-3">
-                            <div 
-                              className="h-3 bg-gradient-primary rounded-full transition-all duration-500"
-                              style={{ width: `${Math.min((sundayData.experienced / 4000) * 100, 100)}%` }}
-                            />
-                          </div>
+                          
                           <p className="text-sm text-muted-foreground">
-                            {((sundayData.experienced / 4000) * 100).toFixed(1)}% of 4,000 Sundays
+                            {(sundayData.experienced / 4000 * 100).toFixed(1)}% of 4,000 Sundays
                           </p>
                         </div>
-                        <Button 
-                          onClick={() => navigate('/life-compass')}
-                          className="w-full"
-                          size="lg"
-                        >
+                        <Button onClick={() => navigate('/life-compass')} className="w-full" size="lg">
                           <Compass className="h-4 w-4 mr-2" />
                           Calibrate Your Compass
                         </Button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      </div>}
+                  </div>}
               </div>
             </CardContent>
           </Card>
@@ -688,38 +647,23 @@ const Profile = () => {
             </DialogDescription>
           </DialogHeader>
           
-          {quote && (
-            <div className="bg-muted/50 rounded-lg p-4 space-y-2 mb-4">
+          {quote && <div className="bg-muted/50 rounded-lg p-4 space-y-2 mb-4">
               <p className="text-sm italic text-foreground">"{quote.quote}"</p>
               <p className="text-xs text-muted-foreground text-right">
                 — {quote.author}{quote.source ? `, ${quote.source}` : ''}
               </p>
-            </div>
-          )}
+            </div>}
           
           <div className="space-y-2">
             <Label htmlFor="recipient-email">Recipient Email</Label>
-            <Input
-              id="recipient-email"
-              type="email"
-              placeholder="friend@example.com"
-              value={recipientEmail}
-              onChange={(e) => setRecipientEmail(e.target.value)}
-            />
+            <Input id="recipient-email" type="email" placeholder="friend@example.com" value={recipientEmail} onChange={e => setRecipientEmail(e.target.value)} />
           </div>
           
           <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setEmailShareOpen(false)}
-              disabled={sendingEmail}
-            >
+            <Button variant="outline" onClick={() => setEmailShareOpen(false)} disabled={sendingEmail}>
               Cancel
             </Button>
-            <Button 
-              onClick={handleSendEmail}
-              disabled={sendingEmail || !recipientEmail.trim()}
-            >
+            <Button onClick={handleSendEmail} disabled={sendingEmail || !recipientEmail.trim()}>
               {sendingEmail ? "Sending..." : "Send Quote"}
             </Button>
           </DialogFooter>
