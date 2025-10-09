@@ -35,9 +35,16 @@ const Footer = () => {
                 className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-smooth text-sm"
               >
                 <Heart className="w-4 h-4" />
-                Carpe Diem Resources
+                Carpe Diem
               </Link>
-            <Link 
+              <Link 
+                to="/resource-collection" 
+                className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-smooth text-sm"
+              >
+                <Heart className="w-4 h-4" />
+                Resource Collection
+              </Link>
+            <Link
                 to="/life-compass" 
                 className="flex items-center gap-2 text-muted-foreground hover:text-primary transition-smooth text-sm"
               >
