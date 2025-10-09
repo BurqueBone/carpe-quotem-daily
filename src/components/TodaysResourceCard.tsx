@@ -28,7 +28,7 @@ const TodaysResourceCard = ({
       <div className="relative p-4 sm:p-6 space-y-4">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-warm animate-pulse" />
-          <h2 className="font-bold bg-gradient-to-r from-warm to-accent bg-clip-text text-slate-500 text-[9381ff]">
+          <h2 className="font-bold bg-gradient-to-r from-warm to-accent bg-clip-text text-[9381ff] text-[#9381ff]">
             Today's Featured Resource
           </h2>
         </div>
