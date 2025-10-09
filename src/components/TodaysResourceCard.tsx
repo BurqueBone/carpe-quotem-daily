@@ -71,9 +71,7 @@ const TodaysResourceCard = ({
               </a>
             </Button>
             <Button asChild variant="outline" size="default">
-              <Link to="#resources-list">
-                View All Resources
-              </Link>
+              
             </Button>
           </div>
         </div>
