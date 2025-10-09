@@ -384,6 +384,7 @@ export type Database = {
           id: string
           ispublished: boolean
           s4k_favorite: boolean
+          thumbnail_url: string | null
           title: string
           type: string
           updated_at: string
@@ -400,6 +401,7 @@ export type Database = {
           id?: string
           ispublished?: boolean
           s4k_favorite?: boolean
+          thumbnail_url?: string | null
           title: string
           type: string
           updated_at?: string
@@ -416,6 +418,7 @@ export type Database = {
           id?: string
           ispublished?: boolean
           s4k_favorite?: boolean
+          thumbnail_url?: string | null
           title?: string
           type?: string
           updated_at?: string

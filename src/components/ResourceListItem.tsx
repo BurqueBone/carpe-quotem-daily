@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ChevronUp, ChevronDown, ExternalLink } from "lucide-react";
+import { ChevronUp, ExternalLink, Book, Video, Podcast, FileText, Link as LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ResourceListItemProps {
@@ -16,6 +16,7 @@ interface ResourceListItemProps {
     affiliate_url?: string;
     has_affiliate: boolean;
     how_resource_helps?: string;
+    thumbnail_url?: string;
     upvote_count: number;
     user_has_upvoted: boolean;
   };
@@ -23,8 +24,9 @@ interface ResourceListItemProps {
 }
 
 const ResourceListItem = ({ resource, onUpvoteToggle }: ResourceListItemProps) => {
-  const [isExpanded, setIsExpanded] = useState(false);
   const [isUpvoting, setIsUpvoting] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [imageLoading, setImageLoading] = useState(true);
 
   const resourceUrl = resource.has_affiliate && resource.affiliate_url 
     ? resource.affiliate_url 
@@ -42,11 +44,102 @@ const ResourceListItem = ({ resource, onUpvoteToggle }: ResourceListItemProps) =
     }
   };
 
+  const getTypeIcon = () => {
+    switch (resource.type.toLowerCase()) {
+      case 'book':
+        return <Book className="h-6 w-6" />;
+      case 'video':
+        return <Video className="h-6 w-6" />;
+      case 'podcast':
+        return <Podcast className="h-6 w-6" />;
+      case 'article':
+        return <FileText className="h-6 w-6" />;
+      default:
+        return <LinkIcon className="h-6 w-6" />;
+    }
+  };
+
   return (
     <Card className="group hover:shadow-md transition-all duration-200">
       <div className="flex items-start gap-4 p-4">
-        {/* Upvote Button */}
-        <div className="flex flex-col items-center gap-1">
+        {/* Thumbnail on the left */}
+        <div className="flex-shrink-0">
+          {resource.thumbnail_url && !imageError ? (
+            <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-muted">
+              {imageLoading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+                </div>
+              )}
+              <img
+                src={resource.thumbnail_url}
+                alt={resource.title}
+                className={cn(
+                  "w-full h-full object-cover transition-opacity",
+                  imageLoading ? "opacity-0" : "opacity-100"
+                )}
+                onLoad={() => setImageLoading(false)}
+                onError={() => {
+                  setImageError(true);
+                  setImageLoading(false);
+                }}
+              />
+            </div>
+          ) : (
+            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+              {getTypeIcon()}
+            </div>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="flex-1 min-w-0 space-y-2">
+          <div className="space-y-2">
+            <a
+              href={resourceUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group/link flex items-center gap-2 hover:text-primary transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="text-lg font-semibold leading-tight break-words">
+                {resource.title}
+              </h3>
+              <ExternalLink className="h-4 w-4 flex-shrink-0 opacity-60 group-hover/link:opacity-100 transition-opacity" />
+            </a>
+
+            <div className="flex flex-wrap gap-2">
+              {resource.category_name && (
+                <Badge variant="outline" className="text-xs">
+                  {resource.category_name}
+                </Badge>
+              )}
+              <Badge variant="secondary" className="text-xs capitalize">
+                {resource.type}
+              </Badge>
+            </div>
+          </div>
+
+          {/* Always show description */}
+          <p className="text-sm text-muted-foreground leading-relaxed">
+            {resource.description}
+          </p>
+          
+          {/* Show how_resource_helps if available */}
+          {resource.how_resource_helps && (
+            <div className="bg-muted/50 rounded-lg p-3">
+              <p className="text-xs font-semibold text-primary mb-1">
+                How this helps:
+              </p>
+              <p className="text-sm text-foreground">
+                {resource.how_resource_helps}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Upvote Button on the right */}
+        <div className="flex flex-col items-center gap-1 flex-shrink-0">
           <Button
             variant="ghost"
             size="sm"
@@ -70,70 +163,6 @@ const ResourceListItem = ({ resource, onUpvoteToggle }: ResourceListItemProps) =
           )}>
             {resource.upvote_count}
           </span>
-        </div>
-
-        {/* Content */}
-        <div className="flex-1 min-w-0 space-y-3">
-          <div className="space-y-2">
-            <div className="flex items-start justify-between gap-2">
-              <a
-                href={resourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group/link flex items-center gap-2 hover:text-primary transition-colors"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <h3 className="text-lg font-semibold leading-tight break-words">
-                  {resource.title}
-                </h3>
-                <ExternalLink className="h-4 w-4 flex-shrink-0 opacity-60 group-hover/link:opacity-100 transition-opacity" />
-              </a>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setIsExpanded(!isExpanded)}
-                className="ml-2 flex-shrink-0"
-              >
-                {isExpanded ? (
-                  <ChevronUp className="h-4 w-4" />
-                ) : (
-                  <ChevronDown className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              {resource.category_name && (
-                <Badge variant="outline" className="text-xs">
-                  {resource.category_name}
-                </Badge>
-              )}
-              <Badge variant="secondary" className="text-xs capitalize">
-                {resource.type}
-              </Badge>
-            </div>
-          </div>
-
-          {/* Expanded Content */}
-          {isExpanded && (
-            <div className="space-y-3 pt-2 border-t animate-in fade-in slide-in-from-top-2 duration-200">
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {resource.description}
-              </p>
-              
-              {resource.how_resource_helps && (
-                <div className="bg-muted/50 rounded-lg p-3">
-                  <p className="text-xs font-semibold text-primary mb-1">
-                    How this helps:
-                  </p>
-                  <p className="text-sm text-foreground">
-                    {resource.how_resource_helps}
-                  </p>
-                </div>
-              )}
-            </div>
-          )}
         </div>
       </div>
     </Card>

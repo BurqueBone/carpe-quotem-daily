@@ -14,6 +14,7 @@ interface Resource {
   affiliate_url?: string;
   has_affiliate: boolean;
   how_resource_helps?: string;
+  thumbnail_url?: string;
   created_at: string;
   upvote_count: number;
   user_has_upvoted: boolean;
