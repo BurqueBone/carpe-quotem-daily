@@ -3,7 +3,7 @@ import CategoryCard from "@/components/CategoryCard";
 import { useCarpeDiemData } from "@/hooks/useCarpeDiemData";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle, RefreshCw, Zap, ArrowRight, copy-plus } from "lucide-react";
+import { AlertCircle, RefreshCw, Zap, ArrowRight, LuGrape } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import React from "react";
 import { Link } from "react-router-dom";
@@ -86,7 +86,7 @@ const CarpeDiem = () => {
                   className="inline-flex items-center gap-2 bg-secondary text-black px-6 py-3 rounded-lg font-medium shadow-glow hover:shadow-xl transition-smooth"
                 >
                   <div className="flex items-center justify-center gap-2 font-semibold text-black">
-                    <copy-plus className="w-4 h-4" />
+                    <LuGrape className="w-4 h-4" />
                     View All Resources
                   </div>
                 </Link>
