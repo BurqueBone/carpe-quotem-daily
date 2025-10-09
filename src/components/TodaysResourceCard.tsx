@@ -38,7 +38,7 @@ const TodaysResourceCard = ({
             <div className="space-y-1.5 flex-1 w-full sm:w-auto">
               <div className="flex flex-col gap-1.5">
                 <h3 className="text-xl sm:text-2xl font-bold text-foreground leading-tight break-words">
-                  {resource.title} <span className="text-muted-foreground font-normal">—</span> <span className="text-sm text-muted-foreground font-normal">{resource.description}</span>
+                  {resource.title} <span className="text-muted-foreground font-normal text-sm">-</span> <span className="text-sm text-muted-foreground font-normal">{resource.description}</span>
                 </h3>
               </div>
               <div className="flex flex-wrap gap-2">
