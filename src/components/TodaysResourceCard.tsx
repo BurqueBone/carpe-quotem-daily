@@ -36,9 +36,11 @@ const TodaysResourceCard = ({
         <div className="space-y-3">
           <div className="flex flex-col sm:flex-row items-start justify-between gap-3">
             <div className="space-y-1.5 flex-1 w-full sm:w-auto">
-              <h3 className="text-xl sm:text-2xl font-bold text-foreground leading-tight break-words">
-                {resource.title}
-              </h3>
+              <div className="flex flex-col gap-1.5">
+                <h3 className="text-xl sm:text-2xl font-bold text-foreground leading-tight break-words">
+                  {resource.title} <span className="text-muted-foreground font-normal">—</span> <span className="text-sm text-muted-foreground font-normal">{resource.description}</span>
+                </h3>
+              </div>
               <div className="flex flex-wrap gap-2">
                 <Badge variant="secondary" className="capitalize">
                   {resource.type}
@@ -55,10 +57,6 @@ const TodaysResourceCard = ({
               <span className="text-xs text-muted-foreground">votes</span>
             </div>
           </div>
-
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            {resource.description}
-          </p>
 
           {resource.how_resource_helps && <div className="bg-warm/5 backdrop-blur-sm rounded-lg p-3 border border-warm/20">
               <p className="text-xs font-semibold text-warm-foreground mb-0.5">How this helps:</p>
