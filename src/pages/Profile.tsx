@@ -8,10 +8,10 @@ import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Bell, User, LogOut, Mail, Lock, Copy, Heart, Calendar as CalendarIcon, Sparkles } from "lucide-react";
+import { Bell, User, LogOut, Mail, Lock, Copy, Heart, Calendar as CalendarIcon, Sparkles, Compass } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import { useToast } from "@/components/ui/use-toast";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useSecurityValidation } from "@/hooks/useSecurityValidation";
 import Header from "@/components/Header";
@@ -31,6 +31,7 @@ const Profile = () => {
     validateEmail,
     sanitizeInput
   } = useSecurityValidation();
+  const navigate = useNavigate();
   const [enabled, setEnabled] = useState(true);
 
   // Account settings state
@@ -587,7 +588,7 @@ const Profile = () => {
                             <p className="text-sm text-muted-foreground">Sundays experienced</p>
                           </div>
                           <div className="bg-muted/50 rounded-lg p-4 space-y-2">
-                            <p className="text-2xl font-bold text-accent">
+                            <p className="text-2xl font-bold text-foreground">
                               {sundayData.remaining.toLocaleString()}
                             </p>
                             <p className="text-sm text-muted-foreground">Sundays remaining</p>
@@ -604,9 +605,14 @@ const Profile = () => {
                             {((sundayData.experienced / 4000) * 100).toFixed(1)}% of 4,000 Sundays
                           </p>
                         </div>
-                        <p className="text-sm text-foreground">
-                          Each Sunday is a gift. Make them count. ✨
-                        </p>
+                        <Button 
+                          onClick={() => navigate('/life-compass')}
+                          className="w-full"
+                          size="lg"
+                        >
+                          <Compass className="h-4 w-4 mr-2" />
+                          Calibrate Your Compass
+                        </Button>
                       </div>
                     )}
                   </div>
