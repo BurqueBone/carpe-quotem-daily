@@ -13,6 +13,7 @@ export interface Resource {
   type: 'article' | 'book' | 'app' | 'course' | 'video';
   affiliate_url?: string;
   has_affiliate: boolean;
+  upvote_count?: number;
 }
 
 export interface Category {
@@ -58,18 +59,17 @@ export const useCarpeDiemData = () => {
           throw categoriesError;
         }
 
-        // Fetch published resources only
+        // Fetch resources with upvote counts using RPC function
         const { data: resourcesData, error: resourcesError } = await (supabase as any)
-          .from('resources')
-          .select('*')
-          .eq('ispublished', true)
-          .order('title');
+          .rpc('get_resources_with_upvotes', { 
+            user_id_param: null 
+          });
 
         if (resourcesError) {
           throw resourcesError;
         }
 
-        // Group resources by category
+        // Group resources by category and get top 3 by upvote count for each
         const resourcesByCategory = resourcesData.reduce((acc: Record<string, Resource[]>, resource: any) => {
           if (!acc[resource.category_id]) {
             acc[resource.category_id] = [];
@@ -82,11 +82,19 @@ export const useCarpeDiemData = () => {
             type: resource.type as 'article' | 'book' | 'app' | 'course' | 'video',
             affiliate_url: resource.affiliate_url,
             has_affiliate: resource.has_affiliate,
+            upvote_count: resource.upvote_count,
           });
           return acc;
         }, {});
 
-        // Combine categories with their resources
+        // For each category, sort by upvote_count and take top 3
+        Object.keys(resourcesByCategory).forEach(categoryId => {
+          resourcesByCategory[categoryId] = resourcesByCategory[categoryId]
+            .sort((a: any, b: any) => b.upvote_count - a.upvote_count)
+            .slice(0, 3);
+        });
+
+        // Combine categories with their top 3 resources
         const categoriesWithResources: Category[] = categoriesData.map((category: any) => ({
           id: category.id,
           title: category.title,
