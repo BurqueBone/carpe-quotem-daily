@@ -60,17 +60,14 @@ const Header = () => {
                   Carpe Diem
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid gap-3 p-4 w-48">
+                  <ul className="grid gap-1 p-2 w-48">
                     <li>
                       <NavigationMenuLink asChild>
                         <Link
                           to="/carpe-diem"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
-                          <div className="text-sm font-medium leading-none">Resources</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Explore self-improvement resources
-                          </p>
+                          <div className="text-sm font-medium leading-none">Carpe Diem</div>
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -78,12 +75,9 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/resource-collection"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">Resource Collection</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Vote on your favorite resources
-                          </p>
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -91,12 +85,9 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/life-compass"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">Life Compass</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Assess your life balance and design your ideal week
-                          </p>
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -108,17 +99,14 @@ const Header = () => {
                   About
                 </NavigationMenuTrigger>
                 <NavigationMenuContent>
-                  <ul className="grid gap-3 p-4 w-48">
+                  <ul className="grid gap-1 p-2 w-48">
                     <li>
                       <NavigationMenuLink asChild>
                         <Link
                           to="/about"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">About Us</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Learn about our mission
-                          </p>
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -126,12 +114,9 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/blog"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">Blog</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Read our latest posts
-                          </p>
                         </Link>
                       </NavigationMenuLink>
                     </li>
@@ -139,12 +124,9 @@ const Header = () => {
                       <NavigationMenuLink asChild>
                         <Link
                           to="/contact"
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                          className="block select-none rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
                         >
                           <div className="text-sm font-medium leading-none">Contact</div>
-                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Get in touch with us
-                          </p>
                         </Link>
                       </NavigationMenuLink>
                     </li>
