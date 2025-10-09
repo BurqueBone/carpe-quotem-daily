@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ChevronUp, ExternalLink, Book, Video, Podcast, FileText, Link as LinkIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -139,31 +138,28 @@ const ResourceListItem = ({ resource, onUpvoteToggle }: ResourceListItemProps) =
         </div>
 
         {/* Upvote Button on the right */}
-        <div className="flex flex-col items-center gap-1 flex-shrink-0">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={handleUpvote}
-            disabled={isUpvoting}
-            className={cn(
-              "h-10 w-10 p-0 rounded-lg transition-all",
-              resource.user_has_upvoted 
-                ? "bg-primary text-primary-foreground hover:bg-primary/90" 
-                : "hover:bg-primary/10"
-            )}
-          >
-            <ChevronUp className={cn(
-              "h-5 w-5",
-              resource.user_has_upvoted && "fill-current"
-            )} />
-          </Button>
+        <button
+          onClick={handleUpvote}
+          disabled={isUpvoting}
+          className={cn(
+            "flex flex-col items-center gap-0.5 rounded-lg p-2 border transition-all flex-shrink-0 cursor-pointer",
+            resource.user_has_upvoted 
+              ? "bg-primary/10 border-primary backdrop-blur-sm" 
+              : "bg-background/50 border-border hover:border-primary/50 backdrop-blur-sm"
+          )}
+        >
+          <ChevronUp className={cn(
+            "h-5 w-5 transition-colors",
+            resource.user_has_upvoted ? "text-primary" : "text-muted-foreground"
+          )} />
           <span className={cn(
-            "text-sm font-semibold min-w-[2ch] text-center",
-            resource.user_has_upvoted && "text-primary"
+            "text-base font-bold",
+            resource.user_has_upvoted ? "text-primary" : "text-foreground"
           )}>
             {resource.upvote_count}
           </span>
-        </div>
+          <span className="text-xs text-muted-foreground">votes</span>
+        </button>
       </div>
     </Card>
   );
