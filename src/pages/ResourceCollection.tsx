@@ -96,9 +96,6 @@ const ResourceCollection = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">
                 All Resources
-                <span className="text-muted-foreground text-lg ml-2">
-                  ({resources.length})
-                </span>
               </h2>
             </div>
 
