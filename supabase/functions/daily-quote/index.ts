@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
+import { checkRateLimit, logRequest, getClientIP } from '../shared/rate-limiting.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -24,6 +25,37 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get client IP for rate limiting
+    const clientIP = getClientIP(req);
+    const userAgent = req.headers.get('user-agent') || 'unknown';
+
+    // Rate limit: 30 requests per minute per IP
+    const rateLimitCheck = await checkRateLimit(supabase, {
+      identifier: clientIP,
+      maxRequests: 30,
+      windowMs: 60 * 1000 // 1 minute
+    });
+
+    if (!rateLimitCheck.allowed) {
+      console.log(`Rate limit exceeded for daily-quote from IP: ${clientIP}`);
+      
+      await logRequest(supabase, 'daily_quote_rate_limited', clientIP, userAgent);
+      
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Too many requests. Please try again in a moment.'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 429,
+        }
+      );
+    }
+
+    // Log the request
+    await logRequest(supabase, 'daily_quote_request', clientIP, userAgent);
 
     console.log('Fetching random quote...');
 

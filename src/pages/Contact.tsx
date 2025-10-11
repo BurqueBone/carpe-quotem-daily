@@ -84,11 +84,16 @@ const Contact = () => {
         message: sanitizeInput(formData.message.trim())
       };
 
-      const { error } = await supabase
-        .from('contact_submissions')
-        .insert([sanitizedData]);
+      // Call the Edge Function instead of direct database insert
+      const { data, error } = await supabase.functions.invoke('submit-contact', {
+        body: sanitizedData
+      });
 
       if (error) throw error;
+      
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to submit contact form');
+      }
 
       toast({
         title: "Message sent successfully!",

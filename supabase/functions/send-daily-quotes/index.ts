@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { processTemplateVariables, buildTemplateContext } from '../shared/template-processor.ts';
+import { maskEmail } from '../shared/email-masking.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -219,7 +220,7 @@ serve(async (req) => {
           html: emailHTML,
         });
 
-        console.log('Email sent successfully to:', `${userEmail.charAt(0)}***@${userEmail.split('@')[1]?.charAt(0)}***`, emailResponse);
+        console.log('Email sent successfully to:', maskEmail(userEmail), emailResponse);
 
         // Track the email send
         await supabase

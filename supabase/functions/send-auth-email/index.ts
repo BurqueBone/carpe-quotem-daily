@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0';
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
+import { maskEmail } from '../shared/email-masking.ts';
 
 const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
 const hookSecret = Deno.env.get('SUPABASE_AUTH_WEBHOOK_SECRET') || '';
@@ -202,7 +203,7 @@ serve(async (req) => {
       throw error;
     }
 
-    console.log(`Auth email sent successfully to ${user.email.charAt(0)}***@${user.email.split('@')[1]?.charAt(0)}*** for ${email_action_type}`);
+    console.log(`Auth email sent successfully to ${maskEmail(user.email)} for ${email_action_type}`);
 
     return new Response(
       JSON.stringify({ success: true }),

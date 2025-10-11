@@ -2,6 +2,7 @@ import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { Resend } from "https://esm.sh/resend@2.0.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
 import { processTemplateVariables, buildTemplateContext } from "../shared/template-processor.ts";
+import { maskEmail } from '../shared/email-masking.ts';
 
 const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
 
@@ -153,7 +154,7 @@ const handler = async (req: Request): Promise<Response> => {
     const sanitizedSource = source ? sanitizeInput(source) : undefined;
     const sanitizedEmail = sanitizeInput(recipientEmail);
 
-    console.log('Sending quote email to:', sanitizedEmail.replace(/(.{2}).*@/, '$1***@'));
+    console.log('Sending quote email to:', maskEmail(sanitizedEmail));
 
     // Log the share attempt
     await supabase.from('security_logs').insert({
