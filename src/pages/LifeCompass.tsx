@@ -199,29 +199,29 @@ const LifeCompass = () => {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               {lowestRated.map(area => (
                 <div 
                   key={area.id}
                   onClick={() => togglePriority(area.id)}
-                  className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
+                  className={`p-3 sm:p-4 rounded-lg border-2 cursor-pointer transition-all ${
                     selectedPriorities.includes(area.id)
                       ? 'border-primary bg-primary/10'
                       : 'border-border hover:border-primary/50'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div style={{ color: `hsl(var(--${area.color}))` }}>
+                    <div style={{ color: `hsl(var(--${area.color}))` }} className="flex-shrink-0">
                       {area.icon}
                     </div>
-                    <div className="flex-1">
-                      <div className="font-medium">{area.name}</div>
-                      <div className="text-sm text-muted-foreground">
+                    <div className="flex-1 min-w-0">
+                      <div className="font-medium text-sm sm:text-base">{area.name}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">
                         Current rating: {area.rating}/10
                       </div>
                     </div>
                     {selectedPriorities.includes(area.id) && (
-                      <CheckCircle2 className="w-5 h-5 text-primary" />
+                      <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0" />
                     )}
                   </div>
                 </div>
@@ -280,8 +280,8 @@ const LifeCompass = () => {
     }, '') + ' Z';
 
     return (
-      <div className="flex justify-center mb-6">
-        <svg width="300" height="300" className="drop-shadow-md">
+      <div className="flex justify-center mb-6 px-4">
+        <svg width="100%" height="auto" viewBox="0 0 300 300" className="drop-shadow-md max-w-[300px] w-full">
           {/* Grid lines */}
           {[2, 4, 6, 8, 10].map(level => (
             <circle
@@ -344,7 +344,7 @@ const LifeCompass = () => {
                   y={labelY}
                   textAnchor="middle"
                   dominantBaseline="middle"
-                  className="text-xs font-medium fill-foreground"
+                  className="text-[10px] sm:text-xs font-medium fill-foreground"
                 >
                   {point.area.name.split(' ')[0]}
                 </text>
@@ -359,9 +359,9 @@ const LifeCompass = () => {
   const IdealWeekDesigner = () => {
     return (
       <div className="space-y-8">
-        <div className="text-center space-y-4">
-          <h2 className="text-2xl font-bold">Design Your Ideal Week</h2>
-          <p className="text-muted-foreground max-w-2xl mx-auto">
+        <div className="text-center space-y-4 px-2">
+          <h2 className="text-xl sm:text-2xl font-bold">Design Your Ideal Week</h2>
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
             Now, let's design your ideal week. If you had complete control of your time, what would it look like?
             Drag priority blocks onto your calendar to create your perfect week.
           </p>
@@ -379,7 +379,7 @@ const LifeCompass = () => {
           {/* Priority Blocks */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h3 className="font-semibold">Priority Blocks</h3>
+              <h3 className="font-semibold text-sm sm:text-base">Priority Blocks</h3>
               <Button 
                 variant="outline" 
                 size="sm" 
@@ -389,7 +389,7 @@ const LifeCompass = () => {
                 Clear All
               </Button>
             </div>
-            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-1 gap-2">
               {lifeAreas.map(area => (
                 <PriorityBlock 
                   key={area.id} 
@@ -440,45 +440,45 @@ const LifeCompass = () => {
       <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
         <div className="space-y-8">
           {/* Header */}
-          <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold bg-gradient-warm bg-clip-text text-transparent">
+          <div className="text-center space-y-4 px-2">
+            <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-warm bg-clip-text text-transparent">
               Life Compass
             </h1>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
               A two-part interactive tool to assess your current life balance and design a future 
               that aligns with your true priorities. Discover insights that empower meaningful change.
             </p>
           </div>
 
           {/* Progress indicator */}
-          <div className="flex justify-center">
-            <div className="flex items-center space-x-4">
-              <div className={`flex items-center space-x-2 ${currentStep === 'assessment' ? 'text-primary' : 'text-muted-foreground'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'assessment' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
+          <div className="flex justify-center overflow-x-auto pb-4">
+            <div className="flex items-center space-x-2 sm:space-x-4 min-w-min px-4">
+              <div className={`flex items-center space-x-1 sm:space-x-2 ${currentStep === 'assessment' ? 'text-primary' : 'text-muted-foreground'}`}>
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 text-sm sm:text-base ${currentStep === 'assessment' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
                   1
                 </div>
-                <span className="font-medium">Life Wheel</span>
+                <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden xs:inline">Life Wheel</span>
               </div>
-              <div className="w-8 h-px bg-border"></div>
-              <div className={`flex items-center space-x-2 ${currentStep === 'priorities' ? 'text-primary' : 'text-muted-foreground'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'priorities' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
+              <div className="w-4 sm:w-8 h-px bg-border"></div>
+              <div className={`flex items-center space-x-1 sm:space-x-2 ${currentStep === 'priorities' ? 'text-primary' : 'text-muted-foreground'}`}>
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 text-sm sm:text-base ${currentStep === 'priorities' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
                   2
                 </div>
-                <span className="font-medium">Priorities</span>
+                <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden xs:inline">Priorities</span>
               </div>
-              <div className="w-8 h-px bg-border"></div>
-              <div className={`flex items-center space-x-2 ${currentStep === 'designer' ? 'text-primary' : 'text-muted-foreground'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'designer' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
+              <div className="w-4 sm:w-8 h-px bg-border"></div>
+              <div className={`flex items-center space-x-1 sm:space-x-2 ${currentStep === 'designer' ? 'text-primary' : 'text-muted-foreground'}`}>
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 text-sm sm:text-base ${currentStep === 'designer' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
                   3
                 </div>
-                <span className="font-medium">Ideal Week</span>
+                <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden xs:inline">Ideal Week</span>
               </div>
-              <div className="w-8 h-px bg-border"></div>
-              <div className={`flex items-center space-x-2 ${currentStep === 'results' ? 'text-primary' : 'text-muted-foreground'}`}>
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center border-2 ${currentStep === 'results' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
+              <div className="w-4 sm:w-8 h-px bg-border"></div>
+              <div className={`flex items-center space-x-1 sm:space-x-2 ${currentStep === 'results' ? 'text-primary' : 'text-muted-foreground'}`}>
+                <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center border-2 text-sm sm:text-base ${currentStep === 'results' ? 'border-primary bg-primary text-primary-foreground' : 'border-muted-foreground'}`}>
                   4
                 </div>
-                <span className="font-medium">Results</span>
+                <span className="font-medium text-xs sm:text-sm whitespace-nowrap hidden xs:inline">Results</span>
               </div>
             </div>
           </div>
@@ -497,15 +497,15 @@ const LifeCompass = () => {
                 <CardContent className="space-y-6">
                   <WheelVisualization />
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 gap-4 sm:gap-6">
                     {lifeAreas.map(area => (
-                      <div key={area.id} className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <div style={{ color: area.color }}>
+                      <div key={area.id} className="space-y-2 sm:space-y-3">
+                        <div className="flex items-center gap-2 sm:gap-3">
+                          <div style={{ color: area.color }} className="flex-shrink-0">
                             {area.icon}
                           </div>
-                          <span className="font-medium">{area.name}</span>
-                          <span className="ml-auto text-2xl font-bold text-primary">
+                          <span className="font-medium text-sm sm:text-base">{area.name}</span>
+                          <span className="ml-auto text-xl sm:text-2xl font-bold text-primary">
                             {area.rating}
                           </span>
                         </div>
@@ -549,67 +549,67 @@ const LifeCompass = () => {
           {currentStep === 'results' && (
             <div className="space-y-8">
               <Card className="max-w-6xl mx-auto">
-                <CardHeader className="text-center">
-                  <CardTitle>Your Life Compass Results</CardTitle>
-                  <CardDescription>
+                <CardHeader className="text-center px-4 sm:px-6">
+                  <CardTitle className="text-xl sm:text-2xl">Your Life Compass Results</CardTitle>
+                  <CardDescription className="text-sm sm:text-base">
                     Here's your personalized analysis and actionable insights
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-8">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <CardContent className="space-y-6 sm:space-y-8 px-4 sm:px-6">
+                  <div className="grid grid-cols-1 gap-6 sm:gap-8">
                     <div>
-                      <h3 className="font-semibold mb-4">Your Current Wheel</h3>
+                      <h3 className="font-semibold mb-4 text-sm sm:text-base">Your Current Wheel</h3>
                       <WheelVisualization />
                     </div>
                     
-                    <div className="space-y-6">
+                    <div className="space-y-4 sm:space-y-6">
                       {/* What you're doing well */}
                       <div>
-                        <h3 className="font-semibold mb-3 text-green-600">🌟 What You're Excelling At</h3>
+                        <h3 className="font-semibold mb-3 text-green-600 text-sm sm:text-base">🌟 What You're Excelling At</h3>
                         <div className="space-y-2">
                           {lifeAreas
                             .filter(area => area.rating >= 7)
                             .sort((a, b) => b.rating - a.rating)
                             .slice(0, 3)
                             .map(area => (
-                              <div key={area.id} className="flex items-center gap-3 p-3 rounded-lg bg-green-50 border border-green-200">
-                                <div style={{ color: `hsl(var(--${area.color}))` }}>
+                              <div key={area.id} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-green-50 border border-green-200">
+                                <div style={{ color: `hsl(var(--${area.color}))` }} className="flex-shrink-0">
                                   {area.icon}
                                 </div>
-                                <div>
-                                  <div className="font-medium text-green-800">{area.name}</div>
-                                  <div className="text-sm text-green-600">Rating: {area.rating}/10 - Keep up the great work!</div>
+                                <div className="min-w-0">
+                                  <div className="font-medium text-green-800 text-xs sm:text-sm">{area.name}</div>
+                                  <div className="text-xs text-green-600">Rating: {area.rating}/10 - Keep up the great work!</div>
                                 </div>
                               </div>
                             ))}
                           {lifeAreas.filter(area => area.rating >= 7).length === 0 && (
-                            <p className="text-muted-foreground italic">Every area has room for growth - that's the beauty of continuous improvement!</p>
+                            <p className="text-muted-foreground italic text-xs sm:text-sm">Every area has room for growth - that's the beauty of continuous improvement!</p>
                           )}
                         </div>
                       </div>
 
                       {/* Areas to work on */}
                       <div>
-                        <h3 className="font-semibold mb-3 text-orange-600">🎯 Your Priority Growth Areas</h3>
+                        <h3 className="font-semibold mb-3 text-orange-600 text-sm sm:text-base">🎯 Your Priority Growth Areas</h3>
                         <div className="space-y-2">
                           {selectedPriorities.length > 0 ? (
                             selectedPriorities.map(priorityId => {
                               const area = lifeAreas.find(a => a.id === priorityId);
                               if (!area) return null;
                               return (
-                                <div key={area.id} className="flex items-center gap-3 p-3 rounded-lg bg-orange-50 border border-orange-200">
-                                  <div style={{ color: `hsl(var(--${area.color}))` }}>
+                                <div key={area.id} className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg bg-orange-50 border border-orange-200">
+                                  <div style={{ color: `hsl(var(--${area.color}))` }} className="flex-shrink-0">
                                     {area.icon}
                                   </div>
-                                  <div>
-                                    <div className="font-medium text-orange-800">{area.name}</div>
-                                    <div className="text-sm text-orange-600">Current: {area.rating}/10 - You chose to focus here</div>
+                                  <div className="min-w-0">
+                                    <div className="font-medium text-orange-800 text-xs sm:text-sm">{area.name}</div>
+                                    <div className="text-xs text-orange-600">Current: {area.rating}/10 - You chose to focus here</div>
                                   </div>
                                 </div>
                               );
                             })
                           ) : (
-                            <p className="text-muted-foreground italic">You didn't select specific areas to prioritize, which means you're taking a balanced approach to growth.</p>
+                            <p className="text-muted-foreground italic text-xs sm:text-sm">You didn't select specific areas to prioritize, which means you're taking a balanced approach to growth.</p>
                           )}
                         </div>
                       </div>
@@ -620,15 +620,15 @@ const LifeCompass = () => {
 
                   {/* Ideal Week Analysis */}
                   <div>
-                    <h3 className="font-semibold mb-4 text-blue-600">📅 Your Ideal Week Insights</h3>
-                    <div className="bg-blue-50 rounded-lg p-6 space-y-4">
-                      <p className="text-blue-800 font-medium">
+                    <h3 className="font-semibold mb-4 text-blue-600 text-sm sm:text-base">📅 Your Ideal Week Insights</h3>
+                    <div className="bg-blue-50 rounded-lg p-4 sm:p-6 space-y-3 sm:space-y-4">
+                      <p className="text-blue-800 font-medium text-sm sm:text-base">
                         You placed {placedBlocks.length} priority blocks in your ideal week.
                       </p>
                       
                       {selectedPriorities.length > 0 && placedBlocks.length > 0 && (
-                        <div className="space-y-3">
-                          <p className="text-blue-700">
+                        <div className="space-y-2 sm:space-y-3">
+                          <p className="text-blue-700 text-xs sm:text-sm">
                             <strong>Growth Focus Analysis:</strong> Let's see how well your ideal week supports your priority areas:
                           </p>
                           {selectedPriorities.map(priorityId => {
@@ -637,17 +637,17 @@ const LifeCompass = () => {
                             if (!area) return null;
                             
                             return (
-                              <div key={priorityId} className="flex items-center justify-between p-2 bg-white rounded border">
+                              <div key={priorityId} className="flex items-center justify-between p-2 bg-white rounded border text-xs sm:text-sm">
                                 <div className="flex items-center gap-2">
-                                  <div style={{ color: `hsl(var(--${area.color}))` }}>
+                                  <div style={{ color: `hsl(var(--${area.color}))` }} className="flex-shrink-0">
                                     {area.icon}
                                   </div>
                                   <span className="font-medium">{area.name}</span>
                                 </div>
-                                <div className="text-sm">
+                                <div className="text-xs sm:text-sm">
                                   {blocksForThisArea > 0 
-                                    ? `${blocksForThisArea} time blocks scheduled ✅`
-                                    : "No time blocks yet - consider adding some! ⚠️"
+                                    ? `${blocksForThisArea} blocks ✅`
+                                    : "No blocks ⚠️"
                                   }
                                 </div>
                               </div>
@@ -657,7 +657,7 @@ const LifeCompass = () => {
                       )}
                       
                       {placedBlocks.length === 0 && (
-                        <p className="text-blue-700">
+                        <p className="text-blue-700 text-xs sm:text-sm">
                           You haven't scheduled any priority blocks yet. Consider going back to design your ideal week with activities that support your growth areas.
                         </p>
                       )}
@@ -668,15 +668,15 @@ const LifeCompass = () => {
 
                   {/* Printable Ideal Week Worksheet */}
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-indigo-600">📋 Your Ideal Week Worksheet</h3>
+                    <div className="flex items-center justify-between mb-4 px-2">
+                      <h3 className="font-semibold text-indigo-600 text-sm sm:text-base">📋 Your Ideal Week Worksheet</h3>
                       <Button 
                         onClick={() => window.print()}
                         variant="outline"
                         size="sm"
-                        className="print:hidden"
+                        className="print:hidden text-xs sm:text-sm"
                       >
-                        Print This Worksheet
+                        Print
                       </Button>
                     </div>
                     <IdealWeekWorksheet placedBlocks={placedBlocks} />
@@ -685,19 +685,19 @@ const LifeCompass = () => {
                   <Separator />
                   {selectedPriorities.length > 0 && (
                     <div>
-                      <h3 className="font-semibold mb-4 text-purple-600">📚 Recommended Resources for Your Growth</h3>
+                      <h3 className="font-semibold mb-4 text-purple-600 text-sm sm:text-base px-2">📚 Recommended Resources for Your Growth</h3>
                       
                       {/* Display 3 relevant resources */}
                       {getRelevantResources().length > 0 && (
-                        <div className="mb-6">
-                          <h4 className="text-sm font-medium text-purple-700 mb-3">Featured Resources:</h4>
+                        <div className="mb-6 px-2">
+                          <h4 className="text-xs sm:text-sm font-medium text-purple-700 mb-3">Featured Resources:</h4>
                           <div className="space-y-3">
                             {getRelevantResources().map((resource) => (
-                              <div key={resource.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200 hover:border-purple-300 transition-colors">
+                              <div key={resource.id} className="flex items-center justify-between p-2 sm:p-3 bg-white rounded-lg border border-purple-200 hover:border-purple-300 transition-colors gap-2">
                                 <div className="flex-1 min-w-0">
-                                  <h5 className="font-medium text-purple-900 truncate">{resource.title}</h5>
-                                  <p className="text-sm text-purple-700 truncate">{resource.description}</p>
-                                  <span className="text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">
+                                  <h5 className="font-medium text-purple-900 truncate text-xs sm:text-sm">{resource.title}</h5>
+                                  <p className="text-xs text-purple-700 truncate">{resource.description}</p>
+                                  <span className="text-[10px] sm:text-xs text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full inline-block mt-1">
                                     {resource.categoryTitle}
                                   </span>
                                 </div>
@@ -705,9 +705,9 @@ const LifeCompass = () => {
                                   variant="ghost"
                                   size="sm"
                                   onClick={() => window.open(resource.url, '_blank')}
-                                  className="text-purple-700 hover:text-purple-900 flex-shrink-0 ml-3"
+                                  className="text-purple-700 hover:text-purple-900 flex-shrink-0"
                                 >
-                                  <ExternalLink className="h-4 w-4" />
+                                  <ExternalLink className="h-3 w-3 sm:h-4 sm:w-4" />
                                 </Button>
                               </div>
                             ))}
@@ -715,20 +715,20 @@ const LifeCompass = () => {
                         </div>
                       )}
                       
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 gap-3 sm:gap-4 px-2">
                         {selectedPriorities.slice(0, 4).map(priorityId => {
                           const area = lifeAreas.find(a => a.id === priorityId);
                           if (!area) return null;
                           
                           return (
-                            <div key={priorityId} className="p-4 rounded-lg border bg-purple-50 border-purple-200">
-                              <div className="flex items-center gap-2 mb-3">
-                                <div style={{ color: `hsl(var(--${area.color}))` }}>
+                            <div key={priorityId} className="p-3 sm:p-4 rounded-lg border bg-purple-50 border-purple-200">
+                              <div className="flex items-center gap-2 mb-2 sm:mb-3">
+                                <div style={{ color: `hsl(var(--${area.color}))` }} className="flex-shrink-0">
                                   {area.icon}
                                 </div>
-                                <h4 className="font-semibold text-purple-800">{area.name}</h4>
+                                <h4 className="font-semibold text-purple-800 text-xs sm:text-sm">{area.name}</h4>
                               </div>
-                              <p className="text-sm text-purple-700 mb-3">
+                              <p className="text-xs text-purple-700 mb-2 sm:mb-3">
                                 Since you want to improve in this area, check out our curated resources in the{' '}
                                 <strong>{categoryMapping[area.id] || area.name}</strong> category.
                               </p>
@@ -736,9 +736,9 @@ const LifeCompass = () => {
                                 variant="outline" 
                                 size="sm" 
                                 onClick={() => window.open('/carpe-diem', '_blank')}
-                                className="text-purple-700 border-purple-300 hover:bg-purple-100"
+                                className="text-purple-700 border-purple-300 hover:bg-purple-100 text-xs w-full sm:w-auto"
                               >
-                                View {categoryMapping[area.id] || area.name} Resources
+                                View Resources
                               </Button>
                             </div>
                           );
@@ -749,27 +749,27 @@ const LifeCompass = () => {
 
                   <Separator />
 
-                  <div className="bg-gradient-subtle rounded-xl p-6 text-center space-y-4">
-                    <h3 className="text-lg font-semibold">🚀 Your Next Steps</h3>
-                    <p className="text-muted-foreground">
+                  <div className="bg-gradient-subtle rounded-xl p-4 sm:p-6 text-center space-y-3 sm:space-y-4 mx-2">
+                    <h3 className="text-base sm:text-lg font-semibold">🚀 Your Next Steps</h3>
+                    <p className="text-muted-foreground text-xs sm:text-sm">
                       {selectedPriorities.length > 0 
                         ? `You've identified ${selectedPriorities.length} area${selectedPriorities.length > 1 ? 's' : ''} for growth. Start with just one small action this week in your highest priority area. Small, consistent steps create lasting transformation.`
                         : "Focus on maintaining your strengths while being open to growth opportunities. Sometimes the best growth comes from doubling down on what you're already good at."
                       }
                     </p>
-                    <div className="flex justify-center gap-4 flex-wrap">
-                      <Button onClick={() => setCurrentStep('assessment')} variant="outline">
-                        <RotateCcw className="w-4 h-4 mr-2" />
-                        Retake Assessment
+                    <div className="flex justify-center gap-2 sm:gap-4 flex-wrap">
+                      <Button onClick={() => setCurrentStep('assessment')} variant="outline" size="sm" className="text-xs sm:text-sm">
+                        <RotateCcw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        Retake
                       </Button>
-                      <Button onClick={() => setCurrentStep('designer')} variant="outline">
-                        Redesign My Week
+                      <Button onClick={() => setCurrentStep('designer')} variant="outline" size="sm" className="text-xs sm:text-sm">
+                        Redesign Week
                       </Button>
-                      <Button onClick={() => window.print()}>
-                        Save My Results
+                      <Button onClick={() => window.print()} size="sm" className="text-xs sm:text-sm">
+                        Save Results
                       </Button>
-                      <Button onClick={() => window.open('/carpe-diem', '_blank')}>
-                        Explore Resources
+                      <Button onClick={() => window.open('/carpe-diem', '_blank')} size="sm" className="text-xs sm:text-sm">
+                        Resources
                       </Button>
                     </div>
                   </div>

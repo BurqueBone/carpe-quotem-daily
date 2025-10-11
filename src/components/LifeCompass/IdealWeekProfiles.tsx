@@ -412,26 +412,26 @@ const IdealWeekProfiles: React.FC<IdealWeekProfilesProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">Quick Start Templates</h3>
-        <p className="text-sm text-muted-foreground">
+      <div className="text-center space-y-2 px-2">
+        <h3 className="text-base sm:text-lg font-semibold">Quick Start Templates</h3>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Choose a template that matches your lifestyle, or start from scratch
         </p>
       </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
         {profileTemplates.map(profile => (
           <Card 
             key={profile.id} 
             className="relative group hover:shadow-md transition-shadow cursor-pointer hover:border-primary/50"
             onClick={() => handleProfileSelect(profile)}
           >
-            <CardContent className="p-4 text-center">
-              <div className="flex flex-col items-center gap-2">
-                <div className="p-3 rounded-lg bg-primary/10 text-primary">
+            <CardContent className="p-2 sm:p-4 text-center">
+              <div className="flex flex-col items-center gap-1 sm:gap-2">
+                <div className="p-2 sm:p-3 rounded-lg bg-primary/10 text-primary scale-75 sm:scale-100">
                   {profile.icon}
                 </div>
-                <h4 className="font-medium text-sm">{profile.name}</h4>
+                <h4 className="font-medium text-xs sm:text-sm">{profile.name}</h4>
               </div>
             </CardContent>
           </Card>

@@ -76,7 +76,7 @@ const PriorityBlock: React.FC<PriorityBlockProps> = ({
         <TooltipTrigger asChild>
           <Card 
             className={cn(
-              "p-3 cursor-move hover:shadow-md transition-all duration-200",
+              "p-2 sm:p-3 cursor-move hover:shadow-md transition-all duration-200",
               "border-2 relative group",
               colorClasses,
               isDragging && "opacity-50 rotate-3 scale-105",
@@ -96,34 +96,34 @@ const PriorityBlock: React.FC<PriorityBlockProps> = ({
           >
             {iconOnly ? (
               <div className="flex items-center justify-center">
-                <div className="flex-shrink-0">
+                <div className="flex-shrink-0 scale-75 sm:scale-100">
                   {area.icon}
                 </div>
                 {isPlaced && onRemove && (
                   <button
                     onClick={onRemove}
-                    className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-black/10 rounded-full bg-background border border-border"
+                    className="absolute -top-1 -right-1 sm:-top-2 sm:-right-2 opacity-0 group-hover:opacity-100 transition-opacity p-0.5 sm:p-1 hover:bg-black/10 rounded-full bg-background border border-border"
                     aria-label="Remove block"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-2 h-2 sm:w-3 sm:h-3" />
                   </button>
                 )}
               </div>
             ) : (
-              <div className="flex items-center justify-between gap-2">
-                <div className="flex items-center gap-2 flex-1 min-w-0">
-                  <div className="flex-shrink-0">
+              <div className="flex items-center justify-between gap-1 sm:gap-2">
+                <div className="flex items-center gap-1 sm:gap-2 flex-1 min-w-0">
+                  <div className="flex-shrink-0 scale-75 sm:scale-100">
                     {area.icon}
                   </div>
-                  <span className="text-sm font-medium truncate">{area.name}</span>
+                  <span className="text-xs sm:text-sm font-medium truncate">{area.name}</span>
                 </div>
                 {isPlaced && onRemove && (
                   <button
                     onClick={onRemove}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity p-1 hover:bg-black/10 rounded-full"
+                    className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 sm:p-1 hover:bg-black/10 rounded-full flex-shrink-0"
                     aria-label="Remove block"
                   >
-                    <X className="w-3 h-3" />
+                    <X className="w-2 h-2 sm:w-3 sm:h-3" />
                   </button>
                 )}
               </div>
