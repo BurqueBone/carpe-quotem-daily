@@ -29,16 +29,31 @@
     border: 1px solid hsl(var(--border));
     border-bottom: none;
     border-radius: 0.5rem 0.5rem 0 0;
+    opacity: 1 !important;
+  }
+
+  .EasyMDEContainer .editor-toolbar a {
+    color: hsl(var(--foreground)) !important;
+    opacity: 1 !important;
+  }
+
+  .EasyMDEContainer .editor-toolbar a:hover,
+  .EasyMDEContainer .editor-toolbar a.active {
+    background: hsl(var(--primary) / 0.1) !important;
+    border-color: hsl(var(--primary)) !important;
+    opacity: 1 !important;
   }
 
   .EasyMDEContainer .editor-toolbar button {
-    color: hsl(var(--foreground));
+    color: hsl(var(--foreground)) !important;
+    opacity: 1 !important;
   }
 
   .EasyMDEContainer .editor-toolbar button:hover,
   .EasyMDEContainer .editor-toolbar button.active {
-    background: hsl(var(--primary) / 0.1);
-    border-color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.1) !important;
+    border-color: hsl(var(--primary)) !important;
+    opacity: 1 !important;
   }
 
   .EasyMDEContainer .editor-preview,
@@ -77,16 +92,31 @@
     border: 1px solid hsl(var(--border));
     border-bottom: none;
     border-radius: 0.5rem 0.5rem 0 0;
+    opacity: 1 !important;
+  }
+
+  .EasyMDEContainer .editor-toolbar a {
+    color: hsl(var(--foreground)) !important;
+    opacity: 1 !important;
+  }
+
+  .EasyMDEContainer .editor-toolbar a:hover,
+  .EasyMDEContainer .editor-toolbar a.active {
+    background: hsl(var(--primary) / 0.2) !important;
+    border-color: hsl(var(--primary)) !important;
+    opacity: 1 !important;
   }
 
   .EasyMDEContainer .editor-toolbar button {
-    color: hsl(var(--foreground));
+    color: hsl(var(--foreground)) !important;
+    opacity: 1 !important;
   }
 
   .EasyMDEContainer .editor-toolbar button:hover,
   .EasyMDEContainer .editor-toolbar button.active {
-    background: hsl(var(--primary) / 0.2);
-    border-color: hsl(var(--primary));
+    background: hsl(var(--primary) / 0.2) !important;
+    border-color: hsl(var(--primary)) !important;
+    opacity: 1 !important;
   }
 
   .EasyMDEContainer .editor-preview,
@@ -129,9 +159,11 @@
   padding: 0.5rem;
 }
 
+.EasyMDEContainer .editor-toolbar a,
 .EasyMDEContainer .editor-toolbar button {
   border-radius: 0.25rem;
   margin: 0 2px;
+  opacity: 1 !important;
 }
 
 .EasyMDEContainer .editor-toolbar i.separator {
