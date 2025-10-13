@@ -2,6 +2,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'];
+const SIGNED_URL_EXPIRY = 31536000; // 1 year in seconds
 
 export const uploadBlogImage = async (
   file: File,
@@ -36,26 +37,43 @@ export const uploadBlogImage = async (
     return { url: '', error: error.message };
   }
 
-  // Get public URL
-  const { data: { publicUrl } } = supabase.storage
+  // Get signed URL (bucket is private for security)
+  const { data: signedUrlData, error: signedUrlError } = await supabase.storage
     .from('blog-images')
-    .getPublicUrl(data.path);
+    .createSignedUrl(data.path, SIGNED_URL_EXPIRY);
 
-  return { url: publicUrl };
+  if (signedUrlError) {
+    console.error('Signed URL error:', signedUrlError);
+    return { url: '', error: signedUrlError.message };
+  }
+
+  return { url: signedUrlData.signedUrl };
 };
 
 export const deleteBlogImage = async (url: string): Promise<void> => {
   try {
-    // Extract path from URL
+    // Extract path from signed or public URL
     const urlObj = new URL(url);
-    const pathMatch = urlObj.pathname.match(/\/storage\/v1\/object\/public\/blog-images\/(.+)/);
     
-    if (!pathMatch) {
+    // Handle both signed URLs and direct paths
+    let path: string | null = null;
+    
+    // Try to extract from signed URL (contains /sign/ in path)
+    const signedMatch = urlObj.pathname.match(/\/storage\/v1\/object\/sign\/blog-images\/(.+)/);
+    if (signedMatch) {
+      path = signedMatch[1].split('?')[0]; // Remove query params
+    } else {
+      // Try public URL format (legacy)
+      const publicMatch = urlObj.pathname.match(/\/storage\/v1\/object\/public\/blog-images\/(.+)/);
+      if (publicMatch) {
+        path = publicMatch[1];
+      }
+    }
+    
+    if (!path) {
       console.error('Invalid blog image URL');
       return;
     }
-
-    const path = pathMatch[1];
 
     // Delete from Supabase Storage
     const { error } = await supabase.storage

@@ -15,6 +15,7 @@ import { FeaturedImageUpload } from './FeaturedImageUpload';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { Eye, EyeOff } from 'lucide-react';
 import { BlogFocus } from '@/utils/blogHelpers';
+import { z } from 'zod';
 
 interface BlogPost {
   id?: string;
@@ -41,6 +42,28 @@ interface BlogPostFormProps {
   onSave: () => void;
   onCancel: () => void;
 }
+
+// Validation schema for blog post content
+const contentSchema = z.object({
+  title: z.string().min(1, 'Title is required').max(200, 'Title must be less than 200 characters'),
+  slug: z.string().min(1, 'Slug is required').max(200, 'Slug must be less than 200 characters'),
+  content: z.string()
+    .min(1, 'Content is required')
+    .max(100000, 'Content must be less than 100KB')
+    .refine((val) => {
+      // Block dangerous patterns
+      const dangerousPatterns = [
+        /<script[\s\S]*?>[\s\S]*?<\/script>/gi,
+        /javascript:/gi,
+        /on\w+\s*=/gi, // event handlers like onclick=
+        /data:text\/html/gi,
+      ];
+      return !dangerousPatterns.some(pattern => pattern.test(val));
+    }, 'Content contains potentially dangerous code patterns'),
+  excerpt: z.string().max(500, 'Excerpt must be less than 500 characters').optional(),
+  meta_title: z.string().max(200, 'Meta title must be less than 200 characters').optional(),
+  meta_description: z.string().max(500, 'Meta description must be less than 500 characters').optional(),
+});
 
 const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
   const { toast } = useToast();
@@ -127,6 +150,13 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
     setLoading(true);
 
     try {
+      // Validate content
+      const validationResult = contentSchema.safeParse(formData);
+      if (!validationResult.success) {
+        const firstError = validationResult.error.errors[0];
+        throw new Error(firstError.message);
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
