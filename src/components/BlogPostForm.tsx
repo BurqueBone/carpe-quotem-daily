@@ -6,8 +6,15 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Checkbox } from '@/components/ui/checkbox';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { MarkdownEditor } from './MarkdownEditor';
+import { MarkdownPreview } from './MarkdownPreview';
+import { FeaturedImageUpload } from './FeaturedImageUpload';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { Eye, EyeOff } from 'lucide-react';
+import { BlogFocus } from '@/utils/blogHelpers';
 
 interface BlogPost {
   id?: string;
@@ -19,6 +26,8 @@ interface BlogPost {
   meta_description: string;
   is_published: boolean;
   published_at?: string;
+  blog_focus?: BlogFocus;
+  featured_image_url?: string;
 }
 
 interface Category {
@@ -38,6 +47,10 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [showPreview, setShowPreview] = useState(() => {
+    const stored = localStorage.getItem('blog-editor-preview-open');
+    return stored ? JSON.parse(stored) : true;
+  });
   
   const [formData, setFormData] = useState<BlogPost>({
     title: '',
@@ -47,6 +60,8 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
     meta_title: '',
     meta_description: '',
     is_published: false,
+    blog_focus: undefined,
+    featured_image_url: '',
     ...post
   });
 
@@ -183,6 +198,24 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
     );
   };
 
+  const togglePreview = () => {
+    const newValue = !showPreview;
+    setShowPreview(newValue);
+    localStorage.setItem('blog-editor-preview-open', JSON.stringify(newValue));
+  };
+
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'p') {
+        e.preventDefault();
+        togglePreview();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [showPreview]);
+
   return (
     <Card>
       <CardHeader>
@@ -190,6 +223,23 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="blog_focus">Blog Focus (Optional)</Label>
+            <Select 
+              value={formData.blog_focus || ''} 
+              onValueChange={(value) => setFormData(prev => ({ ...prev, blog_focus: value as BlogFocus || undefined }))}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select blog focus" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="resource_review">Resource Review</SelectItem>
+                <SelectItem value="memento_mori_research">Memento Mori Research</SelectItem>
+                <SelectItem value="meaningful_life">Meaningful Life</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="title">Title</Label>
             <Input
@@ -210,6 +260,11 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
             />
           </div>
 
+          <FeaturedImageUpload
+            value={formData.featured_image_url}
+            onChange={(url) => setFormData(prev => ({ ...prev, featured_image_url: url }))}
+          />
+
           <div className="space-y-2">
             <Label htmlFor="excerpt">Excerpt</Label>
             <Textarea
@@ -221,14 +276,43 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="content">Content</Label>
-            <Textarea
-              id="content"
-              value={formData.content}
-              onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
-              rows={12}
-              required
-            />
+            <div className="flex items-center justify-between mb-2">
+              <Label>Content (Markdown)</Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={togglePreview}
+                className="gap-2"
+              >
+                {showPreview ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                {showPreview ? 'Hide' : 'Show'} Preview
+              </Button>
+            </div>
+            <div className="border rounded-lg overflow-hidden min-h-[500px]">
+              <ResizablePanelGroup direction="horizontal" className="min-h-[500px]">
+                <ResizablePanel defaultSize={showPreview ? 60 : 100} minSize={40}>
+                  <div className="h-full">
+                    <MarkdownEditor
+                      value={formData.content}
+                      onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                    />
+                  </div>
+                </ResizablePanel>
+                
+                {showPreview && (
+                  <>
+                    <ResizableHandle withHandle />
+                    <ResizablePanel defaultSize={40} minSize={30}>
+                      <div className="h-full overflow-auto p-6 bg-muted/20">
+                        <div className="text-sm text-muted-foreground mb-4 font-medium">Preview</div>
+                        <MarkdownPreview content={formData.content} />
+                      </div>
+                    </ResizablePanel>
+                  </>
+                )}
+              </ResizablePanelGroup>
+            </div>
           </div>
 
           <div className="space-y-2">

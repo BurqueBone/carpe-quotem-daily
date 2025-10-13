@@ -80,9 +80,11 @@ export type Database = {
       blog_posts: {
         Row: {
           author_id: string | null
+          blog_focus: Database["public"]["Enums"]["blog_focus_type"] | null
           content: string
           created_at: string
           excerpt: string | null
+          featured_image_url: string | null
           id: string
           is_published: boolean
           meta_description: string | null
@@ -94,9 +96,11 @@ export type Database = {
         }
         Insert: {
           author_id?: string | null
+          blog_focus?: Database["public"]["Enums"]["blog_focus_type"] | null
           content: string
           created_at?: string
           excerpt?: string | null
+          featured_image_url?: string | null
           id?: string
           is_published?: boolean
           meta_description?: string | null
@@ -108,9 +112,11 @@ export type Database = {
         }
         Update: {
           author_id?: string | null
+          blog_focus?: Database["public"]["Enums"]["blog_focus_type"] | null
           content?: string
           created_at?: string
           excerpt?: string | null
+          featured_image_url?: string | null
           id?: string
           is_published?: boolean
           meta_description?: string | null
@@ -591,6 +597,10 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      blog_focus_type:
+        | "resource_review"
+        | "memento_mori_research"
+        | "meaningful_life"
       template_variable_category: "system" | "user" | "content" | "custom"
       template_variable_data_type:
         | "text"
@@ -726,6 +736,11 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      blog_focus_type: [
+        "resource_review",
+        "memento_mori_research",
+        "meaningful_life",
+      ],
       template_variable_category: ["system", "user", "content", "custom"],
       template_variable_data_type: ["text", "url", "date", "boolean", "number"],
     },

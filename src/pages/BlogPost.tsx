@@ -9,6 +9,8 @@ import { Calendar, ArrowLeft, Tag } from 'lucide-react';
 import { format } from 'date-fns';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { MarkdownPreview } from '@/components/MarkdownPreview';
+import { formatBlogFocus, getBlogFocusColor, BlogFocus } from '@/utils/blogHelpers';
 
 interface BlogPost {
   id: string;
@@ -19,6 +21,8 @@ interface BlogPost {
   published_at: string;
   meta_title: string;
   meta_description: string;
+  blog_focus?: BlogFocus;
+  featured_image_url?: string;
 }
 
 interface Category {
@@ -153,6 +157,17 @@ const BlogPost = () => {
             </Button>
           </Link>
 
+          {/* Featured Image */}
+          {post.featured_image_url && (
+            <div className="mb-8 rounded-lg overflow-hidden shadow-lg">
+              <img 
+                src={post.featured_image_url} 
+                alt={post.title}
+                className="w-full h-auto object-cover max-h-[500px]"
+              />
+            </div>
+          )}
+
           {/* Article Header */}
           <header className="mb-8">
             <div className="flex items-center gap-2 text-muted-foreground mb-4">
@@ -172,28 +187,30 @@ const BlogPost = () => {
               </p>
             )}
 
-            {/* Categories */}
-            {categories.length > 0 && (
-              <div className="flex items-center gap-2 flex-wrap">
-                <Tag className="h-4 w-4 text-muted-foreground" />
-                {categories.map(category => (
-                  <Badge key={category.id} variant="secondary">
-                    {category.name}
-                  </Badge>
-                ))}
-              </div>
-            )}
+            {/* Categories and Blog Focus */}
+            <div className="flex items-center gap-3 flex-wrap">
+              {post.blog_focus && (
+                <Badge className={getBlogFocusColor(post.blog_focus)}>
+                  {formatBlogFocus(post.blog_focus)}
+                </Badge>
+              )}
+              {categories.length > 0 && (
+                <>
+                  <Tag className="h-4 w-4 text-muted-foreground" />
+                  {categories.map(category => (
+                    <Badge key={category.id} variant="secondary">
+                      {category.name}
+                    </Badge>
+                  ))}
+                </>
+              )}
+            </div>
           </header>
 
           {/* Article Content */}
           <Card>
-            <CardContent className="prose prose-lg max-w-none p-8">
-              <div 
-                className="text-foreground leading-relaxed"
-                style={{ whiteSpace: 'pre-wrap' }}
-              >
-                {post.content}
-              </div>
+            <CardContent className="p-8">
+              <MarkdownPreview content={post.content} />
             </CardContent>
           </Card>
 

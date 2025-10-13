@@ -1,0 +1,172 @@
+/* Markdown Editor Styles */
+.markdown-editor-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+/* Light theme */
+@media (prefers-color-scheme: light) {
+  .EasyMDEContainer {
+    background: hsl(var(--background));
+  }
+
+  .EasyMDEContainer .CodeMirror {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  .EasyMDEContainer .CodeMirror-focused {
+    border-color: hsl(var(--primary));
+    outline: 2px solid hsl(var(--primary) / 0.2);
+    outline-offset: 2px;
+  }
+
+  .EasyMDEContainer .editor-toolbar {
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-bottom: none;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .EasyMDEContainer .editor-toolbar button {
+    color: hsl(var(--foreground));
+  }
+
+  .EasyMDEContainer .editor-toolbar button:hover,
+  .EasyMDEContainer .editor-toolbar button.active {
+    background: hsl(var(--primary) / 0.1);
+    border-color: hsl(var(--primary));
+  }
+
+  .EasyMDEContainer .editor-preview,
+  .EasyMDEContainer .editor-preview-side {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  .EasyMDEContainer .CodeMirror-cursor {
+    border-left-color: hsl(var(--foreground));
+  }
+}
+
+/* Dark theme */
+@media (prefers-color-scheme: dark) {
+  .EasyMDEContainer {
+    background: hsl(var(--background));
+  }
+
+  .EasyMDEContainer .CodeMirror {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  .EasyMDEContainer .CodeMirror-focused {
+    border-color: hsl(var(--primary));
+    outline: 2px solid hsl(var(--primary) / 0.2);
+    outline-offset: 2px;
+  }
+
+  .EasyMDEContainer .editor-toolbar {
+    background: hsl(var(--background));
+    border: 1px solid hsl(var(--border));
+    border-bottom: none;
+    border-radius: 0.5rem 0.5rem 0 0;
+  }
+
+  .EasyMDEContainer .editor-toolbar button {
+    color: hsl(var(--foreground));
+  }
+
+  .EasyMDEContainer .editor-toolbar button:hover,
+  .EasyMDEContainer .editor-toolbar button.active {
+    background: hsl(var(--primary) / 0.2);
+    border-color: hsl(var(--primary));
+  }
+
+  .EasyMDEContainer .editor-preview,
+  .EasyMDEContainer .editor-preview-side {
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
+  }
+
+  .EasyMDEContainer .CodeMirror-cursor {
+    border-left-color: hsl(var(--foreground));
+  }
+
+  .EasyMDEContainer .cm-header {
+    color: hsl(var(--primary));
+  }
+
+  .EasyMDEContainer .cm-quote {
+    color: hsl(var(--muted-foreground));
+  }
+
+  .EasyMDEContainer .cm-link {
+    color: hsl(var(--primary));
+  }
+
+  .EasyMDEContainer .cm-url {
+    color: hsl(var(--primary) / 0.7);
+  }
+}
+
+/* Common styles */
+.EasyMDEContainer .CodeMirror {
+  min-height: 400px;
+  font-size: 14px;
+  line-height: 1.6;
+  padding: 1rem;
+}
+
+.EasyMDEContainer .editor-toolbar {
+  opacity: 1;
+  padding: 0.5rem;
+}
+
+.EasyMDEContainer .editor-toolbar button {
+  border-radius: 0.25rem;
+  margin: 0 2px;
+}
+
+.EasyMDEContainer .editor-toolbar i.separator {
+  border-left: 1px solid hsl(var(--border));
+  margin: 0 6px;
+}
+
+.EasyMDEContainer .editor-statusbar {
+  color: hsl(var(--muted-foreground));
+  font-size: 12px;
+  padding: 0.5rem 1rem;
+}
+
+.EasyMDEContainer .CodeMirror-scroll {
+  min-height: 400px;
+}
+
+/* Preview styles */
+.EasyMDEContainer .editor-preview-side {
+  border-left: 1px solid hsl(var(--border));
+  padding: 1rem;
+}
+
+.EasyMDEContainer .editor-preview {
+  padding: 1rem;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .EasyMDEContainer .CodeMirror {
+    min-height: 300px;
+    font-size: 13px;
+  }
+
+  .EasyMDEContainer .editor-toolbar button {
+    font-size: 14px;
+  }
+}

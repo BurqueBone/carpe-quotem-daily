@@ -8,8 +8,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/components/AuthContext';
 import { useToast } from '@/hooks/use-toast';
 import AdminLayout from '@/components/AdminLayout';
-import { Plus, Edit, Trash2, Search } from 'lucide-react';
+import { Plus, Edit, Trash2, Search, ImageIcon } from 'lucide-react';
 import { format } from 'date-fns';
+import { formatBlogFocus, getBlogFocusColor, BlogFocus } from '@/utils/blogHelpers';
 
 interface BlogPost {
   id: string;
@@ -20,6 +21,8 @@ interface BlogPost {
   published_at: string | null;
   created_at: string;
   updated_at: string;
+  blog_focus?: BlogFocus;
+  featured_image_url?: string;
 }
 
 const AdminBlog = () => {
@@ -46,7 +49,7 @@ const AdminBlog = () => {
     try {
       const { data, error } = await supabase
         .from('blog_posts')
-        .select('*')
+        .select('id, title, slug, excerpt, is_published, published_at, created_at, updated_at, blog_focus, featured_image_url')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -154,24 +157,45 @@ const AdminBlog = () => {
                 <Card key={post.id}>
                   <CardHeader>
                     <div className="flex justify-between items-start gap-4">
-                      <div className="flex-1">
+                      {post.featured_image_url && (
+                        <div className="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                          <img 
+                            src={post.featured_image_url}
+                            alt={post.title}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      {!post.featured_image_url && (
+                        <div className="w-24 h-24 rounded-lg bg-muted flex items-center justify-center flex-shrink-0">
+                          <ImageIcon className="h-8 w-8 text-muted-foreground" />
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
                         <CardTitle className="text-xl mb-2">{post.title}</CardTitle>
                         {post.excerpt && (
-                          <p className="text-muted-foreground text-sm line-clamp-2">
+                          <p className="text-muted-foreground text-sm line-clamp-2 mb-2">
                             {post.excerpt}
                           </p>
                         )}
-                        <div className="flex items-center gap-4 mt-3 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2 mb-2 flex-wrap">
+                          {post.blog_focus && (
+                            <Badge className={getBlogFocusColor(post.blog_focus)}>
+                              {formatBlogFocus(post.blog_focus)}
+                            </Badge>
+                          )}
+                          <Badge variant={post.is_published ? "default" : "secondary"}>
+                            {post.is_published ? 'Published' : 'Draft'}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
                           <span>Created {format(new Date(post.created_at), 'MMM dd, yyyy')}</span>
                           {post.published_at && (
                             <span>Published {format(new Date(post.published_at), 'MMM dd, yyyy')}</span>
                           )}
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Badge variant={post.is_published ? "default" : "secondary"}>
-                          {post.is_published ? 'Published' : 'Draft'}
-                        </Badge>
+                      <div className="flex items-center gap-2 flex-shrink-0">
                         <Button
                           variant="outline"
                           size="sm"

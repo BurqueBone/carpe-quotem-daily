@@ -10,6 +10,7 @@ import { Search, Calendar, ArrowRight } from 'lucide-react';
 import { format } from 'date-fns';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
+import { formatBlogFocus, getBlogFocusColor, BlogFocus } from '@/utils/blogHelpers';
 
 interface BlogPost {
   id: string;
@@ -19,6 +20,8 @@ interface BlogPost {
   published_at: string;
   meta_title: string;
   meta_description: string;
+  blog_focus?: BlogFocus;
+  featured_image_url?: string;
 }
 
 interface Category {
@@ -34,6 +37,7 @@ const Blog = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [selectedFocus, setSelectedFocus] = useState<BlogFocus | ''>('');
 
   useEffect(() => {
     fetchPosts();
@@ -45,7 +49,7 @@ const Blog = () => {
     try {
       const { data, error } = await supabase
         .from('blog_posts')
-        .select('id, title, slug, excerpt, published_at, meta_title, meta_description')
+        .select('id, title, slug, excerpt, published_at, meta_title, meta_description, blog_focus, featured_image_url')
         .eq('is_published', true)
         .order('published_at', { ascending: false });
 
@@ -116,10 +120,12 @@ const Blog = () => {
     }
   };
 
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.excerpt?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFocus = !selectedFocus || post.blog_focus === selectedFocus;
+    return matchesSearch && matchesFocus;
+  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -137,7 +143,7 @@ const Blog = () => {
         </div>
 
         {/* Search and Filter */}
-        <div className="flex flex-col md:flex-row gap-4 mb-8">
+        <div className="flex flex-col gap-4 mb-8">
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
             <Input
@@ -148,24 +154,59 @@ const Blog = () => {
             />
           </div>
           
-          <div className="flex gap-2 flex-wrap">
-            <Button
-              variant={selectedCategory === '' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => handleCategoryFilter('')}
-            >
-              All Posts
-            </Button>
-            {categories.map(category => (
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-2 flex-wrap items-center">
+              <span className="text-sm text-muted-foreground font-medium">Categories:</span>
               <Button
-                key={category.id}
-                variant={selectedCategory === category.id ? 'default' : 'outline'}
+                variant={selectedCategory === '' ? 'default' : 'outline'}
                 size="sm"
-                onClick={() => handleCategoryFilter(category.id)}
+                onClick={() => handleCategoryFilter('')}
               >
-                {category.name}
+                All Posts
               </Button>
-            ))}
+              {categories.map(category => (
+                <Button
+                  key={category.id}
+                  variant={selectedCategory === category.id ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => handleCategoryFilter(category.id)}
+                >
+                  {category.name}
+                </Button>
+              ))}
+            </div>
+
+            <div className="flex gap-2 flex-wrap items-center">
+              <span className="text-sm text-muted-foreground font-medium">Blog Focus:</span>
+              <Button
+                variant={selectedFocus === '' ? 'secondary' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFocus('')}
+              >
+                All
+              </Button>
+              <Button
+                variant={selectedFocus === 'resource_review' ? 'secondary' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFocus('resource_review')}
+              >
+                Resource Review
+              </Button>
+              <Button
+                variant={selectedFocus === 'memento_mori_research' ? 'secondary' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFocus('memento_mori_research')}
+              >
+                Memento Mori Research
+              </Button>
+              <Button
+                variant={selectedFocus === 'meaningful_life' ? 'secondary' : 'outline'}
+                size="sm"
+                onClick={() => setSelectedFocus('meaningful_life')}
+              >
+                Meaningful Life
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -185,12 +226,27 @@ const Blog = () => {
         ) : (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {filteredPosts.map((post) => (
-              <Card key={post.id} className="h-full hover:shadow-lg transition-shadow">
+              <Card key={post.id} className="h-full hover:shadow-lg transition-shadow overflow-hidden">
+                {post.featured_image_url && (
+                  <div className="aspect-video w-full overflow-hidden">
+                    <img 
+                      src={post.featured_image_url}
+                      alt={post.title}
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      loading="lazy"
+                    />
+                  </div>
+                )}
                 <CardHeader>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mb-2">
                     <Calendar className="h-4 w-4" />
                     {format(new Date(post.published_at), 'MMM dd, yyyy')}
                   </div>
+                  {post.blog_focus && (
+                    <Badge variant="outline" className={`mb-2 ${getBlogFocusColor(post.blog_focus)} text-xs`}>
+                      {formatBlogFocus(post.blog_focus)}
+                    </Badge>
+                  )}
                   <CardTitle className="text-xl mb-3 line-clamp-2">
                     {post.title}
                   </CardTitle>
