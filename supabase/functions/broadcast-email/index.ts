@@ -1,20 +1,20 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'Referrer-Policy': 'no-referrer',
-  'Permissions-Policy': 'geolocation=(), microphone=(), camera=()()',
-  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
-  'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "no-referrer",
+  "Permissions-Policy": "geolocation=(), microphone=(), camera=()()",
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
 };
 
 interface BroadcastRequest {
-  action?: 'preview';
+  action?: "preview";
   subject?: string;
   preheader?: string;
   cta_url?: string;
@@ -22,63 +22,61 @@ interface BroadcastRequest {
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method not allowed' }), {
+  if (req.method !== "POST") {
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
       status: 405,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const body = (await req.json().catch(() => ({}))) as BroadcastRequest;
 
     // Get the broadcast email template from database
     const { data: emailTemplate, error: templateError } = await supabase
-      .from('email_templates')
-      .select('subject, html_content')
-      .eq('template_name', 'broadcast')
-      .eq('is_active', true)
+      .from("email_templates")
+      .select("subject, html_content")
+      .eq("template_name", "broadcast")
+      .eq("is_active", true)
       .maybeSingle();
 
     if (templateError) {
-      console.error('broadcast-email: error fetching template', templateError);
-      return new Response(JSON.stringify({ error: 'Failed to fetch email template' }), {
+      console.error("broadcast-email: error fetching template", templateError);
+      return new Response(JSON.stringify({ error: "Failed to fetch email template" }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
     // Get today's quote (same source as daily emails)
-    const { data: quote, error: quoteError } = await supabase
-      .rpc('get_random_quote_and_track')
-      .single();
+    const { data: quote, error: quoteError } = await supabase.rpc("get_random_quote_and_track").single();
 
     if (quoteError) {
-      console.error('broadcast-email: error fetching quote', quoteError);
-      return new Response(JSON.stringify({ error: 'Failed to fetch quote' }), {
+      console.error("broadcast-email: error fetching quote", quoteError);
+      return new Response(JSON.stringify({ error: "Failed to fetch quote" }), {
         status: 500,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
     if (!quote) {
-      return new Response(JSON.stringify({ error: 'No quote found' }), {
+      return new Response(JSON.stringify({ error: "No quote found" }), {
         status: 404,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
-    const subject = body.subject?.trim() || (emailTemplate?.subject || 'Your Sunday4k Daily Inspiration');
-    const preheader = body.preheader?.trim() || 'A gentle nudge toward a more meaningful day';
-    const ctaUrl = body.cta_url?.trim() || 'https://sunday4k.life';
+    const subject = body.subject?.trim() || emailTemplate?.subject || "Your Sunday4k Daily Inspiration";
+    const preheader = body.preheader?.trim() || "A gentle nudge toward a more meaningful day";
+    const ctaUrl = body.cta_url?.trim() || "https://sunday4k.life";
 
     let html: string;
     if (emailTemplate) {
@@ -91,7 +89,7 @@ serve(async (req) => {
       });
     } else {
       // Fallback to hardcoded template
-      console.warn('No broadcast template found, using fallback');
+      console.warn("No broadcast template found, using fallback");
       html = generateBroadcastHTML({
         subject,
         preheader,
@@ -100,44 +98,54 @@ serve(async (req) => {
       });
     }
 
-    return new Response(
-      JSON.stringify({ success: true, subject, html }),
-      {
-        status: 200,
-        headers: { 'Content-Type': 'application/json', ...corsHeaders },
-      }
-    );
+    return new Response(JSON.stringify({ success: true, subject, html }), {
+      status: 200,
+      headers: { "Content-Type": "application/json", ...corsHeaders },
+    });
   } catch (error: any) {
-    console.error('broadcast-email error:', error);
-    return new Response(JSON.stringify({ success: false, error: error.message || 'Unknown error' }), {
+    console.error("broadcast-email error:", error);
+    return new Response(JSON.stringify({ success: false, error: error.message || "Unknown error" }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json', ...corsHeaders },
+      headers: { "Content-Type": "application/json", ...corsHeaders },
     });
   }
 });
 
-function generateEmailFromTemplate(template: string, data: { subject: string; preheader: string; ctaUrl: string; quote: any }): string {
+function generateEmailFromTemplate(
+  template: string,
+  data: { subject: string; preheader: string; ctaUrl: string; quote: any },
+): string {
   let emailHTML = template;
-  
+
   // Replace placeholders
   emailHTML = emailHTML.replace(/\{\{subject\}\}/g, escapeHtml(data.subject));
   emailHTML = emailHTML.replace(/\{\{preheader\}\}/g, escapeHtml(data.preheader));
   emailHTML = emailHTML.replace(/\{\{cta_url\}\}/g, escapeAttr(data.ctaUrl));
   emailHTML = emailHTML.replace(/\{\{quote_text\}\}/g, escapeHtml(data.quote.quote));
-  emailHTML = emailHTML.replace(/\{\{quote_author\}\}/g, escapeHtml(data.quote.author || 'Unknown'));
-  emailHTML = emailHTML.replace(/\{\{quote_source\}\}/g, data.quote.source ? `, ${escapeHtml(data.quote.source)}` : '');
-  
+  emailHTML = emailHTML.replace(/\{\{quote_author\}\}/g, escapeHtml(data.quote.author || "Unknown"));
+  emailHTML = emailHTML.replace(/\{\{quote_source\}\}/g, data.quote.source ? `, ${escapeHtml(data.quote.source)}` : "");
+
   return emailHTML;
 }
 
 // Fallback function (kept for backward compatibility)
-function generateBroadcastHTML({ subject, preheader, ctaUrl, quote }: { subject: string; preheader: string; ctaUrl: string; quote: any }) {
+function generateBroadcastHTML({
+  subject,
+  preheader,
+  ctaUrl,
+  quote,
+}: {
+  subject: string;
+  preheader: string;
+  ctaUrl: string;
+  quote: any;
+}) {
   // Brand palette
-  const primary = '#9381ff';
-  const secondary = '#FFD8BE';
-  const accent = '#B8B8FF';
-  const canvas = '#F8F7FF';
-  const cream = '#FFEEDD';
+  const primary = "#9381ff";
+  const secondary = "#FFD8BE";
+  const accent = "#B8B8FF";
+  const canvas = "#F8F7FF";
+  const cream = "#FFEEDD";
 
   return `
   <!DOCTYPE html>
@@ -173,13 +181,13 @@ function generateBroadcastHTML({ subject, preheader, ctaUrl, quote }: { subject:
         <div class="card">
           <div class="header">
             <div class="logo">Sunday4k</div>
-            <div class="tagline">Daily inspiration for meaningful living</div>
+            <div class="tagline">Your life in weeks. Your weeks in focus.</div>
           </div>
           <div class="content">
             <p class="intro">Here's your daily reminder to live fully and meaningfully:</p>
             <div class="quote-wrap">
               <div class="quote">"${escapeHtml(quote.quote)}"</div>
-              <p class="author">— ${escapeHtml(quote.author || 'Unknown')}${quote.source ? `, ${escapeHtml(quote.source)}` : ''}</p>
+              <p class="author">— ${escapeHtml(quote.author || "Unknown")}${quote.source ? `, ${escapeHtml(quote.source)}` : ""}</p>
             </div>
             <p class="intro">Take a moment to reflect on these words. How might you bring a little more intention, kindness, or courage into today?</p>
             <div class="cta">
@@ -199,13 +207,13 @@ function generateBroadcastHTML({ subject, preheader, ctaUrl, quote }: { subject:
 
 function escapeHtml(input: string) {
   return String(input)
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
 function escapeAttr(input: string) {
-  return escapeHtml(input).replace(/"/g, '&quot;');
+  return escapeHtml(input).replace(/"/g, "&quot;");
 }

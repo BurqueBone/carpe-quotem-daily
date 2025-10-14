@@ -1,40 +1,40 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { Webhook } from 'https://esm.sh/standardwebhooks@1.0.0';
+import { Webhook } from "https://esm.sh/standardwebhooks@1.0.0";
 import { Resend } from "https://esm.sh/resend@2.0.0";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
-import { maskEmail } from '../shared/email-masking.ts';
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
+import { maskEmail } from "../shared/email-masking.ts";
 
-const resend = new Resend(Deno.env.get('RESEND_API_KEY'));
-const hookSecret = Deno.env.get('SUPABASE_AUTH_WEBHOOK_SECRET') || '';
+const resend = new Resend(Deno.env.get("RESEND_API_KEY"));
+const hookSecret = Deno.env.get("SUPABASE_AUTH_WEBHOOK_SECRET") || "";
 
 // In-memory dedupe for rapid retries (best-effort, not persistent)
 const seenTokenHashes = new Set<string>();
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'X-Content-Type-Options': 'nosniff',
-  'X-Frame-Options': 'DENY',
-  'Referrer-Policy': 'no-referrer',
-  'Permissions-Policy': 'geolocation=(), microphone=(), camera=()',
-  'Strict-Transport-Security': 'max-age=63072000; includeSubDomains; preload',
-  'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "X-Content-Type-Options": "nosniff",
+  "X-Frame-Options": "DENY",
+  "Referrer-Policy": "no-referrer",
+  "Permissions-Policy": "geolocation=(), microphone=(), camera=()",
+  "Strict-Transport-Security": "max-age=63072000; includeSubDomains; preload",
+  "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'; base-uri 'none'; form-action 'none'",
 };
 
 serve(async (req) => {
   // Handle CORS preflight requests
-  if (req.method === 'OPTIONS') {
+  if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
-  if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405, headers: corsHeaders });
+  if (req.method !== "POST") {
+    return new Response("Method not allowed", { status: 405, headers: corsHeaders });
   }
 
   try {
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const payload = await req.text();
@@ -46,37 +46,31 @@ serve(async (req) => {
       try {
         wh.verify(payload, headers);
       } catch (error) {
-        console.error('Webhook verification failed:', error);
-        return new Response('Unauthorized', { status: 401, headers: corsHeaders });
+        console.error("Webhook verification failed:", error);
+        return new Response("Unauthorized", { status: 401, headers: corsHeaders });
       }
     }
 
     const webhookData = JSON.parse(payload);
-    console.log('Auth webhook received:', webhookData);
+    console.log("Auth webhook received:", webhookData);
 
     const {
       user,
-      email_data: { 
-        token, 
-        token_hash, 
-        redirect_to, 
-        email_action_type,
-        site_url 
-      }
+      email_data: { token, token_hash, redirect_to, email_action_type, site_url },
     } = webhookData;
 
     if (!user?.email) {
-      throw new Error('No user email found in webhook data');
+      throw new Error("No user email found in webhook data");
     }
 
     // Best-effort in-memory dedupe to avoid double sends on rapid retries
     if (token_hash) {
       if (seenTokenHashes.has(token_hash)) {
-        console.log('🟡 Duplicate webhook suppressed for token_hash:', token_hash.slice(0, 8) + '...');
-        return new Response(
-          JSON.stringify({ success: true, deduped: true }),
-          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
+        console.log("🟡 Duplicate webhook suppressed for token_hash:", token_hash.slice(0, 8) + "...");
+        return new Response(JSON.stringify({ success: true, deduped: true }), {
+          status: 200,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
       seenTokenHashes.add(token_hash);
       // Prevent unbounded growth
@@ -88,58 +82,60 @@ serve(async (req) => {
 
     // Determine if this is a magic link or OTP code request
     // Prefer client hint via redirect_to query param: ?flow=magic|otp
-    let flowParam = '';
+    let flowParam = "";
     try {
       if (redirect_to) {
         const u = new URL(redirect_to);
-        flowParam = u.searchParams.get('flow') || '';
+        flowParam = u.searchParams.get("flow") || "";
       }
-    } catch (_e) { /* ignore malformed URL */ }
+    } catch (_e) {
+      /* ignore malformed URL */
+    }
 
-    const isMagicLink = flowParam !== 'otp' && !!(redirect_to && redirect_to.trim().length > 0);
-    
-    console.log('🔍 Detection logic:', {
-      redirect_to: redirect_to || '(empty)',
+    const isMagicLink = flowParam !== "otp" && !!(redirect_to && redirect_to.trim().length > 0);
+
+    console.log("🔍 Detection logic:", {
+      redirect_to: redirect_to || "(empty)",
       email_action_type,
       flowParam,
       isMagicLink,
-      flow: isMagicLink ? '🔗 MAGIC LINK' : '🔢 OTP CODE'
+      flow: isMagicLink ? "🔗 MAGIC LINK" : "🔢 OTP CODE",
     });
-    
+
     // Map email action types to template names
     let templateName: string;
     switch (email_action_type) {
-      case 'signup':
-        templateName = 'signup';
+      case "signup":
+        templateName = "signup";
         break;
-      case 'recovery':
-        templateName = 'password_reset';
+      case "recovery":
+        templateName = "password_reset";
         break;
-      case 'invite':
-        templateName = 'invite';
+      case "invite":
+        templateName = "invite";
         break;
-      case 'magiclink':
-      case 'magic_link':
-      case 'email':
-      case 'otp':
+      case "magiclink":
+      case "magic_link":
+      case "email":
+      case "otp":
         // Use unified auth template for both magic link and OTP code
-        templateName = 'magic_link';
+        templateName = "magic_link";
         break;
       default:
         // Fallback to a generic template or use signup
-        templateName = 'signup';
+        templateName = "signup";
     }
 
     // Get the email template from database
     const { data: emailTemplate, error: templateError } = await supabase
-      .from('email_templates')
-      .select('subject, html_content')
-      .eq('template_name', templateName)
-      .eq('is_active', true)
+      .from("email_templates")
+      .select("subject, html_content")
+      .eq("template_name", templateName)
+      .eq("is_active", true)
       .maybeSingle();
 
     if (templateError) {
-      console.error('Error fetching email template:', templateError);
+      console.error("Error fetching email template:", templateError);
       throw templateError;
     }
 
@@ -148,44 +144,44 @@ serve(async (req) => {
 
     // If the user requested an OTP code, ALWAYS send the code-only email via Resend
     if (!isMagicLink) {
-      subject = 'Your Sunday4k Login Code';
+      subject = "Your Sunday4k Login Code";
       html = generateUnifiedAuthEmailHTML(token, token_hash, redirect_to, site_url, false);
-      console.log('✳️ Forcing OTP code email (no magic link button)');
+      console.log("✳️ Forcing OTP code email (no magic link button)");
     } else if (emailTemplate) {
       // Use template from database for magic link
       subject = processConditionalBlocks(emailTemplate.subject, true);
       html = generateEmailFromTemplate(
-        emailTemplate.html_content, 
-        token, 
-        token_hash, 
-        redirect_to, 
-        site_url, 
+        emailTemplate.html_content,
+        token,
+        token_hash,
+        redirect_to,
+        site_url,
         email_action_type,
-        true
+        true,
       );
     } else {
       // Fallback to hardcoded templates if not found
       console.warn(`No template found for ${templateName}, using fallback`);
-      
-      if (templateName === 'magic_link') {
-        subject = 'Your Sunday4k Login Link';
+
+      if (templateName === "magic_link") {
+        subject = "Your Sunday4k Login Link";
         html = generateUnifiedAuthEmailHTML(token, token_hash, redirect_to, site_url, true);
       } else {
         switch (email_action_type) {
-          case 'signup':
-            subject = 'Welcome to Sunday4k - Confirm Your Email';
+          case "signup":
+            subject = "Welcome to Sunday4k - Confirm Your Email";
             html = generateSignupEmailHTML(token, token_hash, redirect_to, site_url);
             break;
-          case 'recovery':
-            subject = 'Reset Your Sunday4k Password';
+          case "recovery":
+            subject = "Reset Your Sunday4k Password";
             html = generatePasswordResetEmailHTML(token, token_hash, redirect_to, site_url);
             break;
-          case 'invite':
+          case "invite":
             subject = "You're Invited to Join Sunday4k";
             html = generateInviteEmailHTML(token, token_hash, redirect_to, site_url);
             break;
           default:
-            subject = 'Sunday4k Authentication';
+            subject = "Sunday4k Authentication";
             html = generateGenericAuthEmailHTML(token, token_hash, redirect_to, site_url, email_action_type);
         }
       }
@@ -205,26 +201,22 @@ serve(async (req) => {
 
     console.log(`Auth email sent successfully to ${maskEmail(user.email)} for ${email_action_type}`);
 
-    return new Response(
-      JSON.stringify({ success: true }),
-      {
-        status: 200,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
-    );
-
+    return new Response(JSON.stringify({ success: true }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
-    console.error('Error in send-auth-email function:', error);
-    
+    console.error("Error in send-auth-email function:", error);
+
     return new Response(
       JSON.stringify({
         success: false,
-        error: (error as Error).message
+        error: (error as Error).message,
       }),
       {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      }
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      },
     );
   }
 });
@@ -233,51 +225,53 @@ serve(async (req) => {
 function processConditionalBlocks(content: string, isMagicLink: boolean): string {
   // Remove OTP blocks if this is a magic link
   if (isMagicLink) {
-    content = content.replace(/\{\{#if_otp\}\}[\s\S]*?\{\{\/if_otp\}\}/g, '');
-    content = content.replace(/\{\{#if_magic_link\}\}([\s\S]*?)\{\{\/if_magic_link\}\}/g, '$1');
-  } 
+    content = content.replace(/\{\{#if_otp\}\}[\s\S]*?\{\{\/if_otp\}\}/g, "");
+    content = content.replace(/\{\{#if_magic_link\}\}([\s\S]*?)\{\{\/if_magic_link\}\}/g, "$1");
+  }
   // Remove magic link blocks if this is OTP
   else {
-    content = content.replace(/\{\{#if_magic_link\}\}[\s\S]*?\{\{\/if_magic_link\}\}/g, '');
-    content = content.replace(/\{\{#if_otp\}\}([\s\S]*?)\{\{\/if_otp\}\}/g, '$1');
+    content = content.replace(/\{\{#if_magic_link\}\}[\s\S]*?\{\{\/if_magic_link\}\}/g, "");
+    content = content.replace(/\{\{#if_otp\}\}([\s\S]*?)\{\{\/if_otp\}\}/g, "$1");
   }
   return content;
 }
 
 function generateEmailFromTemplate(
-  template: string, 
-  token: string, 
-  token_hash: string, 
-  redirect_to: string, 
-  site_url: string, 
+  template: string,
+  token: string,
+  token_hash: string,
+  redirect_to: string,
+  site_url: string,
   email_action_type: string,
-  isMagicLink: boolean
+  isMagicLink: boolean,
 ): string {
   // Step 1: Process conditional blocks FIRST
   let emailHTML = processConditionalBlocks(template, isMagicLink);
-  
+
   // Step 2: Build action URL
-  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
-  
+  const authBase = site_url.includes("/auth/v1")
+    ? site_url.replace(/\/$/, "")
+    : `${site_url.replace(/\/$/, "")}/auth/v1`;
+
   let actionUrl: string;
   switch (email_action_type) {
-    case 'signup':
+    case "signup":
       actionUrl = `${authBase}/verify?token=${token_hash}&type=signup&redirect_to=${encodeURIComponent(redirect_to)}`;
       break;
-    case 'recovery':
+    case "recovery":
       actionUrl = `${authBase}/verify?token=${token_hash}&type=recovery&redirect_to=${encodeURIComponent(redirect_to)}`;
       break;
-    case 'invite':
+    case "invite":
       actionUrl = `${authBase}/verify?token=${token_hash}&type=invite&redirect_to=${encodeURIComponent(redirect_to)}`;
       break;
-    case 'magiclink':
-    case 'magic_link':
+    case "magiclink":
+    case "magic_link":
       actionUrl = `${authBase}/verify?token=${token_hash}&type=magiclink&redirect_to=${encodeURIComponent(redirect_to)}`;
       break;
     default:
       actionUrl = `${authBase}/verify?token=${token_hash}&type=${email_action_type}&redirect_to=${encodeURIComponent(redirect_to)}`;
   }
-  
+
   // Step 3: Replace all placeholders
   emailHTML = emailHTML.replace(/\{\{confirmation_url\}\}/g, actionUrl);
   emailHTML = emailHTML.replace(/\{\{reset_password_url\}\}/g, actionUrl);
@@ -286,15 +280,23 @@ function generateEmailFromTemplate(
   emailHTML = emailHTML.replace(/\{\{action_url\}\}/g, actionUrl);
   emailHTML = emailHTML.replace(/\{\{code\}\}/g, token);
   emailHTML = emailHTML.replace(/\{\{token\}\}/g, token);
-  
+
   return emailHTML;
 }
 
 // Unified authentication email template that handles both magic link and OTP code
-function generateUnifiedAuthEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string, isMagicLink: boolean): string {
-  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+function generateUnifiedAuthEmailHTML(
+  token: string,
+  token_hash: string,
+  redirect_to: string,
+  site_url: string,
+  isMagicLink: boolean,
+): string {
+  const authBase = site_url.includes("/auth/v1")
+    ? site_url.replace(/\/$/, "")
+    : `${site_url.replace(/\/$/, "")}/auth/v1`;
   const loginUrl = `${authBase}/verify?token=${token_hash}&type=magiclink&redirect_to=${encodeURIComponent(redirect_to)}`;
-  
+
   if (isMagicLink) {
     // Magic Link version
     return `
@@ -360,9 +362,11 @@ function generateUnifiedAuthEmailHTML(token: string, token_hash: string, redirec
 // Fallback functions (kept for backward compatibility)
 
 function generateSignupEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
-  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  const authBase = site_url.includes("/auth/v1")
+    ? site_url.replace(/\/$/, "")
+    : `${site_url.replace(/\/$/, "")}/auth/v1`;
   const confirmUrl = `${authBase}/verify?token=${token_hash}&type=signup&redirect_to=${encodeURIComponent(redirect_to)}`;
-  
+
   return `
     ${getEmailHeader()}
     <div class="content">
@@ -393,10 +397,17 @@ function generateSignupEmailHTML(token: string, token_hash: string, redirect_to:
   `;
 }
 
-function generatePasswordResetEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
-  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+function generatePasswordResetEmailHTML(
+  token: string,
+  token_hash: string,
+  redirect_to: string,
+  site_url: string,
+): string {
+  const authBase = site_url.includes("/auth/v1")
+    ? site_url.replace(/\/$/, "")
+    : `${site_url.replace(/\/$/, "")}/auth/v1`;
   const resetUrl = `${authBase}/verify?token=${token_hash}&type=recovery&redirect_to=${encodeURIComponent(redirect_to)}`;
-  
+
   return `
     ${getEmailHeader()}
     <div class="content">
@@ -432,9 +443,11 @@ function generatePasswordResetEmailHTML(token: string, token_hash: string, redir
 }
 
 function generateInviteEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string): string {
-  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+  const authBase = site_url.includes("/auth/v1")
+    ? site_url.replace(/\/$/, "")
+    : `${site_url.replace(/\/$/, "")}/auth/v1`;
   const inviteUrl = `${authBase}/verify?token=${token_hash}&type=invite&redirect_to=${encodeURIComponent(redirect_to)}`;
-  
+
   return `
     ${getEmailHeader()}
     <div class="content">
@@ -465,10 +478,18 @@ function generateInviteEmailHTML(token: string, token_hash: string, redirect_to:
   `;
 }
 
-function generateGenericAuthEmailHTML(token: string, token_hash: string, redirect_to: string, site_url: string, action_type: string): string {
-  const authBase = site_url.includes('/auth/v1') ? site_url.replace(/\/$/, '') : `${site_url.replace(/\/$/, '')}/auth/v1`;
+function generateGenericAuthEmailHTML(
+  token: string,
+  token_hash: string,
+  redirect_to: string,
+  site_url: string,
+  action_type: string,
+): string {
+  const authBase = site_url.includes("/auth/v1")
+    ? site_url.replace(/\/$/, "")
+    : `${site_url.replace(/\/$/, "")}/auth/v1`;
   const actionUrl = `${authBase}/verify?token=${token_hash}&type=${action_type}&redirect_to=${encodeURIComponent(redirect_to)}`;
-  
+
   return `
     ${getEmailHeader()}
     <div class="content">
@@ -581,7 +602,7 @@ function getEmailHeader(): string {
       <div class="container">
         <div class="header">
           <div class="logo">Sunday4k</div>
-          <div class="tagline">Daily inspiration for meaningful living</div>
+          <div class="tagline">Your life in weeks. Your weeks in focus.</div>
         </div>
   `;
 }
