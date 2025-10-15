@@ -44,7 +44,7 @@ interface PlacedBlock {
   hour: number;
 }
 
-const LifeCompass = () => {
+const WheelOfLifeAssessment = () => {
   const [currentStep, setCurrentStep] = useState<'assessment' | 'priorities' | 'designer' | 'results'>('assessment');
   const [placedBlocks, setPlacedBlocks] = useState<PlacedBlock[]>([]);
   const [nextBlockId, setNextBlockId] = useState(1);
@@ -442,10 +442,10 @@ const LifeCompass = () => {
           {/* Header */}
           <div className="text-center space-y-4 px-2">
             <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-warm bg-clip-text text-transparent">
-              Life Compass
+              Wheel of Life Assessment
             </h1>
             <p className="text-base sm:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              A two-part interactive tool to assess your current life balance and design a future 
+              Assess your current life balance across 12 key areas and design an ideal week 
               that aligns with your true priorities. Discover insights that empower meaningful change.
             </p>
           </div>
@@ -785,4 +785,4 @@ const LifeCompass = () => {
   );
 };
 
-export default LifeCompass;
+export default WheelOfLifeAssessment;

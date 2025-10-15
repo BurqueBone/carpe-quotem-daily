@@ -11,7 +11,9 @@ import AuthCallback from "./pages/AuthCallback";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import CarpeDiem from "./pages/CarpeDiem";
-import LifeCompass from "./pages/LifeCompass";
+import LifeCompassCalibration from "./pages/LifeCompassCalibration";
+import WheelOfLifeAssessment from "./pages/WheelOfLifeAssessment";
+import SimplePriorityCheckIn from "./pages/SimplePriorityCheckIn";
 import ResourceCollection from "./pages/ResourceCollection";
 import About from "./pages/About";
 import TermsOfService from "./pages/TermsOfService";
@@ -50,7 +52,9 @@ const App = () => (
             <Route path="/settings" element={<Settings />} />
             <Route path="/carpe-diem" element={<CarpeDiem />} />
             <Route path="/resource-collection" element={<ResourceCollection />} />
-            <Route path="/life-compass" element={<LifeCompass />} />
+            <Route path="/life-compass-calibration" element={<LifeCompassCalibration />} />
+            <Route path="/life-compass-calibration/wheel-of-life-assessment" element={<WheelOfLifeAssessment />} />
+            <Route path="/life-compass-calibration/simple-priority-check-in" element={<SimplePriorityCheckIn />} />
             <Route path="/about" element={<About />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/blog/:slug" element={<BlogPost />} />
