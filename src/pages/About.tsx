@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { Heart, Clock, Lightbulb, Mail } from 'lucide-react';
+import { Heart, Clock, Lightbulb, Mail, BookOpen } from 'lucide-react';
 
 const About = () => {
   return (
@@ -109,6 +109,55 @@ const About = () => {
                       This isn't about productivity hacking or life optimization. It's about remembering that you're 
                       already enough, and your life—exactly as it is right now—is worth celebrating and nurturing.
                     </p>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Inspiration Section */}
+          <Card className="bg-gradient-to-br from-background to-primary/5 border-border/50">
+            <CardContent className="p-8">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="w-12 h-12 rounded-full bg-gradient-warm flex items-center justify-center flex-shrink-0">
+                  <BookOpen className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-semibold mb-4 text-foreground">Inspired by Research & Wisdom</h2>
+                  <div className="space-y-4 text-muted-foreground leading-relaxed">
+                    <p>
+                      This website was inspired by the groundbreaking research and book{' '}
+                      <span className="text-foreground font-semibold">
+                        "You Only Die Once: How to Make It to the End with No Regrets"
+                      </span>{' '}
+                      written by <span className="text-foreground font-semibold">Jodi Wellman</span>.
+                    </p>
+                    <p>
+                      Jodi's work brilliantly combines psychology, mortality awareness, and practical strategies 
+                      to help us live with more vitality and purpose. Her insights remind us that acknowledging 
+                      our mortality isn't morbid—it's the key to living more fully.
+                    </p>
+                    <div className="flex flex-col sm:flex-row gap-3 mt-6">
+                      <a 
+                        href="https://bookshop.org/a/117658/9780316574273" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
+                        <Button variant="outline" className="w-full sm:w-auto">
+                          <BookOpen className="w-4 h-4 mr-2" />
+                          Read the Book
+                        </Button>
+                      </a>
+                      <a 
+                        href="https://fourthousandmondays.com/" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                      >
+                        <Button variant="outline" className="w-full sm:w-auto">
+                          Explore Jodi's Work
+                        </Button>
+                      </a>
+                    </div>
                   </div>
                 </div>
               </div>
