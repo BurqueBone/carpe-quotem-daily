@@ -21,17 +21,23 @@ const SimplePriorityCheckIn = () => {
     priority2Hours: 0,
     priority3Hours: 0
   });
-  const [underachieveArea, setUnderachieveArea] = useState('');
+  
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const totalPriorityHours = priorityHours.priority1Hours + priorityHours.priority2Hours + priorityHours.priority3Hours;
   const WAKING_HOURS_PER_WEEK = 112;
   const calculatedPercentage = Math.round((totalPriorityHours / WAKING_HOURS_PER_WEEK) * 100);
 
-  const hasCompletePriority = 
-    (priorities.priority1 && priorityHours.priority1Hours > 0) ||
-    (priorities.priority2 && priorityHours.priority2Hours > 0) ||
-    (priorities.priority3 && priorityHours.priority3Hours > 0);
+  const allPrioritiesComplete = 
+    priorities.priority1.trim() !== '' && 
+    priorities.priority2.trim() !== '' && 
+    priorities.priority3.trim() !== '' &&
+    priorityHours.priority1Hours !== null &&
+    priorityHours.priority2Hours !== null &&
+    priorityHours.priority3Hours !== null &&
+    Number.isInteger(priorityHours.priority1Hours) &&
+    Number.isInteger(priorityHours.priority2Hours) &&
+    Number.isInteger(priorityHours.priority3Hours);
 
   const getStrategicGapMessage = (pct: number) => {
     if (pct >= 0 && pct <= 25) {
@@ -76,15 +82,13 @@ const SimplePriorityCheckIn = () => {
   const needsUnderachieveField = calculatedPercentage < 80;
 
   const handleSubmit = () => {
-    if (!hasCompletePriority) return;
-    if (needsUnderachieveField && !underachieveArea.trim()) return;
+    if (!allPrioritiesComplete) return;
     setIsSubmitted(true);
   };
 
   const handleReset = () => {
     setPriorities({ priority1: '', priority2: '', priority3: '' });
     setPriorityHours({ priority1Hours: 0, priority2Hours: 0, priority3Hours: 0 });
-    setUnderachieveArea('');
     setIsSubmitted(false);
   };
 
@@ -208,88 +212,16 @@ const SimplePriorityCheckIn = () => {
                   </div>
                 </div>
 
-                {hasCompletePriority && (
-                  <>
-                    <Separator />
-
-                    <div className="space-y-4">
-                      <div className="bg-gradient-subtle rounded-lg p-6 space-y-4">
-                        <h3 className="font-semibold text-lg">Time Alignment Calculation</h3>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                          <div>
-                            <div className="text-3xl font-bold text-primary">{totalPriorityHours}</div>
-                            <div className="text-sm text-muted-foreground">Priority Hours</div>
-                          </div>
-                          
-                          <div className="flex items-center justify-center">
-                            <span className="text-2xl text-muted-foreground">÷</span>
-                          </div>
-                          
-                          <div>
-                            <div className="text-3xl font-bold">{WAKING_HOURS_PER_WEEK}</div>
-                            <div className="text-sm text-muted-foreground">Waking Hours/Week</div>
-                          </div>
-                        </div>
-                        
-                        <Separator />
-                        
-                        <div className="text-center">
-                          <div className="text-5xl font-bold text-primary mb-2">
-                            {calculatedPercentage}%
-                          </div>
-                          <div className="text-sm text-muted-foreground">
-                            of your waking week aligned with priorities
-                          </div>
-                        </div>
-                      </div>
-
-                      {totalPriorityHours > WAKING_HOURS_PER_WEEK && (
-                        <Alert variant="default" className="border-amber-300 bg-amber-50 dark:bg-amber-950/20">
-                          <AlertDescription>
-                            Your total hours ({totalPriorityHours}) exceed a typical waking week (112 hours). 
-                            This might indicate overlapping priorities or optimistic planning—both are okay! 
-                            Just be mindful of your actual capacity.
-                          </AlertDescription>
-                        </Alert>
-                      )}
-
-                      <Alert variant={strategicGap.variant}>
-                        <div className="text-2xl mb-2">{strategicGap.emoji}</div>
-                        <AlertTitle>{strategicGap.title}</AlertTitle>
-                        <AlertDescription className="mt-2">
-                          {strategicGap.message}
-                        </AlertDescription>
-                      </Alert>
-
-                      {needsUnderachieveField && (
-                        <div className="space-y-2">
-                          <Label htmlFor="underachieve">
-                            Where can you strategically underachieve this week?
-                          </Label>
-                          <Textarea
-                            id="underachieve"
-                            placeholder="e.g., Letting household organization be 'good enough' instead of perfect, so I can spend evenings with family"
-                            value={underachieveArea}
-                            onChange={(e) => setUnderachieveArea(e.target.value)}
-                            rows={3}
-                          />
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex justify-center pt-4">
-                      <Button
-                        onClick={handleSubmit}
-                        size="lg"
-                        disabled={needsUnderachieveField && !underachieveArea.trim()}
-                      >
-                        <CheckCircle2 className="w-4 h-4 mr-2" />
-                        View My Summary
-                      </Button>
-                    </div>
-                  </>
-                )}
+                <div className="flex justify-center pt-6">
+                  <Button
+                    onClick={handleSubmit}
+                    size="lg"
+                    disabled={!allPrioritiesComplete}
+                  >
+                    <CheckCircle2 className="w-4 h-4 mr-2" />
+                    View My Summary
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ) : (
@@ -305,77 +237,69 @@ const SimplePriorityCheckIn = () => {
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Your Top Priorities:</h3>
                     <ul className="space-y-3">
-                      {priorities.priority1 && (
-                        <li className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-2 flex-1">
-                            <span className="text-primary font-bold">1.</span>
-                            <span>{priorities.priority1}</span>
-                          </div>
-                          <div className="text-sm font-semibold text-primary whitespace-nowrap">
-                            {priorityHours.priority1Hours} hrs/week
-                          </div>
-                        </li>
-                      )}
-                      {priorities.priority2 && (
-                        <li className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-2 flex-1">
-                            <span className="text-primary font-bold">2.</span>
-                            <span>{priorities.priority2}</span>
-                          </div>
-                          <div className="text-sm font-semibold text-primary whitespace-nowrap">
-                            {priorityHours.priority2Hours} hrs/week
-                          </div>
-                        </li>
-                      )}
-                      {priorities.priority3 && (
-                        <li className="flex items-start justify-between gap-4">
-                          <div className="flex items-start gap-2 flex-1">
-                            <span className="text-primary font-bold">3.</span>
-                            <span>{priorities.priority3}</span>
-                          </div>
-                          <div className="text-sm font-semibold text-primary whitespace-nowrap">
-                            {priorityHours.priority3Hours} hrs/week
-                          </div>
-                        </li>
-                      )}
+                      <li className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-2 flex-1">
+                          <span className="text-primary font-bold">1.</span>
+                          <span>{priorities.priority1}</span>
+                        </div>
+                        <div className="text-sm font-semibold text-primary whitespace-nowrap">
+                          {priorityHours.priority1Hours} hrs/week
+                        </div>
+                      </li>
+                      <li className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-2 flex-1">
+                          <span className="text-primary font-bold">2.</span>
+                          <span>{priorities.priority2}</span>
+                        </div>
+                        <div className="text-sm font-semibold text-primary whitespace-nowrap">
+                          {priorityHours.priority2Hours} hrs/week
+                        </div>
+                      </li>
+                      <li className="flex items-start justify-between gap-4">
+                        <div className="flex items-start gap-2 flex-1">
+                          <span className="text-primary font-bold">3.</span>
+                          <span>{priorities.priority3}</span>
+                        </div>
+                        <div className="text-sm font-semibold text-primary whitespace-nowrap">
+                          {priorityHours.priority3Hours} hrs/week
+                        </div>
+                      </li>
                     </ul>
                   </div>
 
                   <Separator />
 
                   <div>
-                    <h3 className="font-semibold text-lg mb-2">Time Alignment:</h3>
-                    <div className="bg-gradient-subtle rounded-lg p-4">
-                      <div className="text-3xl font-bold text-primary mb-1">
+                    <div className="bg-gradient-subtle rounded-lg p-4 text-center">
+                      <div className="text-4xl font-bold text-primary mb-2">
                         {calculatedPercentage}%
                       </div>
-                      <div className="text-sm text-muted-foreground mb-3">
-                        of your waking week goes to what truly matters
+                      <div className="text-sm text-muted-foreground">
+                        of your waking week aligned with priorities
                       </div>
-                      <div className="text-xs text-muted-foreground">
-                        ({totalPriorityHours} hours out of {WAKING_HOURS_PER_WEEK} waking hours per week)
+                      <div className="text-xs text-muted-foreground mt-2">
+                        {totalPriorityHours} ÷ {WAKING_HOURS_PER_WEEK} waking hours/week
                       </div>
                     </div>
                   </div>
 
-                  {underachieveArea && (
-                    <>
-                      <Separator />
-                      <div>
-                        <h3 className="font-semibold text-lg mb-2">Strategic Underachievement:</h3>
-                        <div className="bg-blue-50 dark:bg-blue-950/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
-                          <p className="text-foreground">{underachieveArea}</p>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  <Alert variant={strategicGap.variant}>
+                    <div className="text-2xl mb-2">{strategicGap.emoji}</div>
+                    <AlertTitle>{strategicGap.title}</AlertTitle>
+                    <AlertDescription className="mt-2">
+                      {strategicGap.message}
+                    </AlertDescription>
+                  </Alert>
 
                   <Separator />
 
-                  <div className="bg-gradient-warm/10 rounded-lg p-6 text-center">
+                  <div className="bg-gradient-warm/10 rounded-lg p-6 text-center space-y-4">
                     <p className="text-muted-foreground italic">
                       "The question is not whether you will die, but how you will live."
                     </p>
+                    <Button onClick={() => window.location.href = '/carpe-diem'} size="lg" className="mt-4">
+                      Explore Carpe Diem Resources
+                    </Button>
                   </div>
                 </div>
 
