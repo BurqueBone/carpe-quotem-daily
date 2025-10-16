@@ -1,41 +1,57 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { format } from "date-fns";
 
 interface LifespanVisualizerProps {
   maxLifespan?: number;
 }
 
 const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
-  const [dateOfBirth, setDateOfBirth] = useState<string>("");
+  const [selectedMonth, setSelectedMonth] = useState<string>("");
+  const [selectedDay, setSelectedDay] = useState<string>("");
+  const [selectedYear, setSelectedYear] = useState<string>("");
+  const [birthdate, setBirthdate] = useState<Date | undefined>(undefined);
   const isMobile = useIsMobile();
 
   // Load from localStorage on mount
   useEffect(() => {
     const saved = localStorage.getItem("sunday4k_lifespan_dob");
     if (saved) {
-      setDateOfBirth(saved);
+      const date = new Date(saved);
+      if (!isNaN(date.getTime())) {
+        setBirthdate(date);
+        setSelectedMonth(date.getMonth().toString());
+        setSelectedDay(date.getDate().toString());
+        setSelectedYear(date.getFullYear().toString());
+      }
     }
   }, []);
 
-  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setDateOfBirth(value);
-    if (value) {
-      localStorage.setItem("sunday4k_lifespan_dob", value);
+  // Update birthdate when all three selectors have values
+  useEffect(() => {
+    if (selectedDay && selectedMonth && selectedYear) {
+      const date = new Date(parseInt(selectedYear), parseInt(selectedMonth), parseInt(selectedDay));
+      if (!isNaN(date.getTime())) {
+        setBirthdate(date);
+        localStorage.setItem("sunday4k_lifespan_dob", format(date, "yyyy-MM-dd"));
+      }
     } else {
-      localStorage.removeItem("sunday4k_lifespan_dob");
+      setBirthdate(undefined);
+      if (!selectedDay && !selectedMonth && !selectedYear) {
+        localStorage.removeItem("sunday4k_lifespan_dob");
+      }
     }
-  };
+  }, [selectedDay, selectedMonth, selectedYear]);
 
-  const calculateLifeData = (dob: string) => {
+  const calculateLifeData = (dob: Date | undefined) => {
     if (!dob) return null;
 
     const now = new Date();
-    const birthDate = new Date(dob);
+    const birthDate = dob;
 
     // Validate date is in the past
     if (birthDate > now) return null;
@@ -72,7 +88,26 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
     };
   };
 
-  const lifeData = calculateLifeData(dateOfBirth);
+  const lifeData = calculateLifeData(birthdate);
+
+  // Generate arrays for dropdowns
+  const days = Array.from({ length: 31 }, (_, i) => (i + 1).toString());
+  const months = [
+    { value: "0", label: "January" },
+    { value: "1", label: "February" },
+    { value: "2", label: "March" },
+    { value: "3", label: "April" },
+    { value: "4", label: "May" },
+    { value: "5", label: "June" },
+    { value: "6", label: "July" },
+    { value: "7", label: "August" },
+    { value: "8", label: "September" },
+    { value: "9", label: "October" },
+    { value: "10", label: "November" },
+    { value: "11", label: "December" },
+  ];
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => (currentYear - i).toString());
   const viewMode = isMobile ? "years" : "months";
 
   const renderGrid = () => {
@@ -148,16 +183,57 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
         <CardDescription>A visual of your life experienced so far.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="space-y-2">
-          <Label htmlFor="dob">Date of Birth</Label>
-          <Input
-            id="dob"
-            type="date"
-            value={dateOfBirth}
-            onChange={handleDateChange}
-            max={new Date().toISOString().split("T")[0]}
-            className="max-w-xs"
-          />
+        <div className="space-y-4">
+          <Label>Date of Birth</Label>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="space-y-2">
+              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Month" />
+                </SelectTrigger>
+                <SelectContent>
+                  {months.map((month) => (
+                    <SelectItem key={month.value} value={month.value}>
+                      {month.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Select value={selectedDay} onValueChange={setSelectedDay}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Day" />
+                </SelectTrigger>
+                <SelectContent>
+                  {days.map((day) => (
+                    <SelectItem key={day} value={day}>
+                      {day}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Select value={selectedYear} onValueChange={setSelectedYear}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Year" />
+                </SelectTrigger>
+                <SelectContent>
+                  {years.map((year) => (
+                    <SelectItem key={year} value={year}>
+                      {year}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          {birthdate && (
+            <p className="text-sm text-muted-foreground text-center">
+              {format(birthdate, "MMMM d, yyyy")}
+            </p>
+          )}
         </div>
 
         {renderGrid()}
