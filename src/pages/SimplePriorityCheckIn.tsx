@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
+import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import Header from "@/components/Header";
@@ -16,11 +16,22 @@ const SimplePriorityCheckIn = () => {
     priority2: '',
     priority3: ''
   });
-  const [percentage, setPercentage] = useState<number>(0);
+  const [priorityHours, setPriorityHours] = useState({
+    priority1Hours: 0,
+    priority2Hours: 0,
+    priority3Hours: 0
+  });
   const [underachieveArea, setUnderachieveArea] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const hasAtLeastOnePriority = priorities.priority1 || priorities.priority2 || priorities.priority3;
+  const totalPriorityHours = priorityHours.priority1Hours + priorityHours.priority2Hours + priorityHours.priority3Hours;
+  const WAKING_HOURS_PER_WEEK = 112;
+  const calculatedPercentage = Math.round((totalPriorityHours / WAKING_HOURS_PER_WEEK) * 100);
+
+  const hasCompletePriority = 
+    (priorities.priority1 && priorityHours.priority1Hours > 0) ||
+    (priorities.priority2 && priorityHours.priority2Hours > 0) ||
+    (priorities.priority3 && priorityHours.priority3Hours > 0);
 
   const getStrategicGapMessage = (pct: number) => {
     if (pct >= 0 && pct <= 25) {
@@ -61,18 +72,18 @@ const SimplePriorityCheckIn = () => {
     }
   };
 
-  const strategicGap = getStrategicGapMessage(percentage);
-  const needsUnderachieveField = percentage < 80;
+  const strategicGap = getStrategicGapMessage(calculatedPercentage);
+  const needsUnderachieveField = calculatedPercentage < 80;
 
   const handleSubmit = () => {
-    if (!hasAtLeastOnePriority) return;
+    if (!hasCompletePriority) return;
     if (needsUnderachieveField && !underachieveArea.trim()) return;
     setIsSubmitted(true);
   };
 
   const handleReset = () => {
     setPriorities({ priority1: '', priority2: '', priority3: '' });
-    setPercentage(0);
+    setPriorityHours({ priority1Hours: 0, priority2Hours: 0, priority3Hours: 0 });
     setUnderachieveArea('');
     setIsSubmitted(false);
   };
@@ -103,63 +114,145 @@ const SimplePriorityCheckIn = () => {
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="priority1">Priority 1</Label>
-                    <Textarea
-                      id="priority1"
-                      placeholder="e.g., Deepening connections with my children"
-                      value={priorities.priority1}
-                      onChange={(e) => setPriorities(prev => ({ ...prev, priority1: e.target.value }))}
-                      rows={2}
-                    />
+                  <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
+                    <div className="flex-1 space-y-2 w-full">
+                      <Label htmlFor="priority1">Priority 1</Label>
+                      <Textarea
+                        id="priority1"
+                        placeholder="e.g., Deepening connections with my children"
+                        value={priorities.priority1}
+                        onChange={(e) => setPriorities(prev => ({ ...prev, priority1: e.target.value }))}
+                        rows={2}
+                      />
+                    </div>
+                    <div className="space-y-2 w-full md:w-32">
+                      <Label htmlFor="priority1Hours" className="whitespace-nowrap">
+                        Hours/Week
+                      </Label>
+                      <Input
+                        id="priority1Hours"
+                        type="number"
+                        min="0"
+                        max="112"
+                        value={priorityHours.priority1Hours || ''}
+                        onChange={(e) => setPriorityHours(prev => ({ 
+                          ...prev, 
+                          priority1Hours: Math.min(112, Math.max(0, parseInt(e.target.value) || 0))
+                        }))}
+                        placeholder="0"
+                        className="text-center"
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="priority2">Priority 2</Label>
-                    <Textarea
-                      id="priority2"
-                      placeholder="e.g., Building physical vitality through movement"
-                      value={priorities.priority2}
-                      onChange={(e) => setPriorities(prev => ({ ...prev, priority2: e.target.value }))}
-                      rows={2}
-                    />
+                  <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
+                    <div className="flex-1 space-y-2 w-full">
+                      <Label htmlFor="priority2">Priority 2</Label>
+                      <Textarea
+                        id="priority2"
+                        placeholder="e.g., Building physical vitality through movement"
+                        value={priorities.priority2}
+                        onChange={(e) => setPriorities(prev => ({ ...prev, priority2: e.target.value }))}
+                        rows={2}
+                      />
+                    </div>
+                    <div className="space-y-2 w-full md:w-32">
+                      <Label htmlFor="priority2Hours" className="whitespace-nowrap">
+                        Hours/Week
+                      </Label>
+                      <Input
+                        id="priority2Hours"
+                        type="number"
+                        min="0"
+                        max="112"
+                        value={priorityHours.priority2Hours || ''}
+                        onChange={(e) => setPriorityHours(prev => ({ 
+                          ...prev, 
+                          priority2Hours: Math.min(112, Math.max(0, parseInt(e.target.value) || 0))
+                        }))}
+                        placeholder="0"
+                        className="text-center"
+                      />
+                    </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="priority3">Priority 3</Label>
-                    <Textarea
-                      id="priority3"
-                      placeholder="e.g., Creating meaningful work that serves others"
-                      value={priorities.priority3}
-                      onChange={(e) => setPriorities(prev => ({ ...prev, priority3: e.target.value }))}
-                      rows={2}
-                    />
+                  <div className="flex flex-col md:flex-row gap-4 md:gap-6 items-start">
+                    <div className="flex-1 space-y-2 w-full">
+                      <Label htmlFor="priority3">Priority 3</Label>
+                      <Textarea
+                        id="priority3"
+                        placeholder="e.g., Creating meaningful work that serves others"
+                        value={priorities.priority3}
+                        onChange={(e) => setPriorities(prev => ({ ...prev, priority3: e.target.value }))}
+                        rows={2}
+                      />
+                    </div>
+                    <div className="space-y-2 w-full md:w-32">
+                      <Label htmlFor="priority3Hours" className="whitespace-nowrap">
+                        Hours/Week
+                      </Label>
+                      <Input
+                        id="priority3Hours"
+                        type="number"
+                        min="0"
+                        max="112"
+                        value={priorityHours.priority3Hours || ''}
+                        onChange={(e) => setPriorityHours(prev => ({ 
+                          ...prev, 
+                          priority3Hours: Math.min(112, Math.max(0, parseInt(e.target.value) || 0))
+                        }))}
+                        placeholder="0"
+                        className="text-center"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                {hasAtLeastOnePriority && (
+                {hasCompletePriority && (
                   <>
                     <Separator />
 
                     <div className="space-y-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="percentage">
-                          What percentage of your time this week actually goes to these priorities?
-                        </Label>
-                        <div className="flex items-center gap-4">
-                          <Slider
-                            id="percentage"
-                            value={[percentage]}
-                            onValueChange={(value) => setPercentage(value[0])}
-                            max={100}
-                            step={5}
-                            className="flex-1"
-                          />
-                          <div className="text-2xl font-bold text-primary min-w-[4rem] text-right">
-                            {percentage}%
+                      <div className="bg-gradient-subtle rounded-lg p-6 space-y-4">
+                        <h3 className="font-semibold text-lg">Time Alignment Calculation</h3>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                          <div>
+                            <div className="text-3xl font-bold text-primary">{totalPriorityHours}</div>
+                            <div className="text-sm text-muted-foreground">Priority Hours</div>
+                          </div>
+                          
+                          <div className="flex items-center justify-center">
+                            <span className="text-2xl text-muted-foreground">÷</span>
+                          </div>
+                          
+                          <div>
+                            <div className="text-3xl font-bold">{WAKING_HOURS_PER_WEEK}</div>
+                            <div className="text-sm text-muted-foreground">Waking Hours/Week</div>
+                          </div>
+                        </div>
+                        
+                        <Separator />
+                        
+                        <div className="text-center">
+                          <div className="text-5xl font-bold text-primary mb-2">
+                            {calculatedPercentage}%
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            of your waking week aligned with priorities
                           </div>
                         </div>
                       </div>
+
+                      {totalPriorityHours > WAKING_HOURS_PER_WEEK && (
+                        <Alert variant="default" className="border-amber-300 bg-amber-50 dark:bg-amber-950/20">
+                          <AlertDescription>
+                            Your total hours ({totalPriorityHours}) exceed a typical waking week (112 hours). 
+                            This might indicate overlapping priorities or optimistic planning—both are okay! 
+                            Just be mindful of your actual capacity.
+                          </AlertDescription>
+                        </Alert>
+                      )}
 
                       <Alert variant={strategicGap.variant}>
                         <div className="text-2xl mb-2">{strategicGap.emoji}</div>
@@ -211,23 +304,38 @@ const SimplePriorityCheckIn = () => {
                 <div className="space-y-4">
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Your Top Priorities:</h3>
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {priorities.priority1 && (
-                        <li className="flex items-start gap-2">
-                          <span className="text-primary font-bold">1.</span>
-                          <span>{priorities.priority1}</span>
+                        <li className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-2 flex-1">
+                            <span className="text-primary font-bold">1.</span>
+                            <span>{priorities.priority1}</span>
+                          </div>
+                          <div className="text-sm font-semibold text-primary whitespace-nowrap">
+                            {priorityHours.priority1Hours} hrs/week
+                          </div>
                         </li>
                       )}
                       {priorities.priority2 && (
-                        <li className="flex items-start gap-2">
-                          <span className="text-primary font-bold">2.</span>
-                          <span>{priorities.priority2}</span>
+                        <li className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-2 flex-1">
+                            <span className="text-primary font-bold">2.</span>
+                            <span>{priorities.priority2}</span>
+                          </div>
+                          <div className="text-sm font-semibold text-primary whitespace-nowrap">
+                            {priorityHours.priority2Hours} hrs/week
+                          </div>
                         </li>
                       )}
                       {priorities.priority3 && (
-                        <li className="flex items-start gap-2">
-                          <span className="text-primary font-bold">3.</span>
-                          <span>{priorities.priority3}</span>
+                        <li className="flex items-start justify-between gap-4">
+                          <div className="flex items-start gap-2 flex-1">
+                            <span className="text-primary font-bold">3.</span>
+                            <span>{priorities.priority3}</span>
+                          </div>
+                          <div className="text-sm font-semibold text-primary whitespace-nowrap">
+                            {priorityHours.priority3Hours} hrs/week
+                          </div>
                         </li>
                       )}
                     </ul>
@@ -238,9 +346,14 @@ const SimplePriorityCheckIn = () => {
                   <div>
                     <h3 className="font-semibold text-lg mb-2">Time Alignment:</h3>
                     <div className="bg-gradient-subtle rounded-lg p-4">
-                      <div className="text-3xl font-bold text-primary mb-1">{percentage}%</div>
-                      <div className="text-sm text-muted-foreground">
-                        of your time this week goes to what truly matters
+                      <div className="text-3xl font-bold text-primary mb-1">
+                        {calculatedPercentage}%
+                      </div>
+                      <div className="text-sm text-muted-foreground mb-3">
+                        of your waking week goes to what truly matters
+                      </div>
+                      <div className="text-xs text-muted-foreground">
+                        ({totalPriorityHours} hours out of {WAKING_HOURS_PER_WEEK} waking hours per week)
                       </div>
                     </div>
                   </div>
