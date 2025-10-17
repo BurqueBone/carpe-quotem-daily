@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
+import { checkRateLimit, logRequest, getClientIP } from '../shared/rate-limiting.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,7 +27,8 @@ serve(async (req) => {
 
   try {
     if (!hubspotApiKey) {
-      throw new Error('HubSpot API key not configured');
+      console.error('HubSpot API key not configured');
+      throw new Error('Service configuration error');
     }
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
@@ -42,8 +44,38 @@ serve(async (req) => {
     const { data: { user }, error: userError } = await supabase.auth.getUser(token);
     
     if (userError || !user) {
+      console.error('User authentication failed:', userError);
       throw new Error('Invalid user token');
     }
+
+    // Rate limiting: 3 requests per minute for HubSpot sync
+    const clientIP = getClientIP(req);
+    const rateLimitCheck = await checkRateLimit(supabase, {
+      identifier: `sync-hubspot:${user.id}:${clientIP}`,
+      maxRequests: 3,
+      windowMs: 60 * 1000 // 1 minute
+    });
+
+    if (!rateLimitCheck.allowed) {
+      console.warn('Rate limit exceeded for sync-hubspot:', user.id, clientIP);
+      return new Response(
+        JSON.stringify({ 
+          success: false,
+          error: 'Too many requests. Please try again later.' 
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': '60'
+          }
+        }
+      );
+    }
+
+    // Log the request
+    await logRequest(supabase, 'sync-hubspot', clientIP, req.headers.get('user-agent') || undefined);
 
     const { action, additionalData } = await req.json();
 
@@ -134,13 +166,18 @@ serve(async (req) => {
     );
   } catch (error) {
     console.error('Error syncing to HubSpot:', error);
+    
+    // Return generic error message to client, detailed logs server-side
+    const errorMessage = (error as Error).message;
+    const status = errorMessage?.includes('authorization') || errorMessage?.includes('Invalid user token') ? 401 : 500;
+    
     return new Response(
       JSON.stringify({ 
         success: false, 
-        error: (error as Error).message 
+        error: status === 401 ? 'Authentication failed' : 'An error occurred processing your request'
       }),
       {
-        status: 500,
+        status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );

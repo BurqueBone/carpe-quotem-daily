@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
+import { checkRateLimit, logRequest, getClientIP } from '../shared/rate-limiting.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -56,8 +57,35 @@ serve(async (req) => {
       .rpc('has_role', { _user_id: user.id, _role: 'admin' });
     
     if (adminError || !adminCheck) {
+      console.error('Admin check failed for user:', user.id, adminError);
       throw new Error('Admin access required');
     }
+
+    // Rate limiting: 5 requests per minute for admin operations
+    const clientIP = getClientIP(req);
+    const rateLimitCheck = await checkRateLimit(supabase, {
+      identifier: `admin-template-variables:${user.id}:${clientIP}`,
+      maxRequests: 5,
+      windowMs: 60 * 1000 // 1 minute
+    });
+
+    if (!rateLimitCheck.allowed) {
+      console.warn('Rate limit exceeded for admin-template-variables:', user.id, clientIP);
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': '60'
+          }
+        }
+      );
+    }
+
+    // Log the request
+    await logRequest(supabase, 'admin-template-variables', clientIP, req.headers.get('user-agent') || undefined);
 
     // Get request body to determine method and parameters
     const requestBody = await req.json();
@@ -222,10 +250,13 @@ serve(async (req) => {
     }
   } catch (error: any) {
     console.error('Error in admin-template-variables function:', error);
+    
+    // Return generic error message to client, detailed logs server-side
+    const status = error.message?.includes('Unauthorized') || error.message?.includes('Admin access required') ? 401 : 500;
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: status === 401 ? 'Authentication failed' : 'An error occurred processing your request' }),
       {
-        status: error.message.includes('Unauthorized') || error.message.includes('Admin access required') ? 401 : 500,
+        status,
         headers: { 'Content-Type': 'application/json', ...corsHeaders },
       }
     );

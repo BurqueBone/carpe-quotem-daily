@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
+import { checkRateLimit, logRequest, getClientIP } from '../shared/rate-limiting.ts';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -42,14 +43,41 @@ serve(async (req) => {
       .maybeSingle();
 
     if (!adminRole) {
+      console.error('Admin check failed for user:', user.id);
       return new Response(
-        JSON.stringify({ error: 'Insufficient permissions' }),
+        JSON.stringify({ error: 'Authentication failed' }),
         { 
           status: 403, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       );
     }
+
+    // Rate limiting: 5 requests per minute for admin operations
+    const clientIP = getClientIP(req);
+    const rateLimitCheck = await checkRateLimit(supabase, {
+      identifier: `admin-templates:${user.id}:${clientIP}`,
+      maxRequests: 5,
+      windowMs: 60 * 1000 // 1 minute
+    });
+
+    if (!rateLimitCheck.allowed) {
+      console.warn('Rate limit exceeded for admin-templates:', user.id, clientIP);
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': '60'
+          }
+        }
+      );
+    }
+
+    // Log the request
+    await logRequest(supabase, 'admin-templates', clientIP, req.headers.get('user-agent') || undefined);
 
     const url = new URL(req.url);
     const method = req.method;
@@ -131,10 +159,13 @@ serve(async (req) => {
 
   } catch (error: any) {
     console.error('Error in admin-templates function:', error);
+    
+    // Return generic error message to client, detailed logs server-side
+    const status = error.message?.includes('authorization') || error.message?.includes('Unauthorized') ? 401 : 500;
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: 'An error occurred processing your request' }),
       {
-        status: 500,
+        status,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );

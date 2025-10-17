@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
+import { checkRateLimit, logRequest, getClientIP } from '../shared/rate-limiting.ts';
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -38,6 +39,32 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Rate limiting: 10 requests per hour for email preview generation
+    const clientIP = getClientIP(req);
+    const rateLimitCheck = await checkRateLimit(supabase, {
+      identifier: `broadcast-email:${clientIP}`,
+      maxRequests: 10,
+      windowMs: 60 * 60 * 1000 // 1 hour
+    });
+
+    if (!rateLimitCheck.allowed) {
+      console.warn('Rate limit exceeded for broadcast-email:', clientIP);
+      return new Response(
+        JSON.stringify({ error: 'Too many requests. Please try again later.' }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'Retry-After': '3600'
+          }
+        }
+      );
+    }
+
+    // Log the request
+    await logRequest(supabase, 'broadcast-email', clientIP, req.headers.get('user-agent') || undefined);
+
     const body = (await req.json().catch(() => ({}))) as BroadcastRequest;
 
     // Get the broadcast email template from database
@@ -50,7 +77,7 @@ serve(async (req) => {
 
     if (templateError) {
       console.error("broadcast-email: error fetching template", templateError);
-      return new Response(JSON.stringify({ error: "Failed to fetch email template" }), {
+      return new Response(JSON.stringify({ error: "An error occurred processing your request" }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
@@ -61,15 +88,16 @@ serve(async (req) => {
 
     if (quoteError) {
       console.error("broadcast-email: error fetching quote", quoteError);
-      return new Response(JSON.stringify({ error: "Failed to fetch quote" }), {
+      return new Response(JSON.stringify({ error: "An error occurred processing your request" }), {
         status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
 
     if (!quote) {
-      return new Response(JSON.stringify({ error: "No quote found" }), {
-        status: 404,
+      console.error("broadcast-email: no quote available");
+      return new Response(JSON.stringify({ error: "An error occurred processing your request" }), {
+        status: 500,
         headers: { "Content-Type": "application/json", ...corsHeaders },
       });
     }
@@ -104,7 +132,7 @@ serve(async (req) => {
     });
   } catch (error: any) {
     console.error("broadcast-email error:", error);
-    return new Response(JSON.stringify({ success: false, error: error.message || "Unknown error" }), {
+    return new Response(JSON.stringify({ success: false, error: "An error occurred processing your request" }), {
       status: 500,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
