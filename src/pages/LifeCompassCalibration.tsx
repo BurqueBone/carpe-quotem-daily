@@ -22,7 +22,7 @@ const LifeCompassCalibration = () => {
           </div>
 
           {/* Lifespan Visualizer - Interactive Feature */}
-          <LifespanVisualizer />
+          <LifespanVisualizer maxLifespan={90} />
 
           {/* Navigation Cards Section */}
           <div className="space-y-4">

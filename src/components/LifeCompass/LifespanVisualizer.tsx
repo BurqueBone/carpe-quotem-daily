@@ -4,13 +4,24 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { format } from "date-fns";
+import { format, differenceInWeeks } from "date-fns";
 
 interface LifespanVisualizerProps {
   maxLifespan?: number;
 }
 
-const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
+// Life milestone definitions
+const LIFE_MILESTONES = [
+  { name: "Childhood", startMonth: 0, endMonth: 60, color: "hsl(var(--primary) / 0.05)" },      // 0-5 years
+  { name: "Schooling", startMonth: 60, endMonth: 288, color: "hsl(var(--secondary) / 0.05)" },      // 5-24 years
+  { name: "Career Growth", startMonth: 288, endMonth: 600, color: "hsl(var(--accent) / 0.05)" }, // 24-50 years
+  { name: "Career Peak", startMonth: 600, endMonth: 780, color: "hsl(220, 80%, 95%)" }, // 50-65 years
+  { name: "Retirement", startMonth: 780, endMonth: 1080, color: "hsl(30, 80%, 95%)" }  // 65-90 years
+];
+
+const FOUR_K_WEEKS_MARKER = 960; // 80 years * 12 months = 4K weeks
+
+const LifespanVisualizer = ({ maxLifespan = 90 }: LifespanVisualizerProps) => {
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [selectedDay, setSelectedDay] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
@@ -61,29 +72,28 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
     const ageInYears = ageInMs / (1000 * 60 * 60 * 24 * 365.25);
     const currentAge = Math.floor(ageInYears);
 
-    // Month/Year calculations
+    // Month calculations
     const monthsLived = Math.floor(ageInYears * 12);
     const totalMonths = maxLifespan * 12;
     const monthsRemaining = Math.max(0, totalMonths - monthsLived);
 
-    const yearsLived = currentAge;
-    const totalYears = maxLifespan;
-    const yearsRemaining = Math.max(0, totalYears - yearsLived);
+    // Precise weeks calculation
+    const weeksLived = differenceInWeeks(now, birthDate);
+    const totalWeeks = maxLifespan * 52; // Approximate
+    const weeksRemaining = Math.max(0, totalWeeks - weeksLived);
 
     // Current period index (0-based)
     const currentMonthIndex = monthsLived;
-    const currentYearIndex = yearsLived;
 
     return {
       currentAge,
       monthsLived,
       monthsRemaining,
       totalMonths,
-      yearsLived,
-      yearsRemaining,
-      totalYears,
+      weeksLived,
+      weeksRemaining,
+      totalWeeks,
       currentMonthIndex,
-      currentYearIndex,
       birthDate,
     };
   };
@@ -108,7 +118,6 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
   ];
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: currentYear - 1900 + 1 }, (_, i) => (currentYear - i).toString());
-  const viewMode = isMobile ? "years" : "months";
 
   const renderGrid = () => {
     if (!lifeData) {
@@ -117,9 +126,9 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
       );
     }
 
-    const total = viewMode === "months" ? lifeData.totalMonths : lifeData.totalYears;
-    const lived = viewMode === "months" ? lifeData.monthsLived : lifeData.yearsLived;
-    const currentIndex = viewMode === "months" ? lifeData.currentMonthIndex : lifeData.currentYearIndex;
+    const total = lifeData.totalMonths;
+    const lived = lifeData.monthsLived;
+    const currentIndex = lifeData.currentMonthIndex;
 
     const squares = [];
 
@@ -138,19 +147,16 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
         bgColor = "bg-blue-100";
       }
 
-      const age = viewMode === "months" ? Math.floor(i / 12) : i;
-      const period = viewMode === "months" ? i : i;
+      const age = Math.floor(i / 12);
       const label = isPast
-        ? `${viewMode === "months" ? "Month" : "Year"} ${period}, Age ${age}, Lived`
-        : `${viewMode === "months" ? "Month" : "Year"} ${period}, Estimated Age ${age}`;
+        ? `Month ${i}, Age ${age}, Lived`
+        : `Month ${i}, Estimated Age ${age}`;
 
       squares.push(
         <Tooltip key={i}>
           <TooltipTrigger asChild>
             <div
-              className={`${bgColor} ${extraClasses} ${
-                viewMode === "months" ? "w-4 h-4" : "w-8 h-8"
-              } rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer`}
+              className={`${bgColor} ${extraClasses} w-4 h-4 rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer`}
               aria-label={label}
             />
           </TooltipTrigger>
@@ -164,14 +170,66 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
     }
 
     return (
-      <div
-        className={`grid gap-2 ${
-          viewMode === "months"
-            ? "grid-cols-[repeat(auto-fill,minmax(16px,1fr))]"
-            : "grid-cols-[repeat(auto-fill,minmax(32px,1fr))]"
-        }`}
-      >
-        {squares}
+      <div className="relative space-y-3">
+        {/* Milestone Labels */}
+        <div className="flex justify-between text-xs font-medium text-muted-foreground px-1">
+          {LIFE_MILESTONES.map((milestone) => (
+            <div
+              key={milestone.name}
+              className="text-center"
+              style={{
+                width: `${((milestone.endMonth - milestone.startMonth) / total) * 100}%`,
+              }}
+            >
+              {milestone.name}
+            </div>
+          ))}
+        </div>
+
+        {/* Grid with Background Sections and Markers */}
+        <div className="relative">
+          {/* Milestone Background Sections */}
+          {LIFE_MILESTONES.map((milestone) => (
+            <div
+              key={`bg-${milestone.name}`}
+              className="absolute top-0 h-full"
+              style={{
+                left: `${(milestone.startMonth / total) * 100}%`,
+                width: `${((milestone.endMonth - milestone.startMonth) / total) * 100}%`,
+                backgroundColor: milestone.color,
+              }}
+            />
+          ))}
+
+          {/* Milestone Separator Lines */}
+          {LIFE_MILESTONES.slice(1).map((milestone) => (
+            <div
+              key={`separator-${milestone.name}`}
+              className="absolute top-0 h-full border-l-2 border-border/50"
+              style={{
+                left: `${(milestone.startMonth / total) * 100}%`,
+              }}
+            />
+          ))}
+
+          {/* 4K Weeks Marker at 80 years (960 months) */}
+          <div
+            className="absolute top-0 h-full flex flex-col items-center"
+            style={{
+              left: `${(FOUR_K_WEEKS_MARKER / total) * 100}%`,
+            }}
+          >
+            <div className="border-l-4 border-primary h-full" />
+            <div className="absolute -top-6 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded whitespace-nowrap">
+              4K Weeks
+            </div>
+          </div>
+
+          {/* Month Squares Grid */}
+          <div className="relative grid gap-1 grid-cols-[repeat(auto-fill,minmax(16px,1fr))]">
+            {squares}
+          </div>
+        </div>
       </div>
     );
   };
@@ -179,7 +237,7 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Your Life in {isMobile ? "Years" : "Weeks"}</CardTitle>
+        <CardTitle>Your Life in Months</CardTitle>
         <CardDescription>A visual of your life experienced so far.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
@@ -245,24 +303,16 @@ const LifespanVisualizer = ({ maxLifespan = 80 }: LifespanVisualizerProps) => {
               <div className="text-sm text-muted-foreground">Current Age</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-foreground">
-                {viewMode === "months" ? lifeData.monthsLived : lifeData.yearsLived}
-              </div>
-              <div className="text-sm text-muted-foreground">{viewMode === "months" ? "Months" : "Years"} Lived</div>
+              <div className="text-2xl font-bold text-foreground">{lifeData.monthsLived}</div>
+              <div className="text-sm text-muted-foreground">Months Lived</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">
-                {viewMode === "months" ? lifeData.monthsRemaining : lifeData.yearsRemaining}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                {viewMode === "months" ? "Months" : "Years"} Remaining
-              </div>
+              <div className="text-2xl font-bold text-foreground">{lifeData.weeksLived}</div>
+              <div className="text-sm text-muted-foreground">Weeks Lived</div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-muted-foreground">
-                {viewMode === "months" ? lifeData.totalMonths : lifeData.totalYears}
-              </div>
-              <div className="text-sm text-muted-foreground">Total {viewMode === "months" ? "Months" : "Years"}</div>
+              <div className="text-2xl font-bold text-blue-600">{lifeData.weeksRemaining}</div>
+              <div className="text-sm text-muted-foreground">Weeks Remaining</div>
             </div>
           </div>
         )}
