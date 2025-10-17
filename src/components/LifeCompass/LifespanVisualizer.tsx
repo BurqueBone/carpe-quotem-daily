@@ -157,6 +157,7 @@ const LifespanVisualizer = ({ maxLifespan = 90 }: LifespanVisualizerProps) => {
           <TooltipTrigger asChild>
             <div
               className={`${bgColor} ${extraClasses} w-4 h-4 rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer`}
+              style={{ gridColumn: i + 1, gridRow: 1 }}
               aria-label={label}
             />
           </TooltipTrigger>
@@ -187,16 +188,18 @@ const LifespanVisualizer = ({ maxLifespan = 90 }: LifespanVisualizerProps) => {
         </div>
 
         {/* Grid with Background Sections and Markers */}
-        <div className="relative">
+        <div className="relative grid gap-1 grid-cols-[repeat(1080,minmax(16px,1fr))]">
           {/* Milestone Background Sections */}
           {LIFE_MILESTONES.map((milestone) => (
             <div
               key={`bg-${milestone.name}`}
-              className="absolute top-0 h-full"
+              className="absolute top-0 h-full pointer-events-none"
               style={{
-                left: `${(milestone.startMonth / total) * 100}%`,
-                width: `${((milestone.endMonth - milestone.startMonth) / total) * 100}%`,
+                gridColumn: `${milestone.startMonth + 1} / ${milestone.endMonth + 1}`,
+                gridRow: 1,
                 backgroundColor: milestone.color,
+                left: `calc((100% / 1080) * ${milestone.startMonth} + (${milestone.startMonth} * 0.25rem))`,
+                width: `calc((100% / 1080) * ${milestone.endMonth - milestone.startMonth} + (${milestone.endMonth - milestone.startMonth - 1} * 0.25rem))`,
               }}
             />
           ))}
@@ -205,18 +208,18 @@ const LifespanVisualizer = ({ maxLifespan = 90 }: LifespanVisualizerProps) => {
           {LIFE_MILESTONES.slice(1).map((milestone) => (
             <div
               key={`separator-${milestone.name}`}
-              className="absolute top-0 h-full border-l-2 border-border/50"
+              className="absolute top-0 h-full border-l-2 border-border/50 pointer-events-none"
               style={{
-                left: `${(milestone.startMonth / total) * 100}%`,
+                left: `calc((100% / 1080) * ${milestone.startMonth} + (${milestone.startMonth} * 0.25rem))`,
               }}
             />
           ))}
 
           {/* 4K Weeks Marker at 80 years (960 months) */}
           <div
-            className="absolute top-0 h-full flex flex-col items-center"
+            className="absolute top-0 h-full flex flex-col items-center pointer-events-none"
             style={{
-              left: `${(FOUR_K_WEEKS_MARKER / total) * 100}%`,
+              left: `calc((100% / 1080) * ${FOUR_K_WEEKS_MARKER} + (${FOUR_K_WEEKS_MARKER} * 0.25rem))`,
             }}
           >
             <div className="border-l-4 border-primary h-full" />
@@ -225,10 +228,8 @@ const LifespanVisualizer = ({ maxLifespan = 90 }: LifespanVisualizerProps) => {
             </div>
           </div>
 
-          {/* Month Squares Grid */}
-          <div className="relative grid gap-1 grid-cols-[repeat(auto-fill,minmax(16px,1fr))]">
-            {squares}
-          </div>
+          {/* Month Squares */}
+          {squares}
         </div>
       </div>
     );
