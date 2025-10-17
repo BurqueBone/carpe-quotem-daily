@@ -31,7 +31,7 @@ const CarpeDiem = () => {
               Life is finite and precious. These resources will help you seize each day and grow across every dimension
               of your human experience. Choose an area to focus on today.
             </p>
-            <p className="text-medium text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="text-small text-muted-foreground max-w-2xl mx-auto">
               **Some links are affiliate links where we earn commissions to keep these resources accessible**
             </p>
           </div>
