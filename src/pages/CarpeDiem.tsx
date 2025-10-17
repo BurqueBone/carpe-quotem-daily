@@ -29,8 +29,10 @@ const CarpeDiem = () => {
             <h1 className="text-4xl font-bold bg-gradient-warm bg-clip-text text-transparent">Carpe Diem</h1>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Life is finite and precious. These resources will help you seize each day and grow across every dimension
-              of your human experience. Choose an area to focus on today. **Some links are affiliate links where we earn
-              commissions to keep these resources accessible**
+              of your human experience. Choose an area to focus on today.
+            </p>
+            <p className="text-medium text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              **Some links are affiliate links where we earn commissions to keep these resources accessible**
             </p>
           </div>
 
