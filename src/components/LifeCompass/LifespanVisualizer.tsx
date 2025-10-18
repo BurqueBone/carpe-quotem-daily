@@ -12,11 +12,11 @@ interface LifespanVisualizerProps {
 
 // Life milestone definitions
 const LIFE_MILESTONES = [
-  { name: "Childhood", startMonth: 0, endMonth: 60, color: "hsl(var(--primary) / 0.05)" },      // 0-5 years
-  { name: "Schooling", startMonth: 60, endMonth: 288, color: "hsl(var(--secondary) / 0.05)" },      // 5-24 years
-  { name: "Career Growth", startMonth: 288, endMonth: 600, color: "hsl(var(--accent) / 0.05)" }, // 24-50 years
-  { name: "Career Peak", startMonth: 600, endMonth: 780, color: "hsl(220, 80%, 95%)" }, // 50-65 years
-  { name: "Retirement", startMonth: 780, endMonth: 1080, color: "hsl(30, 80%, 95%)" }  // 65-90 years
+  { name: "Childhood", startMonth: 0, endMonth: 60, color: "hsl(280, 80%, 97%)" },      // 0-5 years (Light purple)
+  { name: "Schooling", startMonth: 60, endMonth: 288, color: "hsl(210, 80%, 97%)" },      // 5-24 years (Light blue)
+  { name: "Career Growth", startMonth: 288, endMonth: 600, color: "hsl(150, 80%, 97%)" }, // 24-50 years (Light green)
+  { name: "Career Peak", startMonth: 600, endMonth: 780, color: "hsl(45, 80%, 97%)" }, // 50-65 years (Light yellow)
+  { name: "Retirement", startMonth: 780, endMonth: 1080, color: "hsl(25, 80%, 97%)" }  // 65-90 years (Light orange)
 ];
 
 const FOUR_K_WEEKS_MARKER = 960; // 80 years * 12 months = 4K weeks
@@ -122,115 +122,94 @@ const LifespanVisualizer = ({ maxLifespan = 90 }: LifespanVisualizerProps) => {
   const renderGrid = () => {
     if (!lifeData) {
       return (
-        <div className="text-center py-12 text-muted-foreground">Enter your date of birth to visualize your life</div>
+        <div className="text-center py-12 text-muted-foreground">
+          Enter your date of birth to visualize your life
+        </div>
       );
     }
 
-    const total = lifeData.totalMonths;
     const lived = lifeData.monthsLived;
     const currentIndex = lifeData.currentMonthIndex;
 
-    const squares = [];
-
-    for (let i = 0; i < total; i++) {
-      const isPast = i < lived;
-      const isCurrent = i === currentIndex;
-      const isFuture = i > lived;
-
-      let bgColor = "bg-gray-300/80";
-      let extraClasses = "";
-
-      if (isCurrent) {
-        bgColor = "bg-primary";
-        extraClasses = "animate-pulse ring-2 ring-primary/50";
-      } else if (isFuture) {
-        bgColor = "bg-blue-100";
-      }
-
-      const age = Math.floor(i / 12);
-      const label = isPast
-        ? `Month ${i}, Age ${age}, Lived`
-        : `Month ${i}, Estimated Age ${age}`;
-
-      squares.push(
-        <Tooltip key={i}>
-          <TooltipTrigger asChild>
-            <div
-              className={`${bgColor} ${extraClasses} w-4 h-4 rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer`}
-              style={{ gridColumn: i + 1, gridRow: 1 }}
-              aria-label={label}
-            />
-          </TooltipTrigger>
-          {!isMobile && (
-            <TooltipContent>
-              <p className="text-xs">{label}</p>
-            </TooltipContent>
-          )}
-        </Tooltip>,
-      );
-    }
-
     return (
-      <div className="relative space-y-3">
-        {/* Milestone Labels */}
-        <div className="flex justify-between text-xs font-medium text-muted-foreground px-1">
-          {LIFE_MILESTONES.map((milestone) => (
-            <div
+      <div className="space-y-4">
+        {LIFE_MILESTONES.map((milestone) => {
+          const monthsInMilestone = [];
+          
+          // Generate month blocks for this milestone
+          for (let i = milestone.startMonth; i < milestone.endMonth; i++) {
+            const isPast = i < lived;
+            const isCurrent = i === currentIndex;
+            const isFuture = i > lived;
+            
+            let bgColor = "bg-gray-300/80";
+            let extraClasses = "";
+            
+            if (isCurrent) {
+              bgColor = "bg-primary";
+              extraClasses = "animate-pulse ring-2 ring-primary/50";
+            } else if (isFuture) {
+              bgColor = "bg-blue-100";
+            }
+            
+            const age = Math.floor(i / 12);
+            const label = isPast
+              ? `Month ${i}, Age ${age}, Lived`
+              : `Month ${i}, Estimated Age ${age}`;
+            
+            monthsInMilestone.push(
+              <Tooltip key={i}>
+                <TooltipTrigger asChild>
+                  <div
+                    className={`${bgColor} ${extraClasses} w-4 h-4 rounded-sm transition-all duration-200 hover:scale-110 cursor-pointer`}
+                    aria-label={label}
+                  />
+                </TooltipTrigger>
+                {!isMobile && (
+                  <TooltipContent>
+                    <p className="text-xs">{label}</p>
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            );
+          }
+          
+          return (
+            <div 
               key={milestone.name}
-              className="text-center"
-              style={{
-                width: `${((milestone.endMonth - milestone.startMonth) / total) * 100}%`,
-              }}
+              className="border rounded-lg p-4"
+              style={{ backgroundColor: milestone.color }}
             >
-              {milestone.name}
+              <div className="flex items-start gap-4">
+                {/* Milestone Label on Left */}
+                <div className="flex-shrink-0 w-32 md:w-40">
+                  <h3 className="text-sm font-semibold text-foreground">
+                    {milestone.name}
+                  </h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {Math.floor(milestone.startMonth / 12)}-{Math.floor(milestone.endMonth / 12)} years
+                  </p>
+                </div>
+                
+                {/* Month Blocks Grid */}
+                <div className="flex-1 min-w-0">
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(16px,1fr))] gap-1">
+                    {monthsInMilestone}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Add 4K Weeks marker if it falls in this milestone */}
+              {milestone.startMonth <= FOUR_K_WEEKS_MARKER && 
+               milestone.endMonth > FOUR_K_WEEKS_MARKER && (
+                <div className="mt-2 flex items-center gap-2 text-xs font-semibold text-primary">
+                  <div className="w-1 h-4 bg-primary" />
+                  <span>4K Weeks Milestone (80 years)</span>
+                </div>
+              )}
             </div>
-          ))}
-        </div>
-
-        {/* Grid with Background Sections and Markers */}
-        <div className="relative grid gap-1 grid-cols-[repeat(1080,minmax(16px,1fr))]">
-          {/* Milestone Background Sections */}
-          {LIFE_MILESTONES.map((milestone) => (
-            <div
-              key={`bg-${milestone.name}`}
-              className="absolute top-0 h-full pointer-events-none"
-              style={{
-                gridColumn: `${milestone.startMonth + 1} / ${milestone.endMonth + 1}`,
-                gridRow: 1,
-                backgroundColor: milestone.color,
-                left: `calc((100% / 1080) * ${milestone.startMonth} + (${milestone.startMonth} * 0.25rem))`,
-                width: `calc((100% / 1080) * ${milestone.endMonth - milestone.startMonth} + (${milestone.endMonth - milestone.startMonth - 1} * 0.25rem))`,
-              }}
-            />
-          ))}
-
-          {/* Milestone Separator Lines */}
-          {LIFE_MILESTONES.slice(1).map((milestone) => (
-            <div
-              key={`separator-${milestone.name}`}
-              className="absolute top-0 h-full border-l-2 border-border/50 pointer-events-none"
-              style={{
-                left: `calc((100% / 1080) * ${milestone.startMonth} + (${milestone.startMonth} * 0.25rem))`,
-              }}
-            />
-          ))}
-
-          {/* 4K Weeks Marker at 80 years (960 months) */}
-          <div
-            className="absolute top-0 h-full flex flex-col items-center pointer-events-none"
-            style={{
-              left: `calc((100% / 1080) * ${FOUR_K_WEEKS_MARKER} + (${FOUR_K_WEEKS_MARKER} * 0.25rem))`,
-            }}
-          >
-            <div className="border-l-4 border-primary h-full" />
-            <div className="absolute -top-6 bg-primary text-primary-foreground text-xs font-bold px-2 py-1 rounded whitespace-nowrap">
-              4K Weeks
-            </div>
-          </div>
-
-          {/* Month Squares */}
-          {squares}
-        </div>
+          );
+        })}
       </div>
     );
   };
