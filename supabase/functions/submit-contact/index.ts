@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
 import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
+import { Resend } from 'npm:resend@2.0.0';
 import { maskEmail } from '../shared/email-masking.ts';
 import { checkRateLimit, logRequest, getClientIP } from '../shared/rate-limiting.ts';
 
@@ -112,6 +113,14 @@ serve(async (req) => {
 
     console.log(`Contact form submitted successfully from ${maskEmail(sanitizedData.email)}`);
 
+    // Send notification emails to admin users
+    try {
+      await sendAdminNotifications(supabase, sanitizedData);
+    } catch (notificationError: any) {
+      // Log the error but don't fail the contact submission
+      console.error('Failed to send admin notifications:', notificationError);
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true,
@@ -138,3 +147,82 @@ serve(async (req) => {
     );
   }
 });
+
+async function sendAdminNotifications(supabase: any, contactData: { name: string; email: string; message: string }) {
+  const resendApiKey = Deno.env.get('RESEND_API_KEY');
+  if (!resendApiKey) {
+    console.error('RESEND_API_KEY not configured');
+    return;
+  }
+
+  const resend = new Resend(resendApiKey);
+
+  // Get all admin users
+  const { data: adminRoles, error: rolesError } = await supabase
+    .from('user_roles')
+    .select('user_id')
+    .eq('role', 'admin');
+
+  if (rolesError) {
+    console.error('Error fetching admin roles:', rolesError);
+    return;
+  }
+
+  if (!adminRoles || adminRoles.length === 0) {
+    console.log('No admin users found to notify');
+    return;
+  }
+
+  const adminUserIds = adminRoles.map((role: any) => role.user_id);
+
+  // Get admin emails from profiles
+  const { data: adminProfiles, error: profilesError } = await supabase
+    .from('profiles')
+    .select('email')
+    .in('id', adminUserIds);
+
+  if (profilesError) {
+    console.error('Error fetching admin profiles:', profilesError);
+    return;
+  }
+
+  if (!adminProfiles || adminProfiles.length === 0) {
+    console.log('No admin email addresses found');
+    return;
+  }
+
+  const adminEmails = adminProfiles.map((profile: any) => profile.email);
+
+  // Send email to all admins
+  const emailHtml = `
+    <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #9381ff;">New Contact Form Submission</h2>
+      <div style="background-color: #f8f7ff; padding: 20px; border-radius: 8px; margin: 20px 0;">
+        <p><strong>From:</strong> ${contactData.name}</p>
+        <p><strong>Email:</strong> ${contactData.email}</p>
+        <p><strong>Message:</strong></p>
+        <p style="white-space: pre-wrap;">${contactData.message}</p>
+      </div>
+      <p style="color: #666; font-size: 12px;">
+        This notification was sent because you are an admin on Sunday4k.
+      </p>
+    </div>
+  `;
+
+  try {
+    const { error: sendError } = await resend.emails.send({
+      from: 'Sunday4k <onboarding@resend.dev>',
+      to: adminEmails,
+      subject: `New Contact Form: ${contactData.name}`,
+      html: emailHtml,
+    });
+
+    if (sendError) {
+      console.error('Error sending admin notification emails:', sendError);
+    } else {
+      console.log(`Admin notification emails sent to ${adminEmails.length} admin(s)`);
+    }
+  } catch (error) {
+    console.error('Exception sending admin emails:', error);
+  }
+}
