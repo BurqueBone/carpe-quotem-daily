@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthContext";
 import { useResourceCollection } from "@/hooks/useResourceCollection";
@@ -10,6 +10,14 @@ import ResourceFilters from "@/components/ResourceFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 import { AlertCircle } from "lucide-react";
 const ResourceCollection = () => {
   const { user, loading: authLoading } = useAuth();
@@ -31,6 +39,20 @@ const ResourceCollection = () => {
     setShowOnlyUpvoted,
     refetch,
   } = useResourceCollection();
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const resourcesPerPage = 10;
+
+  // Calculate pagination
+  const totalPages = Math.ceil(resources.length / resourcesPerPage);
+  const startIndex = (currentPage - 1) * resourcesPerPage;
+  const endIndex = startIndex + resourcesPerPage;
+  const currentResources = resources.slice(startIndex, endIndex);
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedCategories, selectedTypes, sortBy, showOnlyUpvoted]);
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -116,6 +138,9 @@ const ResourceCollection = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-2xl font-semibold">All Resources</h2>
+              <span className="text-sm text-muted-foreground">
+                {resources.length} total resources
+              </span>
             </div>
 
             {resources.length === 0 ? (
@@ -125,11 +150,48 @@ const ResourceCollection = () => {
                 </AlertDescription>
               </Alert>
             ) : (
-              <div className="space-y-3">
-                {resources.map((resource) => (
-                  <ResourceListItem key={resource.id} resource={resource} onUpvoteToggle={toggleUpvote} />
-                ))}
-              </div>
+              <>
+                <div className="space-y-3">
+                  {currentResources.map((resource) => (
+                    <ResourceListItem key={resource.id} resource={resource} onUpvoteToggle={toggleUpvote} />
+                  ))}
+                </div>
+
+                {/* Pagination */}
+                {totalPages > 1 && (
+                  <div className="flex justify-center pt-4">
+                    <Pagination>
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious
+                            onClick={() => setCurrentPage((prev) => Math.max(1, prev - 1))}
+                            className={currentPage === 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                          <PaginationItem key={page}>
+                            <PaginationLink
+                              onClick={() => setCurrentPage(page)}
+                              isActive={currentPage === page}
+                              className="cursor-pointer"
+                            >
+                              {page}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+
+                        <PaginationItem>
+                          <PaginationNext
+                            onClick={() => setCurrentPage((prev) => Math.min(totalPages, prev + 1))}
+                            className={currentPage === totalPages ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  </div>
+                )}
+              </>
             )}
           </div>
         )}
