@@ -5,7 +5,7 @@ import { useAdminStats } from '@/hooks/useAdminStats';
 import AdminLayout from '@/components/AdminLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Mail, Users, Settings, TrendingUp } from 'lucide-react';
+import { Mail, Users, Settings, TrendingUp, UserPlus } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Admin = () => {
@@ -37,11 +37,11 @@ const Admin = () => {
 
   const dashboardStats = [
     {
-      title: "Active Templates",
-      value: formatNumber(stats.activeTemplates),
-      description: "Email templates in use",
-      icon: Mail,
-      color: "text-blue-600"
+      title: "New Signups",
+      value: formatNumber(stats.newUsersThisWeek),
+      description: "This week",
+      icon: UserPlus,
+      color: "text-orange-600"
     },
     {
       title: "Total Users", 
@@ -49,6 +49,13 @@ const Admin = () => {
       description: "Registered users",
       icon: Users,
       color: "text-green-600"
+    },
+    {
+      title: "Active Templates",
+      value: formatNumber(stats.activeTemplates),
+      description: "Email templates in use",
+      icon: Mail,
+      color: "text-blue-600"
     },
     {
       title: "Emails Sent",
@@ -73,7 +80,7 @@ const Admin = () => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {dashboardStats.map((stat) => {
             const Icon = stat.icon;
             return (
