@@ -444,7 +444,7 @@ export type Database = {
         Row: {
           action: string
           id: string
-          ip_address: unknown | null
+          ip_address: unknown
           table_name: string
           target_user_id: string | null
           timestamp: string
@@ -454,7 +454,7 @@ export type Database = {
         Insert: {
           action: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           table_name: string
           target_user_id?: string | null
           timestamp?: string
@@ -464,7 +464,7 @@ export type Database = {
         Update: {
           action?: string
           id?: string
-          ip_address?: unknown | null
+          ip_address?: unknown
           table_name?: string
           target_user_id?: string | null
           timestamp?: string
@@ -545,7 +545,7 @@ export type Database = {
     }
     Functions: {
       get_random_quote_and_track: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           author: string
           display_count: number
@@ -574,7 +574,7 @@ export type Database = {
         }[]
       }
       get_scheduled_resource: {
-        Args: Record<PropertyKey, never>
+        Args: never
         Returns: {
           affiliate_url: string
           category_id: string
