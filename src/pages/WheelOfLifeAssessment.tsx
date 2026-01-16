@@ -18,6 +18,7 @@ import {
   Brain, 
   Palette, 
   ChevronRight,
+  ChevronLeft,
   RotateCcw,
   Sparkles,
   Dumbbell,
@@ -238,10 +239,16 @@ const WheelOfLifeAssessment = () => {
                   : "You can proceed without selecting any priorities, or choose areas you'd like to focus on improving."
                 }
               </p>
-              <Button onClick={() => setCurrentStep('designer')} size="lg">
-                Design Your Ideal Week
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
+              <div className="flex justify-center gap-3">
+                <Button variant="outline" onClick={() => setCurrentStep('assessment')} size="lg">
+                  <ChevronLeft className="w-4 h-4 mr-2" />
+                  Back to Assessment
+                </Button>
+                <Button onClick={() => setCurrentStep('designer')} size="lg">
+                  Design Your Ideal Week
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
