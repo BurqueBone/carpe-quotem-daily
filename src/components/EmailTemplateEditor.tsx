@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -88,12 +89,33 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
     "user@example.com"
   );
 
-  // Processed HTML content for preview
-  const processedHtmlContent = processTemplateVariables(
-    formData.html_content,
-    sampleContext,
-    templateVariables
-  );
+  // Processed HTML content for preview - sanitized with DOMPurify to prevent XSS
+  const sanitizedHtmlContent = useMemo(() => {
+    const processed = processTemplateVariables(
+      formData.html_content,
+      sampleContext,
+      templateVariables
+    );
+    // Sanitize HTML to prevent XSS attacks in the admin preview
+    // Allow common email HTML elements but strip dangerous content
+    return DOMPurify.sanitize(processed, {
+      ALLOWED_TAGS: [
+        'div', 'span', 'p', 'br', 'hr', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+        'table', 'thead', 'tbody', 'tr', 'td', 'th', 'caption',
+        'a', 'img', 'strong', 'b', 'em', 'i', 'u', 's', 'strike',
+        'ul', 'ol', 'li', 'blockquote', 'pre', 'code',
+        'center', 'font', 'small', 'big', 'sup', 'sub'
+      ],
+      ALLOWED_ATTR: [
+        'href', 'src', 'alt', 'title', 'style', 'class', 'id', 'target',
+        'width', 'height', 'border', 'cellpadding', 'cellspacing', 'align', 'valign',
+        'bgcolor', 'color', 'face', 'size', 'colspan', 'rowspan'
+      ],
+      ALLOW_DATA_ATTR: false,
+      FORBID_TAGS: ['script', 'iframe', 'object', 'embed', 'form', 'input', 'button', 'textarea', 'select'],
+      FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover', 'onfocus', 'onblur']
+    });
+  }, [formData.html_content, sampleContext, templateVariables]);
 
   useEffect(() => {
     fetchTemplateVariables();
@@ -338,7 +360,7 @@ const EmailTemplateEditor = ({ template, onSave, onCancel }: EmailTemplateEditor
                       style={previewTheme === 'dark' ? {
                         filter: 'invert(1) hue-rotate(180deg)',
                       } : undefined}
-                      dangerouslySetInnerHTML={{ __html: processedHtmlContent }}
+                      dangerouslySetInnerHTML={{ __html: sanitizedHtmlContent }}
                     />
                   </div>
                 </div>
