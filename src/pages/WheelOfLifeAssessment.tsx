@@ -271,9 +271,9 @@ const WheelOfLifeAssessment = () => {
   };
 
   const WheelVisualization = () => {
-    const centerX = 150;
-    const centerY = 150;
-    const maxRadius = 120;
+    const centerX = 180;
+    const centerY = 180;
+    const maxRadius = 100;
     
     const points = lifeAreas.map((area, index) => {
       const angle = (index * 2 * Math.PI) / lifeAreas.length - Math.PI / 2;
@@ -288,8 +288,8 @@ const WheelOfLifeAssessment = () => {
     }, '') + ' Z';
 
     return (
-      <div className="flex justify-center mb-6 px-4">
-        <svg width="100%" height="auto" viewBox="0 0 300 300" className="drop-shadow-md max-w-[300px] w-full">
+      <div className="flex justify-center mb-4">
+        <svg width="100%" height="auto" viewBox="0 0 360 360" className="drop-shadow-md max-w-[320px] w-full">
           {/* Grid lines */}
           {[2, 4, 6, 8, 10].map(level => (
             <circle
@@ -335,7 +335,7 @@ const WheelOfLifeAssessment = () => {
           {/* Area labels */}
           {points.map((point, index) => {
             const angle = (index * 2 * Math.PI) / lifeAreas.length - Math.PI / 2;
-            const labelRadius = maxRadius + 20;
+            const labelRadius = maxRadius + 55;
             const labelX = centerX + labelRadius * Math.cos(angle);
             const labelY = centerY + labelRadius * Math.sin(angle);
             
