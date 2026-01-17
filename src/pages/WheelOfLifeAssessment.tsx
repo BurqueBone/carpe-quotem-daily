@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import PriorityBlock from "@/components/LifeCompass/PriorityBlock";
@@ -501,38 +502,50 @@ const WheelOfLifeAssessment = () => {
                     Watch as your wheel takes shape!
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <WheelVisualization />
-                  
-                  <div className="grid grid-cols-1 gap-4 sm:gap-6">
-                    {lifeAreas.map(area => (
-                      <div key={area.id} className="space-y-2 sm:space-y-3">
-                        <div className="flex items-center gap-2 sm:gap-3">
-                          <div style={{ color: area.color }} className="flex-shrink-0">
-                            {area.icon}
-                          </div>
-                          <span className="font-medium text-sm sm:text-base">{area.name}</span>
-                          <span className="ml-auto text-xl sm:text-2xl font-bold text-primary">
-                            {area.rating}
-                          </span>
-                        </div>
-                        <Slider
-                          value={[area.rating]}
-                          onValueChange={(value) => updateRating(area.id, value[0])}
-                          max={10}
-                          min={1}
-                          step={1}
-                          className="w-full"
-                        />
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    {/* Wheel visualization - smaller on desktop */}
+                    <div className="flex justify-center lg:sticky lg:top-4">
+                      <div className="w-full max-w-[280px] lg:max-w-[320px]">
+                        <WheelVisualization />
                       </div>
-                    ))}
+                    </div>
+                    
+                    {/* Sliders in scrollable container */}
+                    <div className="space-y-3">
+                      <ScrollArea className="h-[320px] lg:h-[380px] pr-4">
+                        <div className="space-y-4">
+                          {lifeAreas.map(area => (
+                            <div key={area.id} className="space-y-1.5">
+                              <div className="flex items-center gap-2">
+                                <div style={{ color: area.color }} className="flex-shrink-0 w-5 h-5">
+                                  {area.icon}
+                                </div>
+                                <span className="font-medium text-sm">{area.name}</span>
+                                <span className="ml-auto text-lg font-bold text-primary">
+                                  {area.rating}
+                                </span>
+                              </div>
+                              <Slider
+                                value={[area.rating]}
+                                onValueChange={(value) => updateRating(area.id, value[0])}
+                                max={10}
+                                min={1}
+                                step={1}
+                                className="w-full"
+                              />
+                            </div>
+                          ))}
+                        </div>
+                      </ScrollArea>
+                    </div>
                   </div>
 
                   <Separator />
 
-                  <div className="bg-gradient-subtle rounded-xl p-6 text-center space-y-4">
-                    <h3 className="text-lg font-semibold">Your Wheel Analysis</h3>
-                    <p className="text-muted-foreground">{getWheelAnalysis()}</p>
+                  <div className="bg-gradient-subtle rounded-xl p-4 sm:p-6 text-center space-y-3">
+                    <h3 className="text-base sm:text-lg font-semibold">Your Wheel Analysis</h3>
+                    <p className="text-muted-foreground text-sm">{getWheelAnalysis()}</p>
                     <Button onClick={() => setCurrentStep('priorities')} size="lg">
                       Choose Priority Areas
                       <ChevronRight className="w-4 h-4 ml-2" />
