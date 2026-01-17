@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import PriorityBlock from './PriorityBlock';
 import { cn } from "@/lib/utils";
 
@@ -75,8 +76,9 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   };
 
   return (
-    <Card className="p-2 sm:p-4 bg-card overflow-x-auto">
-      <div className="min-w-[600px] sm:min-w-[800px]">
+    <Card className="p-2 sm:p-4 bg-card">
+      <ScrollArea className="w-full">
+        <div className="min-w-[600px] sm:min-w-[800px]">
         <div className="grid grid-cols-8 gap-0.5 sm:gap-1 text-xs">
           {/* Header row */}
           <div className="p-1 sm:p-3 font-medium text-center text-muted-foreground text-[10px] sm:text-xs">Time</div>
@@ -133,6 +135,8 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           ))}
         </div>
       </div>
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </Card>
   );
 };

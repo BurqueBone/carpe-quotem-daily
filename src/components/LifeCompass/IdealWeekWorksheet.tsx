@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 interface LifeArea {
   id: string;
@@ -92,8 +93,8 @@ const IdealWeekWorksheet: React.FC<IdealWeekWorksheetProps> = ({ placedBlocks })
         <h2 className="text-xl font-semibold mb-4 print:text-lg print:text-black border-b pb-2 print:border-black">
           Weekly Schedule
         </h2>
-        <div className="overflow-x-auto print:overflow-visible">
-          <table className="w-full border-collapse border-2 border-border print:border-black bg-background print:bg-white">
+        <ScrollArea className="w-full print:overflow-visible">
+          <table className="w-full border-collapse border-2 border-border print:border-black bg-background print:bg-white min-w-[700px]">
             <thead>
               <tr>
                 <th className="border border-border print:border-black p-3 print:p-2 bg-muted print:bg-gray-50 text-sm print:text-xs font-bold print:text-black min-w-[80px] print:min-w-[60px]">
@@ -130,7 +131,8 @@ const IdealWeekWorksheet: React.FC<IdealWeekWorksheetProps> = ({ placedBlocks })
               ))}
             </tbody>
           </table>
-        </div>
+          <ScrollBar orientation="horizontal" className="print:hidden" />
+        </ScrollArea>
       </div>
 
       {/* Life Areas Summary - print-optimized */}
