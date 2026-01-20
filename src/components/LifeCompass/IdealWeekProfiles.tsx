@@ -1,8 +1,8 @@
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Briefcase, Heart, Users, Dumbbell, ChevronDown, ChevronUp } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Briefcase, Heart, Users, Dumbbell } from "lucide-react";
 
 interface LifeArea {
   id: string;
@@ -35,6 +35,8 @@ const IdealWeekProfiles: React.FC<IdealWeekProfilesProps> = ({
   lifeAreas,
   onProfileSelected
 }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
   const profileTemplates: ProfileTemplate[] = [
     {
       id: 'career-driven',
@@ -411,33 +413,42 @@ const IdealWeekProfiles: React.FC<IdealWeekProfilesProps> = ({
   };
 
   return (
-    <div className="space-y-4">
-      <div className="text-center space-y-2 px-2">
-        <h3 className="text-base sm:text-lg font-semibold">Quick Start Templates</h3>
-        <p className="text-xs sm:text-sm text-muted-foreground">
-          Choose a template that matches your lifestyle, or start from scratch
-        </p>
-      </div>
+    <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+      <CollapsibleTrigger asChild>
+        <Button 
+          variant="outline" 
+          className="w-full flex items-center justify-between py-3 px-4"
+        >
+          <span className="font-medium text-sm">Quick Start Templates</span>
+          {isOpen ? (
+            <ChevronUp className="w-4 h-4 ml-2" />
+          ) : (
+            <ChevronDown className="w-4 h-4 ml-2" />
+          )}
+        </Button>
+      </CollapsibleTrigger>
       
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-2 sm:gap-3">
-        {profileTemplates.map(profile => (
-          <Card 
-            key={profile.id} 
-            className="relative group hover:shadow-md transition-shadow cursor-pointer hover:border-primary/50"
-            onClick={() => handleProfileSelect(profile)}
-          >
-            <CardContent className="p-2 sm:p-4 text-center">
-              <div className="flex flex-col items-center gap-1 sm:gap-2">
-                <div className="p-2 sm:p-3 rounded-lg bg-primary/10 text-primary scale-75 sm:scale-100">
-                  {profile.icon}
+      <CollapsibleContent className="pt-3">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          {profileTemplates.map(profile => (
+            <Card 
+              key={profile.id} 
+              className="relative group hover:shadow-md transition-shadow cursor-pointer hover:border-primary/50"
+              onClick={() => handleProfileSelect(profile)}
+            >
+              <CardContent className="p-3 text-center">
+                <div className="flex flex-col items-center gap-1.5">
+                  <div className="p-2 rounded-lg bg-primary/10 text-primary">
+                    {profile.icon}
+                  </div>
+                  <h4 className="font-medium text-xs">{profile.name}</h4>
                 </div>
-                <h4 className="font-medium text-xs sm:text-sm">{profile.name}</h4>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 
