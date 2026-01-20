@@ -561,6 +561,12 @@ const WheelOfLifeAssessment = () => {
           {currentStep === 'designer' && (
             <Card className="max-w-7xl mx-auto">
               <CardContent className="p-6">
+                <div className="mb-4">
+                  <Button variant="outline" onClick={() => setCurrentStep('priorities')} size="sm">
+                    <ChevronLeft className="w-4 h-4 mr-2" />
+                    Back to Priorities
+                  </Button>
+                </div>
                 <IdealWeekDesigner />
               </CardContent>
             </Card>
