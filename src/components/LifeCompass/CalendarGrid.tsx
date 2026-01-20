@@ -33,7 +33,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   selectedPriorities
 }) => {
   const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-  const timeSlots = Array.from({ length: 16 }, (_, i) => i + 6); // 6 AM to 10 PM
+  const timeSlots = Array.from({ length: 13 }, (_, i) => i + 7); // 7 AM to 7 PM (compact)
 
   const [draggedOver, setDraggedOver] = useState<string | null>(null);
 
@@ -76,14 +76,14 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
   };
 
   return (
-    <Card className="p-2 sm:p-4 bg-card">
+    <Card className="p-1.5 sm:p-3 bg-card">
       <ScrollArea className="w-full">
-        <div className="min-w-[600px] sm:min-w-[800px]">
-        <div className="grid grid-cols-8 gap-0.5 sm:gap-1 text-xs">
+        <div className="min-w-[550px] sm:min-w-[700px]">
+        <div className="grid grid-cols-8 gap-px text-xs">
           {/* Header row */}
-          <div className="p-1 sm:p-3 font-medium text-center text-muted-foreground text-[10px] sm:text-xs">Time</div>
+          <div className="p-0.5 sm:p-2 font-medium text-center text-muted-foreground text-[9px] sm:text-xs">Time</div>
           {days.map(day => (
-            <div key={day} className="p-1 sm:p-3 text-center font-semibold bg-muted/30 rounded-md text-[10px] sm:text-xs">
+            <div key={day} className="p-0.5 sm:p-2 text-center font-semibold bg-muted/30 rounded-sm text-[9px] sm:text-xs">
               <div className="hidden sm:block">{day.slice(0, 3)}</div>
               <div className="sm:hidden">{day.slice(0, 2)}</div>
             </div>
@@ -92,7 +92,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
           {/* Time slots */}
           {timeSlots.map(hour => (
             <React.Fragment key={hour}>
-              <div className="p-1 sm:p-3 text-right text-muted-foreground font-medium bg-muted/20 rounded-md flex items-center justify-end text-[10px] sm:text-xs">
+              <div className="p-0.5 sm:p-2 text-right text-muted-foreground font-medium bg-muted/20 rounded-sm flex items-center justify-end text-[9px] sm:text-xs">
                 {formatTime(hour)}
               </div>
               {days.map(day => {
@@ -103,7 +103,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                   <div
                     key={`${day}-${hour}`}
                     className={cn(
-                      "p-0.5 sm:p-1 border border-border/30 min-h-[40px] sm:min-h-[50px] rounded-sm transition-colors relative",
+                      "p-px border border-border/30 min-h-[32px] sm:min-h-[38px] rounded-sm transition-colors relative",
                       placedBlock 
                         ? "bg-background" 
                         : isDraggedOver 
@@ -119,13 +119,13 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                         area={placedBlock.area}
                         isPlaced={true}
                         onRemove={() => onBlockRemoved(placedBlock.id)}
-                        className="h-full min-h-[36px] sm:min-h-[46px] m-0"
+                        className="h-full min-h-[30px] sm:min-h-[36px] m-0"
                         isPriority={selectedPriorities.includes(placedBlock.area.id)}
                         iconOnly={true}
                       />
                     ) : (
-                      <div className="h-full flex items-center justify-center text-[10px] sm:text-xs text-muted-foreground/50 opacity-0 hover:opacity-100 transition-opacity">
-                        Drop
+                      <div className="h-full flex items-center justify-center text-[9px] sm:text-[10px] text-muted-foreground/50 opacity-0 hover:opacity-100 transition-opacity">
+                        +
                       </div>
                     )}
                   </div>

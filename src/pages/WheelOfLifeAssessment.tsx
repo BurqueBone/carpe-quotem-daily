@@ -366,76 +366,71 @@ const WheelOfLifeAssessment = () => {
 
   const IdealWeekDesigner = () => {
     return (
-      <div className="space-y-8">
-        <div className="text-center space-y-4 px-2">
-          <h2 className="text-xl sm:text-2xl font-bold">Design Your Ideal Week</h2>
-          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto">
-            Now, let's design your ideal week. If you had complete control of your time, what would it look like?
-            Drag priority blocks onto your calendar to create your perfect week.
-          </p>
+      <div className="space-y-4">
+        {/* Compact Header */}
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <h2 className="text-lg font-semibold">Design Your Ideal Week</h2>
+          <p className="text-sm text-muted-foreground">Drag blocks onto your calendar</p>
         </div>
 
-        {/* Ideal Week Profiles */}
+        {/* Collapsible Ideal Week Profiles */}
         <IdealWeekProfiles 
           lifeAreas={lifeAreas}
           onProfileSelected={handleProfileSelected}
         />
 
-        <Separator />
-
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-          {/* Priority Blocks */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="font-semibold text-sm sm:text-base">Priority Blocks</h3>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={clearCalendar}
-                className="text-xs"
-              >
-                Clear All
-              </Button>
-            </div>
-            <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-1 gap-2">
+        {/* Horizontal Priority Blocks */}
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium text-sm">Priority Blocks</h3>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={clearCalendar}
+              className="text-xs h-7"
+            >
+              <RotateCcw className="w-3 h-3 mr-1" />
+              Clear
+            </Button>
+          </div>
+          <ScrollArea className="w-full">
+            <div className="flex gap-1.5 pb-2">
               {lifeAreas.map(area => (
                 <PriorityBlock 
                   key={area.id} 
                   area={area} 
                   isPriority={selectedPriorities.includes(area.id)}
+                  className="flex-shrink-0"
                 />
               ))}
             </div>
-          </div>
-
-          {/* Calendar Grid */}
-          <div className="lg:col-span-3">
-            <CalendarGrid
-              placedBlocks={placedBlocks}
-              onBlockPlaced={handleBlockPlaced}
-              onBlockRemoved={handleBlockRemoved}
-              selectedPriorities={selectedPriorities}
-            />
-          </div>
+          </ScrollArea>
         </div>
 
-        <div className="text-center space-y-4">
-          <div className="bg-gradient-subtle rounded-xl p-6">
-            <div className="flex items-center justify-center gap-2 mb-3">
-              <Sparkles className="w-5 h-5 text-primary" />
-              <h3 className="text-lg font-semibold">Your Ideal Week</h3>
-            </div>
-            <p className="text-muted-foreground mb-4">
-              You've placed {placedBlocks.length} priority blocks in your ideal week. 
-              {placedBlocks.length > 0 ? " Ready to see your insights?" : " Start by choosing a template or dragging blocks to your calendar."}
-            </p>
-            {placedBlocks.length > 0 && (
-              <Button onClick={() => setCurrentStep('results')} size="lg">
-                Generate My Analysis
-                <ChevronRight className="w-4 h-4 ml-2" />
-              </Button>
-            )}
+        {/* Calendar Grid */}
+        <CalendarGrid
+          placedBlocks={placedBlocks}
+          onBlockPlaced={handleBlockPlaced}
+          onBlockRemoved={handleBlockRemoved}
+          selectedPriorities={selectedPriorities}
+        />
+
+        {/* Sticky Footer */}
+        <div className="sticky bottom-0 bg-background/95 backdrop-blur-sm border-t py-3 -mx-6 px-6 -mb-6 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-muted-foreground">
+              {placedBlocks.length} blocks placed
+            </span>
           </div>
+          {placedBlocks.length > 0 ? (
+            <Button onClick={() => setCurrentStep('results')} size="sm">
+              Generate Analysis
+              <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          ) : (
+            <span className="text-xs text-muted-foreground">Drag blocks to continue</span>
+          )}
         </div>
       </div>
     );
