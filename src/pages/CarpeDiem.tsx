@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Helmet } from "react-helmet-async";
 import CategoryCard from "@/components/CategoryCard";
 import { useCarpeDiemData } from "@/hooks/useCarpeDiemData";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -19,6 +20,13 @@ const CarpeDiem = () => {
     window.location.reload();
   };
   return <div className="min-h-screen bg-gradient-subtle flex flex-col">
+      <Helmet>
+        <title>Carpe Diem Resources — Sunday4K</title>
+        <meta name="description" content="Curated, community-voted resources for self-improvement across 12 life areas: learning, career, health, relationships, creativity, and more." />
+        <meta property="og:title" content="Carpe Diem Resources — Sunday4K" />
+        <meta property="og:description" content="Curated, community-voted resources for self-improvement across 12 life areas: learning, career, health, relationships, creativity, and more." />
+        <meta property="og:url" content="https://sunday4k.life/carpe-diem" />
+      </Helmet>
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
         <div className="space-y-8">

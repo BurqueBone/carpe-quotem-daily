@@ -1,3 +1,4 @@
+import { Helmet } from "react-helmet-async";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import LifespanVisualizer from "@/components/LifeCompass/LifespanVisualizer";
@@ -7,6 +8,13 @@ import { Target, Compass } from "lucide-react";
 const LifeCompassCalibration = () => {
   return (
     <div className="min-h-screen bg-gradient-subtle flex flex-col">
+      <Helmet>
+        <title>Life Compass Calibration — Sunday4K</title>
+        <meta name="description" content="Discover what truly matters to you. Assess your life balance across key areas and create a prioritization plan aligned with your values." />
+        <meta property="og:title" content="Life Compass Calibration — Sunday4K" />
+        <meta property="og:description" content="Discover what truly matters to you. Assess your life balance across key areas and create a prioritization plan aligned with your values." />
+        <meta property="og:url" content="https://sunday4k.life/life-compass-calibration" />
+      </Helmet>
       <Header />
       <div className="container mx-auto px-4 py-8 max-w-6xl flex-1">
         <div className="space-y-8">

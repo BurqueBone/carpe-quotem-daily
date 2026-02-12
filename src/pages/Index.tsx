@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
 import { Zap, ArrowRight, RefreshCw, Compass, Lightbulb } from "lucide-react";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
@@ -19,6 +20,15 @@ const Index = () => {
     refetch
   } = useQuoteOfTheDay();
   return <div className="min-h-screen bg-background overflow-x-hidden w-full">
+      <Helmet>
+        <title>Sunday4K — Your Life in Weeks. Your Weeks in Focus.</title>
+        <meta name="description" content="Sunday4K helps you live intentionally with daily inspirational quotes, life balance assessments, and curated self-improvement resources across 12 life areas." />
+        <meta property="og:title" content="Sunday4K — Your Life in Weeks. Your Weeks in Focus." />
+        <meta property="og:description" content="Sunday4K helps you live intentionally with daily inspirational quotes, life balance assessments, and curated self-improvement resources across 12 life areas." />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://sunday4k.life" />
+        <meta name="twitter:card" content="summary_large_image" />
+      </Helmet>
       <Header />
       
       {/* Hero Section */}
