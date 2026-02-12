@@ -1,8 +1,13 @@
-import { useRef, useState, useMemo } from 'react';
-import SimpleMDE from 'react-simplemde-editor';
-import 'easymde/dist/easymde.min.css';
+import { useRef, useState, useMemo, useEffect, lazy, Suspense } from 'react';
 import { ImageUploadModal } from './ImageUploadModal';
 import '@/styles/markdown-editor.css';
+
+// Lazy-load SimpleMDE to avoid SSR issues with codemirror/navigator
+const SimpleMDE = lazy(() => import('react-simplemde-editor').then(mod => {
+  // Dynamically import the CSS too
+  import('easymde/dist/easymde.min.css');
+  return { default: mod.default };
+}));
 
 interface MarkdownEditorProps {
   value: string;
@@ -65,14 +70,16 @@ export const MarkdownEditor = ({ value, onChange }: MarkdownEditorProps) => {
 
   return (
     <div className="markdown-editor-wrapper">
-      <SimpleMDE
-        value={value}
-        onChange={onChange}
-        options={options}
-        getMdeInstance={(instance) => {
-          editorRef.current = instance;
-        }}
-      />
+      <Suspense fallback={<div className="p-4 text-muted-foreground border rounded-lg min-h-[400px] flex items-center justify-center">Loading editor...</div>}>
+        <SimpleMDE
+          value={value}
+          onChange={onChange}
+          options={options}
+          getMdeInstance={(instance) => {
+            editorRef.current = instance;
+          }}
+        />
+      </Suspense>
       <ImageUploadModal
         open={imageModalOpen}
         onClose={() => setImageModalOpen(false)}
