@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -9,7 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { MarkdownEditor } from './MarkdownEditor';
+const MarkdownEditor = lazy(() => import('./MarkdownEditor').then(m => ({ default: m.MarkdownEditor })));
 import { MarkdownPreview } from './MarkdownPreview';
 import { FeaturedImageUpload } from './FeaturedImageUpload';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
@@ -323,10 +323,12 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
               <ResizablePanelGroup direction="horizontal" className="min-h-[500px]">
                 <ResizablePanel defaultSize={showPreview ? 60 : 100} minSize={40}>
                   <div className="h-full">
-                    <MarkdownEditor
-                      value={formData.content}
-                      onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
-                    />
+                    <Suspense fallback={<div className="p-4 text-muted-foreground">Loading editor...</div>}>
+                      <MarkdownEditor
+                        value={formData.content}
+                        onChange={(value) => setFormData(prev => ({ ...prev, content: value }))}
+                      />
+                    </Suspense>
                   </div>
                 </ResizablePanel>
                 
