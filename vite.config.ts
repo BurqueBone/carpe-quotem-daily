@@ -14,6 +14,9 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
   ].filter(Boolean),
+  ssr: {
+    noExternal: ['react-helmet-async', 'sonner'],
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
