@@ -71,6 +71,7 @@ const BlogPostForm = ({ post, onSave, onCancel }: BlogPostFormProps) => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [showPreview, setShowPreview] = useState(() => {
+    if (typeof window === 'undefined') return true;
     const stored = localStorage.getItem('blog-editor-preview-open');
     return stored ? JSON.parse(stored) : true;
   });
