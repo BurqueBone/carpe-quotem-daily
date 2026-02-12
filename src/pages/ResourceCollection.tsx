@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/components/AuthContext";
 import { useResourceCollection } from "@/hooks/useResourceCollection";
@@ -76,6 +77,13 @@ const ResourceCollection = () => {
   }
   return (
     <div className="min-h-screen flex flex-col overflow-x-hidden w-full">
+      <Helmet>
+        <title>Resource Collection — Sunday4K</title>
+        <meta name="description" content="Hand-picked tools, books, courses, and apps to help you grow in every area of life. Curated by the Sunday4K community." />
+        <meta property="og:title" content="Resource Collection — Sunday4K" />
+        <meta property="og:description" content="Hand-picked tools, books, courses, and apps to help you grow in every area of life. Curated by the Sunday4K community." />
+        <meta property="og:url" content="https://sunday4k.life/resource-collection" />
+      </Helmet>
       <Header />
 
       <main className="flex-1 w-full max-w-7xl mx-auto px-4 py-8 space-y-8">
