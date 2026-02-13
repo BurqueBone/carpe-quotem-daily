@@ -30,7 +30,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isAdmin, setIsAdmin] = useState(false); // Immediate logging to check if component renders
 
   console.log("🚀 AuthProvider: Component rendered/re-rendered");
-  console.log("🌐 Current URL:", window.location.href);
+  console.log("🌐 Current URL:", typeof window !== 'undefined' ? window.location.href : 'SSR');
   console.log("📊 Current state:", { hasUser: !!user, hasSession: !!session, loading });
 
   useEffect(() => {
@@ -104,7 +104,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signInWithMagicLink = async (email: string) => {
-    const redirectUrl = `${window.location.origin}/auth/callback?flow=magic`;
+    const redirectUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/auth/callback?flow=magic`;
     console.log("📧 AuthContext: Sending magic link to:", email, "with redirect:", redirectUrl); // Enforce email format validation before hitting auth
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       return { error: new Error("Invalid email format") };
