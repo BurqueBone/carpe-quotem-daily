@@ -41,7 +41,7 @@ const DebugAuth = () => {
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Hostname:</span>
-                  <code className="bg-muted px-2 py-1 rounded text-sm">{window.location.hostname}</code>
+                  <code className="bg-muted px-2 py-1 rounded text-sm">{typeof window !== 'undefined' ? window.location.hostname : 'SSR'}</code>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">In Lovable Preview:</span>
