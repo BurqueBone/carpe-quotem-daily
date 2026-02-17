@@ -1,6 +1,7 @@
+import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { User, ChevronDown } from 'lucide-react';
+import { User, Menu } from 'lucide-react';
 import { useAuth } from '@/components/AuthContext';
 import {
   NavigationMenu,
@@ -10,6 +11,13 @@ import {
   NavigationMenuList,
   NavigationMenuTrigger,
 } from '@/components/ui/navigation-menu';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import logo from '@/assets/sunday4k-logo.png';
 import newLogo from '@/assets/new-logo.png';
 const Header = () => {
@@ -20,6 +28,8 @@ const Header = () => {
     isAdmin,
     signOut
   } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  
   const handleSignOut = async () => {
     await signOut();
   };
@@ -41,8 +51,17 @@ const Header = () => {
     : "text-foreground hover:text-primary";
     
   const loginButtonClasses = isHomePage 
-    ? "text-black border-white/30 hover:bg-white/10"
+    ? "text-white border-white/30 hover:bg-white/10"
     : "text-black border-border hover:bg-accent";
+
+  const mobileNavLinks = [
+    { to: "/carpe-diem", label: "Carpe Diem" },
+    { to: "/resource-collection", label: "Resource Collection" },
+    { to: "/life-compass-calibration", label: "Life Compass" },
+    { to: "/about", label: "About Us" },
+    { to: "/blog", label: "Blog" },
+    { to: "/contact", label: "Contact" },
+  ];
 
   return <header className={headerClasses}>
       <div className="w-full max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -53,7 +72,8 @@ const Header = () => {
             </h1>
           </Link>
 
-          <NavigationMenu>
+          {/* Desktop Navigation */}
+          <NavigationMenu className="hidden md:flex">
             <NavigationMenuList>
               <NavigationMenuItem>
                 <NavigationMenuTrigger className={navTextClasses}>
@@ -139,19 +159,60 @@ const Header = () => {
 
         <div className="flex items-center gap-4">
           {user && isAdmin && (
-            <Link to="/admin">
+            <Link to="/admin" className="hidden md:inline-flex">
               <Button variant="ghost" className={buttonClasses}>
                 Admin
               </Button>
             </Link>
           )}
-          {user ? <Link to="/profile">
+          {user ? <Link to="/profile" className="hidden md:inline-flex">
               <Button variant="ghost" size="icon" className={`rounded-full ${buttonClasses}`} title="Profile">
                 <User className="h-5 w-5" />
               </Button>
-            </Link> : <Link to="/auth">
+            </Link> : <Link to="/auth" className="hidden md:inline-flex">
               <Button variant="outline" className={loginButtonClasses}>Login</Button>
             </Link>}
+
+          {/* Mobile hamburger */}
+          <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" className={`md:hidden ${buttonClasses}`}>
+                <Menu className="h-6 w-6" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-72">
+              <SheetHeader>
+                <SheetTitle className="text-left">Sunday4K</SheetTitle>
+              </SheetHeader>
+              <nav className="flex flex-col gap-2 mt-6">
+                {mobileNavLinks.map((link) => (
+                  <Link
+                    key={link.to}
+                    to={link.to}
+                    onClick={() => setMobileOpen(false)}
+                    className="block rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-accent transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <div className="border-t border-border my-2" />
+                {user && isAdmin && (
+                  <Link to="/admin" onClick={() => setMobileOpen(false)} className="block rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-accent">
+                    Admin
+                  </Link>
+                )}
+                {user ? (
+                  <Link to="/profile" onClick={() => setMobileOpen(false)} className="block rounded-md px-4 py-3 text-sm font-medium text-foreground hover:bg-accent">
+                    Profile
+                  </Link>
+                ) : (
+                  <Link to="/auth" onClick={() => setMobileOpen(false)} className="block rounded-md px-4 py-3 text-sm font-medium text-primary hover:bg-accent">
+                    Login
+                  </Link>
+                )}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
     </header>;

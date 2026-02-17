@@ -71,21 +71,21 @@ Your weeks in focus.</span>
         <div className="container mx-auto px-[24px] py-[30px]">
           {/* Mission Statement */}
           <section className="max-w-4xl mx-auto text-center mb-20">
-            <div className="rounded-3xl p-12 shadow-lg border border-border/10 bg-[#ffeedd]">
+            <div className="rounded-3xl p-6 md:p-12 shadow-lg border border-border/10 bg-[#ffeedd]">
               <p className="text-lg md:text-xl text-foreground/80 leading-relaxed">Sundays are a day of reflection. They represent both the end and the beginning of a week, giving you the opportunity to examine your past and prepare for your future. Use Sunday4k to assess your life's priorities, receive daily inspiration in your inbox, and utilize a curated collection of resources designed to help you transform your awareness into a life of intention.</p>
             </div>
           </section>
 
           {/* Quote Section */}
           <section className="max-w-4xl mx-auto mb-20">
-            {quoteLoading ? <Card className="p-12 bg-gradient-to-br from-accent to-secondary/20 shadow-lg border border-border/10">
+            {quoteLoading ? <Card className="p-6 md:p-12 bg-gradient-to-br from-accent to-secondary/20 shadow-lg border border-border/10">
                 <div className="text-center space-y-6">
                   <div className="w-20 h-20 mx-auto rounded-full bg-primary flex items-center justify-center shadow-lg">
                     <RefreshCw className="w-10 h-10 text-primary-foreground animate-spin" />
                   </div>
                   <p className="text-muted-foreground text-lg">Loading today's inspiration...</p>
                 </div>
-              </Card> : error ? <Card className="p-12 bg-white shadow-lg border border-border/10">
+              </Card> : error ? <Card className="p-6 md:p-12 bg-white shadow-lg border border-border/10">
                 <div className="text-center space-y-6">
                   <p className="text-destructive text-lg">Failed to load quote: {error}</p>
                   <Button onClick={refetch} variant="outline" size="lg">
@@ -98,7 +98,7 @@ Your weeks in focus.</span>
 
           {/* Resources Section */}
           <section className="max-w-4xl mx-auto">
-            <div className="bg-gradient-to-br from-secondary/10 to-accent/10 rounded-3xl p-12 border border-secondary/20">
+            <div className="bg-gradient-to-br from-secondary/10 to-accent/10 rounded-3xl p-6 md:p-12 border border-secondary/20">
               <div className="text-center max-w-3xl mx-auto">
                 <div className="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-secondary to-primary flex items-center justify-center shadow-xl mb-8">
                   <Zap className="w-10 h-10 text-white" />
