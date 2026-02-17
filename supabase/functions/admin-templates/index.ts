@@ -1,6 +1,17 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.56.1';
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { checkRateLimit, logRequest, getClientIP } from '../shared/rate-limiting.ts';
+
+const templateCreateSchema = z.object({
+  template_name: z.string().trim().min(1).max(100),
+  subject: z.string().trim().min(1).max(200),
+  html_content: z.string().min(1).max(100000),
+  description: z.string().max(500).nullish(),
+  is_active: z.boolean().optional().default(true),
+});
+
+const templateUpdateSchema = templateCreateSchema.partial();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -99,10 +110,17 @@ serve(async (req) => {
     // POST /admin-templates - Create new template
     if (method === 'POST') {
       const body = await req.json();
+      const parsed = templateCreateSchema.safeParse(body);
+      if (!parsed.success) {
+        return new Response(
+          JSON.stringify({ error: 'Validation failed', details: parsed.error.errors.map(e => e.message) }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
       
       const { data, error } = await supabase
         .from('email_templates')
-        .insert([body])
+        .insert([parsed.data])
         .select()
         .single();
 
@@ -118,10 +136,17 @@ serve(async (req) => {
     if (method === 'PUT') {
       const templateId = url.pathname.split('/').pop();
       const body = await req.json();
+      const parsed = templateUpdateSchema.safeParse(body);
+      if (!parsed.success) {
+        return new Response(
+          JSON.stringify({ error: 'Validation failed', details: parsed.error.errors.map(e => e.message) }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
 
       const { data, error } = await supabase
         .from('email_templates')
-        .update(body)
+        .update(parsed.data)
         .eq('id', templateId)
         .select()
         .single();
