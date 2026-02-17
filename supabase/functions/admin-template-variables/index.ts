@@ -1,6 +1,19 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.56.1";
+import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts';
 import { checkRateLimit, logRequest, getClientIP } from '../shared/rate-limiting.ts';
+
+const variableCreateSchema = z.object({
+  variable_name: z.string().trim().min(1).max(100).regex(/^[a-zA-Z0-9._]+$/, 'variable_name can only contain letters, numbers, dots, and underscores'),
+  display_name: z.string().trim().min(1).max(100),
+  description: z.string().max(500).nullish(),
+  category: z.enum(['system', 'user', 'content', 'custom']).optional().default('custom'),
+  data_type: z.enum(['text', 'url', 'date', 'boolean', 'number']).optional().default('text'),
+  default_value: z.string().max(1000).nullish(),
+  is_active: z.boolean().optional().default(true),
+});
+
+const variableUpdateSchema = variableCreateSchema.partial();
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -122,29 +135,21 @@ serve(async (req) => {
           });
         }
 
-      case 'POST':
-        // Create new template variable
-        // Validate required fields
-        if (!requestBody.variable_name || !requestBody.display_name) {
-          throw new Error('variable_name and display_name are required');
-        }
-
-        // Validate variable_name format (alphanumeric, dots, underscores only)
-        if (!/^[a-zA-Z0-9._]+$/.test(requestBody.variable_name)) {
-          throw new Error('variable_name can only contain letters, numbers, dots, and underscores');
+      case 'POST': {
+        // Validate with Zod
+        const createParsed = variableCreateSchema.safeParse(requestBody);
+        if (!createParsed.success) {
+          return new Response(
+            JSON.stringify({ error: 'Validation failed', details: createParsed.error.errors.map(e => e.message) }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
         }
 
         const { data, error: createError } = await supabase
           .from('template_variables')
           .insert([{
-            variable_name: requestBody.variable_name,
-            display_name: requestBody.display_name,
-            description: requestBody.description,
-            category: requestBody.category || 'custom',
-            data_type: requestBody.data_type || 'text',
-            default_value: requestBody.default_value,
+            ...createParsed.data,
             is_system: false, // User-created variables are never system variables
-            is_active: requestBody.is_active !== undefined ? requestBody.is_active : true
           }])
           .select()
           .single();
@@ -155,16 +160,20 @@ serve(async (req) => {
           status: 201,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         });
+      }
 
-      case 'PUT':
-        // Update existing template variable
+      case 'PUT': {
         if (!id) {
           throw new Error('ID is required for updates');
         }
-        
-        // Validate variable_name format if provided
-        if (requestBody.variable_name && !/^[a-zA-Z0-9._]+$/.test(requestBody.variable_name)) {
-          throw new Error('variable_name can only contain letters, numbers, dots, and underscores');
+
+        // Validate with Zod
+        const updateParsed = variableUpdateSchema.safeParse(requestBody);
+        if (!updateParsed.success) {
+          return new Response(
+            JSON.stringify({ error: 'Validation failed', details: updateParsed.error.errors.map(e => e.message) }),
+            { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
         }
 
         // Don't allow updating system variables' core properties
@@ -175,10 +184,9 @@ serve(async (req) => {
           .single();
 
         if (existingVar?.is_system) {
-          // Only allow updating description and is_active for system variables
           const allowedUpdates: any = {};
-          if (requestBody.description !== undefined) allowedUpdates.description = requestBody.description;
-          if (requestBody.is_active !== undefined) allowedUpdates.is_active = requestBody.is_active;
+          if (updateParsed.data.description !== undefined) allowedUpdates.description = updateParsed.data.description;
+          if (updateParsed.data.is_active !== undefined) allowedUpdates.is_active = updateParsed.data.is_active;
           
           const { data, error: updateError1 } = await supabase
             .from('template_variables')
@@ -193,18 +201,9 @@ serve(async (req) => {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         } else {
-          // Allow full updates for custom variables
           const { data, error: updateError2 } = await supabase
             .from('template_variables')
-            .update({
-              variable_name: requestBody.variable_name,
-              display_name: requestBody.display_name,
-              description: requestBody.description,
-              category: requestBody.category,
-              data_type: requestBody.data_type,
-              default_value: requestBody.default_value,
-              is_active: requestBody.is_active
-            })
+            .update(updateParsed.data)
             .eq('id', id)
             .select()
             .single();
@@ -215,6 +214,7 @@ serve(async (req) => {
             headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           });
         }
+      }
 
       case 'DELETE':
         // Delete template variable
