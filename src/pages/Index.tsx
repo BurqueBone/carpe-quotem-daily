@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
-import { Zap, ArrowRight, RefreshCw, Compass, Lightbulb } from "lucide-react";
+import { Zap, ArrowRight, RefreshCw, Compass, Lightbulb, CalendarDays } from "lucide-react";
 import QuoteCard from "@/components/QuoteCard";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -55,6 +55,61 @@ const Index = () => {
         </div>
       </section>
   
+      {/* How It Works Section */}
+      <section className="py-20 px-6 bg-[hsl(249_30%_98%)]">
+        <div className="max-w-[960px] mx-auto">
+          <div className="text-center mb-14">
+            <p className="text-sm font-medium tracking-widest uppercase text-muted-foreground mb-3">How Sunday4K Works</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground">
+              See your life clearly. Plan your weeks intentionally.
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+            {[
+              {
+                num: "01",
+                icon: <Compass className="w-8 h-8 text-primary" />,
+                title: "Calibrate Your Compass",
+                desc: "Rate where you are across 12 life areas — health, career, relationships, creativity, and more. Takes 5 minutes.",
+              },
+              {
+                num: "02",
+                icon: <CalendarDays className="w-8 h-8 text-primary" />,
+                title: "See Your Weeks",
+                desc: "Visualize your life in weeks. See where you've been, where you are, and how many Sundays you have left to make count.",
+              },
+              {
+                num: "03",
+                icon: <Lightbulb className="w-8 h-8 text-primary" />,
+                title: "Get Matched Resources",
+                desc: "Receive curated tools, books, and frameworks tailored to the life areas where you want to grow most.",
+              },
+            ].map((step) => (
+              <div
+                key={step.num}
+                className="bg-card rounded-xl p-8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+              >
+                <div className="mb-4">{step.icon}</div>
+                <p className="text-4xl font-bold text-primary mb-2">{step.num}</p>
+                <h3 className="text-xl font-semibold text-foreground mb-2">{step.title}</h3>
+                <p className="text-base text-muted-foreground leading-relaxed">{step.desc}</p>
+              </div>
+            ))}
+          </div>
+
+          <div className="text-center">
+            <Link
+              to="/life-compass-calibration"
+              className="inline-flex items-center gap-2 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-3 rounded-lg text-lg font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              Start Your Compass
+              <ArrowRight className="w-5 h-5" />
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* Main Content Header */}
       <section className="py-[20px]">
         <div className="container mx-auto px-6 bg-transparent">
