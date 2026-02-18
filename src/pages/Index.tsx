@@ -56,8 +56,8 @@ const Index = () => {
       </section>
   
       {/* How It Works Section */}
-      <section className="py-20 px-6 bg-[hsl(249_30%_98%)]">
-        <div className="max-w-[960px] mx-auto">
+      <section className="py-20 bg-[hsl(249_30%_98%)]">
+        <div className="max-w-5xl mx-auto px-6">
           <div className="text-center mb-14">
             <p className="text-sm font-medium tracking-widest uppercase text-muted-foreground mb-3">How Sunday4K Works</p>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground">
@@ -88,7 +88,7 @@ const Index = () => {
             ].map((step) => (
               <div
                 key={step.num}
-                className="bg-card rounded-xl p-8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
               >
                 <div className="mb-4">{step.icon}</div>
                 <p className="text-4xl font-bold text-primary mb-2">{step.num}</p>
