@@ -68,30 +68,26 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
             {[
               {
-                num: "01",
-                icon: <Compass className="w-8 h-8 text-primary" />,
+                icon: <Compass className="w-14 h-14 text-primary" />,
                 title: "Calibrate Your Compass",
                 desc: "Rate where you are across 12 life areas — health, career, relationships, creativity, and more. Takes 5 minutes.",
               },
               {
-                num: "02",
-                icon: <CalendarDays className="w-8 h-8 text-primary" />,
+                icon: <CalendarDays className="w-14 h-14 text-primary" />,
                 title: "See Your Weeks",
                 desc: "Visualize your life in weeks. See where you've been, where you are, and how many Sundays you have left to make count.",
               },
               {
-                num: "03",
-                icon: <Lightbulb className="w-8 h-8 text-primary" />,
+                icon: <Lightbulb className="w-14 h-14 text-primary" />,
                 title: "Get Matched Resources",
                 desc: "Receive curated tools, books, and frameworks tailored to the life areas where you want to grow most.",
               },
             ].map((step) => (
               <div
-                key={step.num}
-                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+                key={step.title}
+                className="bg-white rounded-xl p-8 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 text-center flex flex-col items-center"
               >
-                <div className="mb-4">{step.icon}</div>
-                <p className="text-4xl font-bold text-primary mb-2">{step.num}</p>
+                <div className="mb-5">{step.icon}</div>
                 <h3 className="text-xl font-semibold text-foreground mb-2">{step.title}</h3>
                 <p className="text-base text-muted-foreground leading-relaxed">{step.desc}</p>
               </div>
