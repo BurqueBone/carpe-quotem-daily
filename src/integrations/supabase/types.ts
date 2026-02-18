@@ -14,6 +14,27 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_config: {
+        Row: {
+          created_at: string | null
+          key: string
+          updated_at: string | null
+          value: string
+        }
+        Insert: {
+          created_at?: string | null
+          key: string
+          updated_at?: string | null
+          value: string
+        }
+        Update: {
+          created_at?: string | null
+          key?: string
+          updated_at?: string | null
+          value?: string
+        }
+        Relationships: []
+      }
       blog_categories: {
         Row: {
           created_at: string
@@ -176,6 +197,27 @@ export type Database = {
           id?: string
           message?: string
           name?: string
+        }
+        Relationships: []
+      }
+      email_subscribers: {
+        Row: {
+          email: string
+          id: string
+          is_active: boolean
+          subscribed_at: string
+        }
+        Insert: {
+          email: string
+          id?: string
+          is_active?: boolean
+          subscribed_at?: string
+        }
+        Update: {
+          email?: string
+          id?: string
+          is_active?: boolean
+          subscribed_at?: string
         }
         Relationships: []
       }
