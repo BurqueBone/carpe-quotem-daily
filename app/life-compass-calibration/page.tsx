@@ -1,28 +1,77 @@
 import { Metadata } from "next";
-import LifeCompassWizard from "@/components/life-compass-wizard";
+import Link from "next/link";
+import { Target, Compass, ChevronRight } from "lucide-react";
+import LifespanVisualizer from "@/components/lifespan-visualizer";
 
 export const metadata: Metadata = {
-  title: "Life Compass Calibration — Wheel of Life Assessment",
+  title: "Life Compass Calibration — Sunday4K",
   description:
-    "Assess your current life balance across 12 key areas and design an ideal week that aligns with your true priorities. Discover insights that empower meaningful change.",
+    "Navigate your finite time with clarity. Visualize your lifespan, prioritize what matters, and assess your life balance.",
 };
 
 export default function LifeCompassPage() {
   return (
-    <div className="px-6 py-16">
-      <div className="mx-auto max-w-4xl">
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-brand-navy/60 md:text-5xl">
-            Wheel of Life Assessment
+    <div className="px-6 py-12">
+      <div className="mx-auto max-w-5xl space-y-10">
+        {/* Header */}
+        <div className="text-center">
+          <h1 className="text-4xl font-bold text-brand-navy md:text-5xl">
+            Life Compass Calibration
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
-            Assess your current life balance across 12 key areas and design an
-            ideal week that aligns with your true priorities. Discover insights
-            that empower meaningful change.
+            Navigate your finite time with clarity. Visualize your lifespan,
+            prioritize what matters, and assess your life balance.
           </p>
         </div>
 
-        <LifeCompassWizard />
+        {/* Lifespan Visualizer */}
+        <LifespanVisualizer />
+
+        {/* Assessment Tool Cards */}
+        <div>
+          <h2 className="mb-4 text-center text-2xl font-bold text-gray-900">
+            Choose Your Assessment Tool
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Link
+              href="/life-compass-calibration/simple-priority-check-in"
+              className="group flex items-center gap-4 rounded-xl border border-brand-gold/30 bg-gradient-to-br from-brand-gold/10 to-brand-orange/10 p-6 shadow-sm transition hover:shadow-md"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-gold/20">
+                <Target className="h-6 w-6 text-brand-orange" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900">
+                  Simple Priority Check-in
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Identify what truly matters this week and where to
+                  strategically underachieve
+                </p>
+              </div>
+              <ChevronRight className="h-5 w-5 shrink-0 text-gray-400 transition group-hover:text-brand-navy" />
+            </Link>
+
+            <Link
+              href="/life-compass-calibration/wheel-of-life-assessment"
+              className="group flex items-center gap-4 rounded-xl border border-brand-navy/20 bg-gradient-to-br from-brand-navy/5 to-brand-cream/20 p-6 shadow-sm transition hover:shadow-md"
+            >
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-navy/10">
+                <Compass className="h-6 w-6 text-brand-navy" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-bold text-gray-900">
+                  Wheel of Life Assessment
+                </h3>
+                <p className="mt-1 text-sm text-gray-500">
+                  Assess your life balance across 12 key areas and design your
+                  ideal week
+                </p>
+              </div>
+              <ChevronRight className="h-5 w-5 shrink-0 text-gray-400 transition group-hover:text-brand-navy" />
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
