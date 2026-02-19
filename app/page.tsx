@@ -31,87 +31,78 @@ export const revalidate = 3600;
 export default function HomePage() {
   return (
     <>
-      {/* Hero with painted sky background */}
-      <section className="relative overflow-hidden px-6 py-28 text-center md:py-40">
-        {/* Background gradient that simulates the painted sky feel */}
-        <div
-          className="absolute inset-0 bg-gradient-to-b from-[#4a3a6b] via-[#8b6b5a] to-[#d4a574]"
-          style={{
-            backgroundImage: `
-              radial-gradient(ellipse at 20% 50%, rgba(74, 58, 107, 0.8) 0%, transparent 60%),
-              radial-gradient(ellipse at 80% 30%, rgba(180, 140, 110, 0.6) 0%, transparent 50%),
-              radial-gradient(ellipse at 50% 80%, rgba(212, 165, 116, 0.7) 0%, transparent 40%),
-              linear-gradient(to bottom, #4a3a6b, #6b5a7a, #9b7a6a, #c4956a, #d4a574)
-            `,
-          }}
-        />
-        <div className="absolute inset-0 bg-black/15" />
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-[#2a1f3d] px-6 py-32 text-center md:py-44">
+        {/* Layered warm gradient to simulate painted sunset sky */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#2a1f3d] via-[#4a3060] to-[#8b5e3c]" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#3d2855]/60 via-transparent to-[#6b4530]/40" />
+          <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#c4844a]/50 to-transparent" />
+          {/* Soft cloud-like glows */}
+          <div className="absolute left-[10%] top-[20%] h-64 w-96 rounded-full bg-[#d4956a]/20 blur-3xl" />
+          <div className="absolute right-[5%] top-[30%] h-48 w-72 rounded-full bg-[#e8b88a]/15 blur-3xl" />
+          <div className="absolute bottom-[10%] left-[30%] h-40 w-80 rounded-full bg-[#c47a4a]/20 blur-3xl" />
+        </div>
+
         <div className="relative mx-auto max-w-3xl">
-          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
+          <h1 className="text-5xl font-bold leading-[1.15] tracking-tight text-white drop-shadow-lg md:text-6xl lg:text-7xl">
             You have
             <br />
-            4,000 Sundays
+            <span className="text-brand-peach">4,000 Sundays</span>
             <br />
             in your life.
           </h1>
-          <p className="mt-4 text-xl font-medium text-white/90 md:text-2xl">
+          <p className="mt-5 text-2xl font-light tracking-wide text-white/80 md:text-3xl">
             Make them count.
           </p>
           <Link
             href="/life-compass-calibration"
-            className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand-purple px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-purple/90"
+            className="mt-10 inline-flex items-center gap-2 rounded-full bg-brand-purple px-10 py-4 text-base font-semibold text-white shadow-xl shadow-brand-purple/30 transition hover:bg-brand-purple/90 hover:shadow-2xl"
           >
-            <Compass className="h-4 w-4" />
+            <Compass className="h-5 w-5" />
             Calibrate Your Compass
           </Link>
         </div>
       </section>
 
       {/* How It Works */}
-      <section className="px-6 py-20">
+      <section className="bg-white px-6 py-24">
         <div className="mx-auto max-w-[960px]">
-          <p className="text-center text-sm font-medium uppercase tracking-widest text-gray-400">
+          <p className="text-center text-sm font-medium uppercase tracking-widest text-brand-purple/60">
             How Sunday4K Works
           </p>
-          <h2 className="mt-2 text-center text-3xl font-bold text-gray-800 md:text-4xl">
+          <h2 className="mt-3 text-center text-3xl font-bold text-gray-900 md:text-4xl">
             See your life clearly. Plan your weeks intentionally.
           </h2>
 
-          <div className="mt-14 grid gap-8 md:grid-cols-3">
+          <div className="mt-16 grid gap-8 md:grid-cols-3">
             {steps.map((step) => (
               <div
                 key={step.number}
-                className="group rounded-xl bg-white p-8 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+                className="group rounded-2xl border border-gray-100 bg-brand-off-white p-8 transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <step.icon className="mb-4 h-8 w-8 text-brand-purple" />
-                <span className="text-4xl font-bold text-brand-purple">
-                  {step.number}
+                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-purple/10">
+                  <step.icon className="h-7 w-7 text-brand-purple" />
+                </div>
+                <span className="text-sm font-bold uppercase tracking-wider text-brand-purple/50">
+                  Step {step.number}
                 </span>
-                <h3 className="mt-3 text-xl font-semibold text-gray-800">
+                <h3 className="mt-2 text-xl font-bold text-gray-900">
                   {step.title}
                 </h3>
-                <p className="mt-2 leading-relaxed text-gray-600">
+                <p className="mt-3 leading-relaxed text-gray-500">
                   {step.description}
                 </p>
               </div>
             ))}
           </div>
-
-          <div className="mt-12 text-center">
-            <Link
-              href="/life-compass-calibration"
-              className="inline-block rounded-full bg-brand-purple px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-purple/90"
-            >
-              Start Your Compass
-            </Link>
-          </div>
         </div>
       </section>
 
       {/* Daily Quote */}
-      <section className="bg-white px-6 py-20">
+      <section className="border-y border-gray-100 bg-brand-off-white px-6 py-20">
         <div className="mx-auto max-w-2xl">
-          <p className="mb-8 text-center text-sm font-medium uppercase tracking-widest text-gray-400">
+          <p className="mb-8 text-center text-sm font-medium uppercase tracking-widest text-brand-purple/60">
             Daily Inspiration
           </p>
           <DailyQuote />
@@ -119,21 +110,21 @@ export default function HomePage() {
       </section>
 
       {/* Carpe Diem Teaser */}
-      <section className="px-6 py-20">
+      <section className="bg-white px-6 py-24">
         <div className="mx-auto max-w-3xl text-center">
-          <p className="text-sm font-medium uppercase tracking-widest text-gray-400">
+          <p className="text-sm font-medium uppercase tracking-widest text-brand-purple/60">
             Curated Resources
           </p>
-          <h2 className="mt-2 text-3xl font-bold text-gray-800 md:text-4xl">
+          <h2 className="mt-3 text-3xl font-bold text-gray-900 md:text-4xl">
             Carpe Diem
           </h2>
-          <p className="mx-auto mt-4 max-w-xl text-gray-600">
+          <p className="mx-auto mt-4 max-w-xl text-lg text-gray-500">
             Over 140 hand-picked tools, books, courses, and apps across 12 life
             areas to help you grow where it matters most.
           </p>
           <Link
             href="/carpe-diem"
-            className="mt-8 inline-block rounded-full border-2 border-brand-purple px-8 py-3 text-sm font-semibold text-brand-purple transition hover:bg-brand-purple hover:text-white"
+            className="mt-10 inline-block rounded-full border-2 border-brand-purple px-10 py-3.5 text-sm font-semibold text-brand-purple transition hover:bg-brand-purple hover:text-white"
           >
             Explore Resources
           </Link>
