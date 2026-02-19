@@ -24,6 +24,14 @@ interface Resource {
   category_id: string;
 }
 
+const categoryAccents = [
+  { icon: "bg-brand-navy/15 text-brand-navy", border: "border-brand-navy/20", iconGlow: "from-brand-navy/15 to-brand-navy/5" },
+  { icon: "bg-brand-gold/20 text-amber-700", border: "border-brand-gold/30", iconGlow: "from-brand-gold/20 to-brand-gold/5" },
+  { icon: "bg-brand-coral/15 text-brand-coral", border: "border-brand-coral/20", iconGlow: "from-brand-coral/15 to-brand-coral/5" },
+  { icon: "bg-brand-orange/15 text-brand-orange", border: "border-brand-orange/20", iconGlow: "from-brand-orange/15 to-brand-orange/5" },
+  { icon: "bg-brand-cream/40 text-brand-navy", border: "border-brand-cream/40", iconGlow: "from-brand-cream/30 to-brand-cream/10" },
+];
+
 const typeBadgeColors: Record<string, string> = {
   book: "bg-amber-100 text-amber-700",
   app: "bg-blue-100 text-blue-700",
@@ -66,26 +74,27 @@ export default function CarpeDiemCategories({
 
   return (
     <div className="grid gap-4 sm:grid-cols-2">
-      {categories.map((cat) => {
+      {categories.map((cat, idx) => {
         const Icon = getIcon(cat.icon_name);
         const isOpen = openCategories.has(cat.id);
         const catResources = resourcesByCategory[cat.id] || [];
+        const accent = categoryAccents[idx % categoryAccents.length];
 
         return (
           <div
             key={cat.id}
             className={`rounded-xl border transition-all ${
               isOpen
-                ? "col-span-1 border-brand-navy/20 bg-white shadow-md sm:col-span-2"
-                : "border-gray-100 bg-gradient-to-br from-white to-brand-off-white hover:border-brand-navy/20 hover:shadow-sm"
+                ? `col-span-1 ${accent.border} bg-white shadow-md sm:col-span-2`
+                : `border-gray-100 bg-gradient-to-br from-white to-brand-off-white hover:${accent.border} hover:shadow-sm`
             }`}
           >
             <button
               onClick={() => toggleCategory(cat.id)}
               className="flex w-full items-center gap-4 p-5 text-left"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-navy/15 to-brand-gold/20">
-                <Icon className="h-5 w-5 text-brand-navy" />
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ${accent.icon}`}>
+                <Icon className="h-5 w-5" />
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-800">{cat.title}</h3>
