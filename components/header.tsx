@@ -79,12 +79,6 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
-          <Link
-            href="/blog"
-            className="text-sm font-medium text-gray-600 transition-colors hover:text-brand-purple"
-          >
-            Blog
-          </Link>
           <Dropdown label="Carpe Diem" links={carpeDiemLinks} />
           <Dropdown label="About" links={aboutLinks} />
           <Link
@@ -122,14 +116,6 @@ export default function Header() {
             >
               <X className="h-6 w-6" />
             </button>
-
-            <Link
-              href="/blog"
-              onClick={() => setMobileOpen(false)}
-              className="flex min-h-[44px] items-center border-b border-gray-100 text-base font-medium text-gray-700 hover:text-brand-purple"
-            >
-              Blog
-            </Link>
 
             {/* Carpe Diem accordion */}
             <button
