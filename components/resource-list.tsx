@@ -99,8 +99,8 @@ export default function ResourceList({
     <div>
       {/* Featured Resource */}
       {featured && (
-        <div className="mb-8 rounded-xl border border-brand-peach/30 bg-white p-6 shadow-sm">
-          <div className="mb-3 flex items-center gap-2 text-brand-peach">
+        <div className="mb-8 rounded-xl border border-brand-gold/30 bg-white p-6 shadow-sm">
+          <div className="mb-3 flex items-center gap-2 text-brand-gold">
             <Sparkles className="h-4 w-4" />
             <span className="text-sm font-semibold">
               Today&apos;s Featured Resource
@@ -123,8 +123,8 @@ export default function ResourceList({
             )}
           </div>
           {featured.how_resource_helps && (
-            <div className="mt-3 rounded-md bg-brand-purple/5 p-3 text-sm text-gray-600">
-              <span className="font-medium text-brand-purple">
+            <div className="mt-3 rounded-md bg-brand-navy/5 p-3 text-sm text-gray-600">
+              <span className="font-medium text-brand-navy">
                 How this helps:
               </span>{" "}
               {featured.how_resource_helps}
@@ -134,7 +134,7 @@ export default function ResourceList({
             href={featured.affiliate_url || featured.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-brand-purple px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-purple/90"
+            className="mt-4 flex items-center justify-center gap-2 rounded-lg bg-brand-navy px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90"
           >
             Seize This Resource
             <ExternalLink className="h-4 w-4" />
@@ -162,7 +162,7 @@ export default function ResourceList({
               setSelectedType(null);
               setSearchQuery("");
             }}
-            className="ml-4 text-xs text-gray-400 hover:text-brand-purple"
+            className="ml-4 text-xs text-gray-400 hover:text-brand-navy"
           >
             Clear All
           </button>
@@ -175,7 +175,7 @@ export default function ResourceList({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search resources..."
-              className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-purple focus:outline-none focus:ring-1 focus:ring-brand-purple"
+              className="w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-navy focus:outline-none focus:ring-1 focus:ring-brand-navy"
             />
 
             <div>
@@ -194,8 +194,8 @@ export default function ResourceList({
                       }
                       className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
                         active
-                          ? "bg-brand-purple text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-brand-purple/10"
+                          ? "bg-brand-navy text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-brand-navy/10"
                       }`}
                     >
                       <Icon className="h-3 w-3" />
@@ -219,8 +219,8 @@ export default function ResourceList({
                       onClick={() => setSelectedType(active ? null : t)}
                       className={`rounded-full px-3 py-1.5 text-xs font-medium capitalize transition ${
                         active
-                          ? "bg-brand-purple text-white"
-                          : "bg-gray-100 text-gray-600 hover:bg-brand-purple/10"
+                          ? "bg-brand-navy text-white"
+                          : "bg-gray-100 text-gray-600 hover:bg-brand-navy/10"
                       }`}
                     >
                       {t}
@@ -257,8 +257,8 @@ export default function ResourceList({
               <div className="flex items-start gap-4">
                 {/* Icon */}
                 {Icon && (
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-purple/10">
-                    <Icon className="h-5 w-5 text-brand-purple" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-navy/10">
+                    <Icon className="h-5 w-5 text-brand-navy" />
                   </div>
                 )}
 
@@ -269,7 +269,7 @@ export default function ResourceList({
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-semibold text-gray-800 hover:text-brand-purple"
+                      className="font-semibold text-gray-800 hover:text-brand-navy"
                     >
                       {r.title}
                     </a>
@@ -277,7 +277,7 @@ export default function ResourceList({
                       href={href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-gray-300 hover:text-brand-purple"
+                      className="text-gray-300 hover:text-brand-navy"
                     >
                       <ExternalLink className="h-3.5 w-3.5" />
                     </a>
@@ -301,8 +301,8 @@ export default function ResourceList({
                   {r.how_resource_helps && (
                     <>
                       {isExpanded && (
-                        <div className="mt-2 rounded-md bg-brand-purple/5 p-3 text-sm text-gray-600">
-                          <span className="font-medium text-brand-purple">
+                        <div className="mt-2 rounded-md bg-brand-navy/5 p-3 text-sm text-gray-600">
+                          <span className="font-medium text-brand-navy">
                             How this helps:
                           </span>{" "}
                           {r.how_resource_helps}
@@ -310,7 +310,7 @@ export default function ResourceList({
                       )}
                       <button
                         onClick={() => toggleExpand(r.id)}
-                        className="mt-2 text-xs font-medium text-brand-purple hover:underline"
+                        className="mt-2 text-xs font-medium text-brand-navy hover:underline"
                       >
                         {isExpanded ? "Show less" : "How this helps..."}
                       </button>
@@ -320,7 +320,7 @@ export default function ResourceList({
 
                 {/* Vote placeholder */}
                 <div className="flex shrink-0 flex-col items-center gap-0.5">
-                  <button className="text-gray-300 hover:text-brand-purple">
+                  <button className="text-gray-300 hover:text-brand-navy">
                     <ChevronUp className="h-5 w-5" />
                   </button>
                   <span className="text-sm font-semibold text-gray-400">

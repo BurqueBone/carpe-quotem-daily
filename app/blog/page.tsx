@@ -51,7 +51,7 @@ export default async function BlogPage() {
                   <time className="text-sm text-gray-400">
                     {formatDate(post.published_at || post.created_at)}
                   </time>
-                  <h2 className="mt-1 text-2xl font-semibold text-gray-800 transition-colors group-hover:text-brand-purple">
+                  <h2 className="mt-1 text-2xl font-semibold text-gray-800 transition-colors group-hover:text-brand-navy">
                     {post.title}
                   </h2>
                   {post.excerpt && (
@@ -59,7 +59,7 @@ export default async function BlogPage() {
                       {post.excerpt}
                     </p>
                   )}
-                  <span className="mt-3 inline-block text-sm font-medium text-brand-purple">
+                  <span className="mt-3 inline-block text-sm font-medium text-brand-navy">
                     Read more &rarr;
                   </span>
                 </Link>

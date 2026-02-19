@@ -27,7 +27,7 @@ export default async function ResourceCollectionPage() {
   return (
     <div className="px-6 py-10">
       <div className="mx-auto max-w-4xl">
-        <h1 className="text-2xl font-bold text-brand-purple/60 md:text-3xl">
+        <h1 className="text-2xl font-bold text-brand-navy/60 md:text-3xl">
           Resource Collection
         </h1>
         <p className="mt-2 text-gray-500">

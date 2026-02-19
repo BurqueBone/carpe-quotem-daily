@@ -95,11 +95,11 @@ function RadarChart({ scores }: { scores: Record<string, number> }) {
       })}
 
       {/* Data area */}
-      <path d={pathData} fill="rgba(147, 129, 255, 0.2)" stroke="#9381ff" strokeWidth={2} />
+      <path d={pathData} fill="rgba(8, 61, 119, 0.15)" stroke="#083D77" strokeWidth={2} />
 
       {/* Data points */}
       {points.map((p, i) => (
-        <circle key={i} cx={p.x} cy={p.y} r={4} fill="#9381ff" />
+        <circle key={i} cx={p.x} cy={p.y} r={4} fill="#083D77" />
       ))}
 
       {/* Labels */}
@@ -158,9 +158,9 @@ export default function LifeCompassWizard() {
               onClick={() => setStep(s)}
               className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition ${
                 step === s
-                  ? "bg-brand-purple text-white"
+                  ? "bg-brand-navy text-white"
                   : step > s
-                    ? "bg-brand-purple/20 text-brand-purple"
+                    ? "bg-brand-navy/20 text-brand-navy"
                     : "bg-gray-100 text-gray-400"
               }`}
             >
@@ -168,7 +168,7 @@ export default function LifeCompassWizard() {
             </button>
             {s < 3 && (
               <div
-                className={`h-0.5 w-10 ${step > s ? "bg-brand-purple/30" : "bg-gray-200"}`}
+                className={`h-0.5 w-10 ${step > s ? "bg-brand-navy/30" : "bg-gray-200"}`}
               />
             )}
           </div>
@@ -199,7 +199,7 @@ export default function LifeCompassWizard() {
                 const value = scores[area.key] || 5;
                 return (
                   <div key={area.key} className="flex items-center gap-3">
-                    <Icon className="h-4 w-4 shrink-0 text-brand-purple" />
+                    <Icon className="h-4 w-4 shrink-0 text-brand-navy" />
                     <span className="w-24 shrink-0 text-sm font-medium text-gray-700">
                       {area.label}
                     </span>
@@ -211,9 +211,9 @@ export default function LifeCompassWizard() {
                       onChange={(e) =>
                         handleSlider(area.key, parseInt(e.target.value))
                       }
-                      className="flex-1 accent-brand-purple"
+                      className="flex-1 accent-brand-navy"
                     />
-                    <span className="w-6 text-right text-sm font-bold text-brand-purple">
+                    <span className="w-6 text-right text-sm font-bold text-brand-navy">
                       {value}
                     </span>
                   </div>
@@ -235,7 +235,7 @@ export default function LifeCompassWizard() {
           <div className="mt-6 text-center">
             <button
               onClick={() => setStep(2)}
-              className="rounded-full bg-brand-purple px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-purple/90"
+              className="rounded-full bg-brand-navy px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90"
             >
               Choose Priority Areas &rarr;
             </button>
@@ -265,12 +265,12 @@ export default function LifeCompassWizard() {
                   onClick={() => toggleFocusArea(area.key)}
                   className={`flex w-full items-center gap-4 rounded-xl border p-4 text-left transition ${
                     selected
-                      ? "border-brand-purple bg-brand-purple/5"
+                      ? "border-brand-navy bg-brand-navy/5"
                       : "border-gray-100 bg-white hover:border-gray-200"
                   }`}
                 >
                   <Icon
-                    className={`h-5 w-5 ${selected ? "text-brand-purple" : "text-gray-400"}`}
+                    className={`h-5 w-5 ${selected ? "text-brand-navy" : "text-gray-400"}`}
                   />
                   <div>
                     <span className="font-semibold text-gray-800">
@@ -294,7 +294,7 @@ export default function LifeCompassWizard() {
             </button>
             <button
               onClick={() => setStep(3)}
-              className="rounded-full bg-brand-purple px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-purple/90"
+              className="rounded-full bg-brand-navy px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90"
             >
               View Results &rarr;
             </button>
@@ -314,7 +314,7 @@ export default function LifeCompassWizard() {
 
           {/* Overall score */}
           <div className="mt-6 text-center">
-            <p className="text-5xl font-bold text-brand-purple">
+            <p className="text-5xl font-bold text-brand-navy">
               {average.toFixed(1)}
               <span className="text-lg font-normal text-gray-400"> / 10</span>
             </p>
@@ -366,7 +366,7 @@ export default function LifeCompassWizard() {
                       </div>
                     </div>
                     {isFocus && (
-                      <span className="shrink-0 rounded-full bg-brand-purple/10 px-2 py-0.5 text-[10px] font-medium text-brand-purple">
+                      <span className="shrink-0 rounded-full bg-brand-navy/10 px-2 py-0.5 text-[10px] font-medium text-brand-navy">
                         Focus
                       </span>
                     )}
@@ -377,7 +377,7 @@ export default function LifeCompassWizard() {
 
           {/* Focus areas summary */}
           {focusAreas.size > 0 && (
-            <div className="mt-8 rounded-xl border border-brand-purple/10 bg-brand-purple/5 p-5">
+            <div className="mt-8 rounded-xl border border-brand-navy/10 bg-brand-navy/5 p-5">
               <h3 className="font-semibold text-gray-800">
                 Your Priority Focus Areas
               </h3>
@@ -389,7 +389,7 @@ export default function LifeCompassWizard() {
                   return (
                     <span
                       key={key}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-brand-purple px-3 py-1.5 text-xs font-medium text-white"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-brand-navy px-3 py-1.5 text-xs font-medium text-white"
                     >
                       <Icon className="h-3 w-3" />
                       {area.label}
@@ -402,7 +402,7 @@ export default function LifeCompassWizard() {
                 Visit our{" "}
                 <a
                   href="/carpe-diem"
-                  className="font-medium text-brand-purple hover:underline"
+                  className="font-medium text-brand-navy hover:underline"
                 >
                   Carpe Diem resources
                 </a>{" "}
@@ -414,7 +414,7 @@ export default function LifeCompassWizard() {
           <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
             <a
               href="/carpe-diem"
-              className="rounded-full bg-brand-purple px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-purple/90"
+              className="rounded-full bg-brand-navy px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90"
             >
               Explore Resources for Growth
             </a>

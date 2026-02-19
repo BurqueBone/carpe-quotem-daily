@@ -11,11 +11,12 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          purple: "#9381ff",
-          peach: "#FFD8BE",
-          "light-purple": "#B8B8FF",
-          "off-white": "#F8F7FF",
-          cream: "#FFEEDD",
+          navy: "#083D77",
+          cream: "#EBEBD3",
+          gold: "#F4D35E",
+          orange: "#EE964B",
+          coral: "#F95738",
+          "off-white": "#F5F3E7",
         },
       },
       fontFamily: {

@@ -41,9 +41,9 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-140px)] items-center justify-center bg-brand-light-purple/20 px-6 py-16">
+    <div className="flex min-h-[calc(100vh-140px)] items-center justify-center bg-brand-cream/20 px-6 py-16">
       <div className="w-full max-w-md rounded-xl border border-gray-100 bg-white p-8 shadow-sm">
-        <h1 className="text-center text-2xl font-bold text-brand-purple/60">
+        <h1 className="text-center text-2xl font-bold text-brand-navy/60">
           Sign In
         </h1>
         <p className="mt-2 text-center text-sm text-gray-500">
@@ -113,7 +113,7 @@ export default function LoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
               required
-              className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-purple focus:outline-none focus:ring-1 focus:ring-brand-purple"
+              className="mt-2 w-full rounded-lg border border-gray-200 px-4 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:border-brand-navy focus:outline-none focus:ring-1 focus:ring-brand-navy"
             />
             <p className="mt-2 text-xs text-gray-400">
               We&apos;ll send you a secure link - no password needed!
@@ -126,7 +126,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading || !email}
-              className="mt-4 w-full rounded-lg bg-brand-purple px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-purple/90 disabled:opacity-50"
+              className="mt-4 w-full rounded-lg bg-brand-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90 disabled:opacity-50"
             >
               {loading ? "Sending..." : "Send magic link"}
             </button>
@@ -135,7 +135,7 @@ export default function LoginPage() {
 
         <p className="mt-6 text-center text-xs text-gray-400">
           By signing in, you agree to our{" "}
-          <Link href="/terms" className="text-brand-purple hover:underline">
+          <Link href="/terms" className="text-brand-navy hover:underline">
             Terms of Service
           </Link>
         </p>

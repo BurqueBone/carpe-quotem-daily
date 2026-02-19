@@ -30,10 +30,10 @@ export default async function CarpeDiemPage() {
       <div className="mx-auto max-w-5xl">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-brand-purple/10">
-            <Zap className="h-10 w-10 text-brand-purple" />
+          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-brand-navy/10">
+            <Zap className="h-10 w-10 text-brand-navy" />
           </div>
-          <h1 className="text-4xl font-bold text-brand-purple/60 md:text-5xl">
+          <h1 className="text-4xl font-bold text-brand-navy/60 md:text-5xl">
             Carpe Diem
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">

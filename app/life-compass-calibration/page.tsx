@@ -12,7 +12,7 @@ export default function LifeCompassPage() {
     <div className="px-6 py-16">
       <div className="mx-auto max-w-4xl">
         <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-brand-purple/60 md:text-5xl">
+          <h1 className="text-4xl font-bold text-brand-navy/60 md:text-5xl">
             Wheel of Life Assessment
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">

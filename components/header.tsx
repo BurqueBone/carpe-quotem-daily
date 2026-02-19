@@ -39,7 +39,7 @@ function Dropdown({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1 text-sm font-medium text-gray-600 transition-colors hover:text-brand-purple"
+        className="flex items-center gap-1 text-sm font-medium text-gray-600 transition-colors hover:text-brand-navy"
       >
         {label}
         <ChevronDown
@@ -54,7 +54,7 @@ function Dropdown({
               key={link.href}
               href={link.href}
               onClick={() => setOpen(false)}
-              className="block px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-brand-off-white hover:text-brand-purple"
+              className="block px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-brand-off-white hover:text-brand-navy"
             >
               {link.label}
             </Link>
@@ -71,9 +71,9 @@ export default function Header() {
   const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-brand-light-purple/20 bg-brand-off-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-brand-cream/20 bg-brand-off-white/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-xl font-bold text-brand-purple">
+        <Link href="/" className="text-xl font-bold text-brand-navy">
           Sunday4K
         </Link>
 
@@ -83,7 +83,7 @@ export default function Header() {
           <Dropdown label="About" links={aboutLinks} />
           <Link
             href="/auth/login"
-            className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-brand-purple hover:text-brand-purple"
+            className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
           >
             Login
           </Link>
@@ -133,7 +133,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="flex min-h-[40px] items-center pl-4 text-sm text-gray-500 hover:text-brand-purple"
+                  className="flex min-h-[40px] items-center pl-4 text-sm text-gray-500 hover:text-brand-navy"
                 >
                   {link.label}
                 </Link>
@@ -155,7 +155,7 @@ export default function Header() {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileOpen(false)}
-                  className="flex min-h-[40px] items-center pl-4 text-sm text-gray-500 hover:text-brand-purple"
+                  className="flex min-h-[40px] items-center pl-4 text-sm text-gray-500 hover:text-brand-navy"
                 >
                   {link.label}
                 </Link>
@@ -164,7 +164,7 @@ export default function Header() {
             <Link
               href="/auth/login"
               onClick={() => setMobileOpen(false)}
-              className="mt-8 rounded-full border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:border-brand-purple hover:text-brand-purple"
+              className="mt-8 rounded-full border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
             >
               Login
             </Link>

@@ -30,7 +30,7 @@ export default function DailyQuote() {
   if (loading) {
     return (
       <div className="flex h-40 items-center justify-center">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-purple border-t-transparent" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-brand-navy border-t-transparent" />
       </div>
     );
   }
@@ -42,7 +42,7 @@ export default function DailyQuote() {
       <p className="text-xl font-medium leading-relaxed text-gray-700 md:text-2xl">
         &ldquo;{quote.quote}&rdquo;
       </p>
-      <cite className="mt-4 block text-sm font-medium text-brand-purple not-italic">
+      <cite className="mt-4 block text-sm font-medium text-brand-navy not-italic">
         — {quote.author}
       </cite>
     </blockquote>

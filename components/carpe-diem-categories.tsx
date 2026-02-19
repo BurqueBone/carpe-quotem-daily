@@ -76,16 +76,16 @@ export default function CarpeDiemCategories({
             key={cat.id}
             className={`rounded-xl border transition-all ${
               isOpen
-                ? "col-span-1 border-brand-purple/20 bg-white shadow-md sm:col-span-2"
-                : "border-gray-100 bg-gradient-to-br from-white to-brand-off-white hover:border-brand-purple/20 hover:shadow-sm"
+                ? "col-span-1 border-brand-navy/20 bg-white shadow-md sm:col-span-2"
+                : "border-gray-100 bg-gradient-to-br from-white to-brand-off-white hover:border-brand-navy/20 hover:shadow-sm"
             }`}
           >
             <button
               onClick={() => toggleCategory(cat.id)}
               className="flex w-full items-center gap-4 p-5 text-left"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-purple/15 to-brand-peach/20">
-                <Icon className="h-5 w-5 text-brand-purple" />
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-brand-navy/15 to-brand-gold/20">
+                <Icon className="h-5 w-5 text-brand-navy" />
               </div>
               <div className="flex-1">
                 <h3 className="font-semibold text-gray-800">{cat.title}</h3>
@@ -109,25 +109,25 @@ export default function CarpeDiemCategories({
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group block rounded-lg border border-gray-50 bg-brand-off-white/50 p-4 transition hover:border-brand-purple/20 hover:bg-white"
+                        className="group block rounded-lg border border-gray-50 bg-brand-off-white/50 p-4 transition hover:border-brand-navy/20 hover:bg-white"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1">
                             <div className="flex items-center gap-2">
-                              <h4 className="font-semibold text-gray-800 group-hover:text-brand-purple">
+                              <h4 className="font-semibold text-gray-800 group-hover:text-brand-navy">
                                 {r.title}
                               </h4>
                               {r.s4k_favorite && (
                                 <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
                               )}
-                              <ExternalLink className="h-3.5 w-3.5 text-gray-300 group-hover:text-brand-purple" />
+                              <ExternalLink className="h-3.5 w-3.5 text-gray-300 group-hover:text-brand-navy" />
                             </div>
                             <p className="mt-1 text-sm text-gray-500">
                               {r.description}
                             </p>
                             {r.how_resource_helps && (
-                              <div className="mt-2 rounded-md bg-brand-purple/5 p-3 text-sm text-gray-600">
-                                <span className="font-medium text-brand-purple">
+                              <div className="mt-2 rounded-md bg-brand-navy/5 p-3 text-sm text-gray-600">
+                                <span className="font-medium text-brand-navy">
                                   How this helps:
                                 </span>{" "}
                                 {r.how_resource_helps}

@@ -122,7 +122,7 @@ export default async function BlogPostPage({
         <div className="mx-auto max-w-3xl">
           <Link
             href="/blog"
-            className="mb-8 inline-block text-sm font-medium text-brand-purple hover:underline"
+            className="mb-8 inline-block text-sm font-medium text-brand-navy hover:underline"
           >
             &larr; Back to Blog
           </Link>
