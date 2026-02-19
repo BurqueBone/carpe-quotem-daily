@@ -27,16 +27,18 @@ export default async function ResourceCollectionPage() {
   return (
     <div className="px-6 py-10">
       <div className="mx-auto max-w-4xl">
-        <h1 className="text-2xl font-bold text-brand-navy/60 md:text-3xl">
-          Resource Collection
-        </h1>
-        <p className="mt-2 text-gray-500">
-          Discover and upvote resources to help you live life to the fullest
-        </p>
-        <p className="mt-1 text-sm italic text-gray-400">
-          **Contains affiliate links where we earn commissions to keep these
-          resources accessible**
-        </p>
+        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
+          <h1 className="text-2xl font-bold text-brand-navy md:text-3xl">
+            Resource Collection
+          </h1>
+          <p className="mt-2 text-gray-500">
+            Discover and upvote resources to help you live life to the fullest
+          </p>
+          <p className="mt-1 text-sm italic text-gray-400">
+            Contains affiliate links where we earn commissions to keep these
+            resources accessible
+          </p>
+        </div>
 
         <div className="mt-8">
           <ResourceList
