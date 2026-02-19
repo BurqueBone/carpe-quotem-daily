@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Compass, CalendarDays, Lightbulb } from "lucide-react";
+import { Compass, CalendarDays, Lightbulb, Zap } from "lucide-react";
 import DailyQuote from "@/components/daily-quote";
 
 const steps = [
@@ -123,8 +123,9 @@ export default function HomePage() {
           </p>
           <Link
             href="/carpe-diem"
-            className="mt-8 inline-block rounded-full border-2 border-brand-navy px-10 py-3.5 text-sm font-semibold text-brand-navy transition hover:bg-brand-navy hover:text-white"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand-navy px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90"
           >
+            <Zap className="h-4 w-4" />
             Explore Resources
           </Link>
         </div>
