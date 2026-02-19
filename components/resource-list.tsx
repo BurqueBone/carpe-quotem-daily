@@ -318,16 +318,14 @@ export default function ResourceList({
                   )}
                 </div>
 
-                {/* Vote placeholder */}
-                <div className="flex shrink-0 flex-col items-center gap-0.5">
-                  <button className="text-gray-300 hover:text-brand-navy">
-                    <ChevronUp className="h-5 w-5" />
-                  </button>
-                  <span className="text-sm font-semibold text-gray-400">
+                {/* Vote button */}
+                <button className="flex shrink-0 flex-col items-center gap-0.5 rounded-lg border border-gray-200 px-3 py-2 transition hover:border-brand-navy hover:bg-brand-navy/5">
+                  <ChevronUp className="h-5 w-5 text-gray-400" />
+                  <span className="text-sm font-semibold text-gray-500">
                     {r.s4k_favorite ? 1 : 0}
                   </span>
                   <span className="text-[10px] text-gray-400">votes</span>
-                </div>
+                </button>
               </div>
             </div>
           );
