@@ -5,17 +5,17 @@ import DailyQuote from "@/components/daily-quote";
 const steps = [
   {
     number: "01",
-    icon: Compass,
-    title: "Calibrate Your Compass",
-    description:
-      "Rate where you are across 12 life areas — health, career, relationships, creativity, and more. Takes 5 minutes.",
-  },
-  {
-    number: "02",
     icon: CalendarDays,
     title: "See Your Weeks",
     description:
       "Visualize your life in weeks. See where you've been, where you are, and how many Sundays you have left to make count.",
+  },
+  {
+    number: "02",
+    icon: Compass,
+    title: "Calibrate Your Compass",
+    description:
+      "Rate where you are across 12 life areas — health, career, relationships, creativity, and more. Takes 5 minutes.",
   },
   {
     number: "03",
