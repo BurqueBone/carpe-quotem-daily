@@ -32,16 +32,15 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#042647] px-6 py-32 text-center md:py-44">
-        {/* Layered warm gradient — deep navy to golden horizon */}
+      <section className="relative overflow-hidden bg-brand-navy px-6 py-32 text-center md:py-44">
+        {/* Watercolor sky background */}
         <div className="absolute inset-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#042647] via-[#083D77] to-[#8B6914]" />
-          <div className="absolute inset-0 bg-gradient-to-r from-[#052E5A]/60 via-transparent to-[#7A5C10]/40" />
-          <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-[#EE964B]/40 to-transparent" />
-          {/* Soft warm glows */}
-          <div className="absolute left-[10%] top-[20%] h-64 w-96 rounded-full bg-[#F4D35E]/10 blur-3xl" />
-          <div className="absolute right-[5%] top-[30%] h-48 w-72 rounded-full bg-[#EE964B]/10 blur-3xl" />
-          <div className="absolute bottom-[10%] left-[30%] h-40 w-80 rounded-full bg-[#F4D35E]/15 blur-3xl" />
+          <img
+            src="/hero-sky-background.png"
+            alt=""
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-brand-navy/30" />
         </div>
 
         <div className="relative mx-auto max-w-3xl">
