@@ -29,25 +29,26 @@ export default async function CarpeDiemPage() {
     <div className="px-6 py-12">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-8 py-12 text-center">
-          <div className="absolute right-[10%] top-[10%] h-32 w-32 rounded-full bg-brand-gold/20 blur-3xl" />
-          <div className="absolute bottom-[10%] left-[15%] h-24 w-24 rounded-full bg-brand-coral/15 blur-3xl" />
-          <div className="relative">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-brand-gold/20">
-              <Zap className="h-8 w-8 text-brand-gold" />
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-6 py-6 text-center">
+          <div className="absolute right-[10%] top-[10%] h-20 w-20 rounded-full bg-brand-gold/20 blur-3xl" />
+          <div className="absolute bottom-[10%] left-[15%] h-16 w-16 rounded-full bg-brand-coral/15 blur-3xl" />
+          <div className="relative flex flex-col items-center gap-3 md:flex-row md:gap-5 md:text-left">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-gold/20">
+              <Zap className="h-6 w-6 text-brand-gold" />
             </div>
-            <h1 className="text-4xl font-bold text-white md:text-5xl">
-              Carpe Diem
-            </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-lg text-white/70">
-              Life is finite and precious. These resources will help you seize
-              each day and grow across every dimension of your human experience.
-              Choose an area to focus on today.
-            </p>
-            <p className="mt-4 text-sm italic text-white/40">
-              Contains affiliate links where we earn commissions to keep these
-              resources accessible
-            </p>
+            <div>
+              <h1 className="text-2xl font-bold text-white md:text-3xl">
+                Carpe Diem
+              </h1>
+              <p className="mt-1 max-w-2xl text-sm text-white/70">
+                Curated tools, books, courses, and apps across 12 life areas.
+                Choose an area to focus on today.
+              </p>
+              <p className="mt-1 text-xs italic text-white/40">
+                Contains affiliate links where we earn commissions to keep these
+                resources accessible
+              </p>
+            </div>
           </div>
         </div>
 
