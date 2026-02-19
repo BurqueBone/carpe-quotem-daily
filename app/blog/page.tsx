@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Newspaper } from "lucide-react";
+import { Newspaper, ArrowRight } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase/static";
 import { formatDate } from "@/lib/utils";
 
@@ -23,6 +23,21 @@ interface BlogPost {
   featured_image_url: string | null;
 }
 
+const focusBadge: Record<string, { label: string; color: string }> = {
+  meaningful_life: {
+    label: "Meaningful Life",
+    color: "bg-brand-navy/10 text-brand-navy",
+  },
+  resource_review: {
+    label: "Resource Review",
+    color: "bg-brand-gold/20 text-amber-700",
+  },
+  memento_mori_research: {
+    label: "Memento Mori",
+    color: "bg-brand-coral/10 text-brand-coral",
+  },
+};
+
 export default async function BlogPage() {
   const supabase = createStaticClient();
 
@@ -37,7 +52,8 @@ export default async function BlogPage() {
 
   return (
     <div className="px-6 py-10">
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-4xl">
+        {/* Header */}
         <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-6 py-6">
           <div className="absolute right-[10%] top-[10%] h-20 w-20 rounded-full bg-brand-gold/20 blur-3xl" />
           <div className="absolute bottom-[10%] left-[15%] h-16 w-16 rounded-full bg-brand-coral/15 blur-3xl" />
@@ -57,30 +73,69 @@ export default async function BlogPage() {
           </div>
         </div>
 
-        <div className="mt-12 space-y-10">
+        {/* Post cards */}
+        <div className="mt-8 grid gap-6 md:grid-cols-2">
           {posts && posts.length > 0 ? (
-            posts.map((post: BlogPost) => (
-              <article key={post.id} className="group">
-                <Link href={`/blog/${post.slug}`} className="block">
-                  <time className="text-sm text-gray-400">
-                    {formatDate(post.published_at || post.created_at)}
-                  </time>
-                  <h2 className="mt-1 text-2xl font-semibold text-gray-800 transition-colors group-hover:text-brand-navy">
-                    {post.title}
-                  </h2>
-                  {post.excerpt && (
-                    <p className="mt-2 leading-relaxed text-gray-600">
-                      {post.excerpt}
-                    </p>
+            posts.map((post: BlogPost) => {
+              const badge = post.blog_focus
+                ? focusBadge[post.blog_focus]
+                : null;
+
+              return (
+                <Link
+                  key={post.id}
+                  href={`/blog/${post.slug}`}
+                  className="group overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition hover:shadow-md"
+                >
+                  {/* Featured image */}
+                  {post.featured_image_url ? (
+                    <div className="aspect-[16/9] overflow-hidden bg-gray-100">
+                      <img
+                        src={post.featured_image_url}
+                        alt=""
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex aspect-[16/9] items-center justify-center bg-gradient-to-br from-brand-navy/10 to-brand-gold/10">
+                      <Newspaper className="h-12 w-12 text-brand-navy/20" />
+                    </div>
                   )}
-                  <span className="mt-3 inline-block text-sm font-medium text-brand-navy">
-                    Read more &rarr;
-                  </span>
+
+                  {/* Content */}
+                  <div className="p-5">
+                    <div className="flex items-center gap-3">
+                      <time className="text-xs text-gray-400">
+                        {formatDate(post.published_at || post.created_at)}
+                      </time>
+                      {badge && (
+                        <span
+                          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${badge.color}`}
+                        >
+                          {badge.label}
+                        </span>
+                      )}
+                    </div>
+                    <h2 className="mt-2 text-lg font-bold text-gray-900 transition-colors group-hover:text-brand-navy">
+                      {post.title}
+                    </h2>
+                    {post.excerpt && (
+                      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-gray-500">
+                        {post.excerpt}
+                      </p>
+                    )}
+                    <span className="mt-3 inline-flex items-center gap-1 text-sm font-semibold text-brand-navy">
+                      Read more
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-1" />
+                    </span>
+                  </div>
                 </Link>
-              </article>
-            ))
+              );
+            })
           ) : (
-            <p className="text-gray-500">No posts published yet.</p>
+            <p className="col-span-2 text-center text-gray-500">
+              No posts published yet.
+            </p>
           )}
         </div>
       </div>
