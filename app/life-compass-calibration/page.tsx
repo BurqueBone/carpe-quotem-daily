@@ -1,6 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
-import { Target, Compass, ChevronRight } from "lucide-react";
+import { Target, Compass, ChevronRight, Navigation } from "lucide-react";
 import LifespanVisualizer from "@/components/lifespan-visualizer";
 
 export const metadata: Metadata = {
@@ -14,14 +14,23 @@ export default function LifeCompassPage() {
     <div className="px-6 py-12">
       <div className="mx-auto max-w-5xl space-y-10">
         {/* Header */}
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-brand-navy md:text-5xl">
-            Life Compass Calibration
-          </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
-            Navigate your finite time with clarity. Visualize your lifespan,
-            prioritize what matters, and assess your life balance.
-          </p>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-6 py-6">
+          <div className="absolute right-[10%] top-[10%] h-20 w-20 rounded-full bg-brand-gold/20 blur-3xl" />
+          <div className="absolute bottom-[10%] left-[15%] h-16 w-16 rounded-full bg-brand-coral/15 blur-3xl" />
+          <div className="relative flex flex-col items-center gap-3 text-center md:flex-row md:gap-5 md:text-left">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-gold/20">
+              <Navigation className="h-6 w-6 text-brand-gold" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white md:text-3xl">
+                Life Compass Calibration
+              </h1>
+              <p className="mt-1 max-w-2xl text-sm text-white/70">
+                Navigate your finite time with clarity. Visualize your lifespan,
+                prioritize what matters, and assess your life balance.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Lifespan Visualizer */}

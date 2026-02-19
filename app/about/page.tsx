@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Heart } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About",
@@ -8,9 +9,25 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="px-6 py-16">
+    <div className="px-6 py-10">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-4xl font-bold text-gray-800">About Sunday4K</h1>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-6 py-6">
+          <div className="absolute right-[10%] top-[10%] h-20 w-20 rounded-full bg-brand-gold/20 blur-3xl" />
+          <div className="absolute bottom-[10%] left-[15%] h-16 w-16 rounded-full bg-brand-coral/15 blur-3xl" />
+          <div className="relative flex flex-col items-center gap-3 text-center md:flex-row md:gap-5 md:text-left">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-gold/20">
+              <Heart className="h-6 w-6 text-brand-gold" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white md:text-3xl">
+                About Sunday4K
+              </h1>
+              <p className="mt-1 max-w-2xl text-sm text-white/70">
+                See your life in weeks and make each one count.
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div className="prose prose-lg prose-gray mt-8 max-w-none prose-headings:text-gray-800">
           <p>

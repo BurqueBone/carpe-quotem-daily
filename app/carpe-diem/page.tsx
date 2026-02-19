@@ -29,10 +29,10 @@ export default async function CarpeDiemPage() {
     <div className="px-6 py-12">
       <div className="mx-auto max-w-5xl">
         {/* Header */}
-        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-6 py-6 text-center">
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-6 py-6">
           <div className="absolute right-[10%] top-[10%] h-20 w-20 rounded-full bg-brand-gold/20 blur-3xl" />
           <div className="absolute bottom-[10%] left-[15%] h-16 w-16 rounded-full bg-brand-coral/15 blur-3xl" />
-          <div className="relative flex flex-col items-center gap-3 md:flex-row md:gap-5 md:text-left">
+          <div className="relative flex flex-col items-center gap-3 text-center md:flex-row md:gap-5 md:text-left">
             <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-gold/20">
               <Zap className="h-6 w-6 text-brand-gold" />
             </div>

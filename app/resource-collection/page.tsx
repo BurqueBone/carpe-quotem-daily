@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { Library } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase/static";
 import ResourceList from "@/components/resource-list";
 
@@ -27,17 +28,26 @@ export default async function ResourceCollectionPage() {
   return (
     <div className="px-6 py-10">
       <div className="mx-auto max-w-4xl">
-        <div className="rounded-xl border border-gray-200 bg-white p-8 text-center shadow-sm">
-          <h1 className="text-2xl font-bold text-brand-navy md:text-3xl">
-            Resource Collection
-          </h1>
-          <p className="mt-2 text-gray-500">
-            Discover and upvote resources to help you live life to the fullest
-          </p>
-          <p className="mt-1 text-sm italic text-gray-400">
-            Contains affiliate links where we earn commissions to keep these
-            resources accessible
-          </p>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-6 py-6">
+          <div className="absolute right-[10%] top-[10%] h-20 w-20 rounded-full bg-brand-gold/20 blur-3xl" />
+          <div className="absolute bottom-[10%] left-[15%] h-16 w-16 rounded-full bg-brand-coral/15 blur-3xl" />
+          <div className="relative flex flex-col items-center gap-3 text-center md:flex-row md:gap-5 md:text-left">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-gold/20">
+              <Library className="h-6 w-6 text-brand-gold" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white md:text-3xl">
+                Resource Collection
+              </h1>
+              <p className="mt-1 max-w-2xl text-sm text-white/70">
+                Discover and upvote resources to help you live life to the fullest
+              </p>
+              <p className="mt-1 text-xs italic text-white/40">
+                Contains affiliate links where we earn commissions to keep these
+                resources accessible
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="mt-8">

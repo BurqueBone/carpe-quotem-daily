@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { Newspaper } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase/static";
 import { formatDate } from "@/lib/utils";
 
@@ -35,13 +36,26 @@ export default async function BlogPage() {
     .order("created_at", { ascending: false });
 
   return (
-    <div className="px-6 py-16">
+    <div className="px-6 py-10">
       <div className="mx-auto max-w-3xl">
-        <h1 className="text-4xl font-bold text-gray-800">Blog</h1>
-        <p className="mt-3 text-lg text-gray-500">
-          Guides and insights on intentional living, weekly planning, and making
-          your time count.
-        </p>
+        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-navy via-brand-navy to-brand-navy/80 px-6 py-6">
+          <div className="absolute right-[10%] top-[10%] h-20 w-20 rounded-full bg-brand-gold/20 blur-3xl" />
+          <div className="absolute bottom-[10%] left-[15%] h-16 w-16 rounded-full bg-brand-coral/15 blur-3xl" />
+          <div className="relative flex flex-col items-center gap-3 text-center md:flex-row md:gap-5 md:text-left">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-gold/20">
+              <Newspaper className="h-6 w-6 text-brand-gold" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold text-white md:text-3xl">
+                Blog
+              </h1>
+              <p className="mt-1 max-w-2xl text-sm text-white/70">
+                Guides and insights on intentional living, weekly planning, and
+                making your time count.
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div className="mt-12 space-y-10">
           {posts && posts.length > 0 ? (
