@@ -1,5 +1,6 @@
 import { Metadata } from "next";
-import { Zap } from "lucide-react";
+import Link from "next/link";
+import { Zap, ArrowRight } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase/static";
 import CarpeDiemCategories from "@/components/carpe-diem-categories";
 
@@ -69,6 +70,17 @@ export default async function CarpeDiemPage() {
             resources={resources || []}
             voteCounts={voteCounts}
           />
+        </div>
+
+        {/* View All Resources */}
+        <div className="mt-10 text-center">
+          <Link
+            href="/resource-collection"
+            className="inline-flex items-center gap-2 rounded-lg bg-brand-navy px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90"
+          >
+            View All Resources
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </div>
     </div>
