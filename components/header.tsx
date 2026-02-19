@@ -71,7 +71,7 @@ export default function Header() {
   const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-brand-cream/20 bg-brand-off-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-off-white/70 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="text-xl font-bold text-brand-navy">
           Sunday4K

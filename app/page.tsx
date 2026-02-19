@@ -32,7 +32,7 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-brand-navy px-6 py-32 text-center md:py-44">
+      <section className="relative overflow-hidden bg-brand-navy px-6 py-16 text-center md:py-24">
         {/* Watercolor sky background */}
         <div className="absolute inset-0">
           <img
