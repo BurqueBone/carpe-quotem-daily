@@ -65,7 +65,7 @@ export default function HomePage() {
       </section>
 
       {/* How It Works */}
-      <section className="bg-white px-6 py-24">
+      <section className="bg-white px-6 py-12 md:py-16">
         <div className="mx-auto max-w-[960px]">
           <p className="text-center text-sm font-medium uppercase tracking-widest text-brand-navy/60">
             How Sunday4K Works
@@ -74,7 +74,7 @@ export default function HomePage() {
             See your life clearly. Plan your weeks intentionally.
           </h2>
 
-          <div className="mt-16 grid gap-8 md:grid-cols-3">
+          <div className="mt-10 grid gap-8 md:grid-cols-3">
             {steps.map((step) => (
               <div
                 key={step.number}
@@ -99,9 +99,9 @@ export default function HomePage() {
       </section>
 
       {/* Daily Quote */}
-      <section className="border-y border-gray-100 bg-brand-off-white px-6 py-20">
+      <section className="border-y border-gray-100 bg-brand-off-white px-6 py-12 md:py-16">
         <div className="mx-auto max-w-2xl">
-          <p className="mb-8 text-center text-sm font-medium uppercase tracking-widest text-brand-navy/60">
+          <p className="mb-6 text-center text-sm font-medium uppercase tracking-widest text-brand-navy/60">
             Daily Inspiration
           </p>
           <DailyQuote />
@@ -109,7 +109,7 @@ export default function HomePage() {
       </section>
 
       {/* Carpe Diem Teaser */}
-      <section className="bg-white px-6 py-24">
+      <section className="bg-white px-6 py-12 md:py-16">
         <div className="mx-auto max-w-3xl text-center">
           <p className="text-sm font-medium uppercase tracking-widest text-brand-navy/60">
             Curated Resources
@@ -123,7 +123,7 @@ export default function HomePage() {
           </p>
           <Link
             href="/carpe-diem"
-            className="mt-10 inline-block rounded-full border-2 border-brand-navy px-10 py-3.5 text-sm font-semibold text-brand-navy transition hover:bg-brand-navy hover:text-white"
+            className="mt-8 inline-block rounded-full border-2 border-brand-navy px-10 py-3.5 text-sm font-semibold text-brand-navy transition hover:bg-brand-navy hover:text-white"
           >
             Explore Resources
           </Link>
