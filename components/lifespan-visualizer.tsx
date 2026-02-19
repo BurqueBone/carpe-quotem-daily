@@ -118,9 +118,9 @@ export default function LifespanVisualizer() {
               for (let i = milestone.startMonth; i < milestone.endMonth; i++) {
                 const isCurrent = i === lifeData.currentMonthIndex;
                 const isPast = i < lifeData.monthsLived;
-                let cls = "bg-blue-200/60"; // future
-                if (isPast) cls = "bg-gray-300/80";
-                if (isCurrent) cls = "bg-brand-navy animate-pulse ring-2 ring-brand-navy/50";
+                let cls = "border border-gray-200/60 bg-transparent"; // future: empty outline
+                if (isPast) cls = "bg-brand-navy/50"; // lived: solid fill
+                if (isCurrent) cls = "bg-brand-coral animate-pulse ring-2 ring-brand-coral/50"; // current: bright marker
                 blocks.push(
                   <div
                     key={i}
