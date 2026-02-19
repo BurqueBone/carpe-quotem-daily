@@ -20,7 +20,6 @@ interface Resource {
   s4k_favorite: boolean;
   has_affiliate: boolean;
   affiliate_url: string | null;
-  how_resource_helps: string | null;
   category_id: string;
 }
 
@@ -45,9 +44,11 @@ const typeBadgeColors: Record<string, string> = {
 export default function CarpeDiemCategories({
   categories,
   resources,
+  voteCounts,
 }: {
   categories: Category[];
   resources: Resource[];
+  voteCounts: Record<string, number>;
 }) {
   const [openCategories, setOpenCategories] = useState<Set<string>>(new Set());
 
@@ -77,8 +78,19 @@ export default function CarpeDiemCategories({
       {categories.map((cat, idx) => {
         const Icon = getIcon(cat.icon_name);
         const isOpen = openCategories.has(cat.id);
-        const catResources = resourcesByCategory[cat.id] || [];
         const accent = categoryAccents[idx % categoryAccents.length];
+
+        // Sort by votes (desc), then s4k_favorite, take top 4
+        const catResources = (resourcesByCategory[cat.id] || [])
+          .slice()
+          .sort((a, b) => {
+            const aVotes = voteCounts[a.id] || 0;
+            const bVotes = voteCounts[b.id] || 0;
+            if (bVotes !== aVotes) return bVotes - aVotes;
+            if (a.s4k_favorite !== b.s4k_favorite) return a.s4k_favorite ? -1 : 1;
+            return 0;
+          })
+          .slice(0, 4);
 
         return (
           <div
@@ -109,45 +121,42 @@ export default function CarpeDiemCategories({
 
             {isOpen && catResources.length > 0 && (
               <div className="border-t border-gray-100 px-5 pb-5">
-                <div className="mt-4 space-y-3">
+                <div className="mt-4 grid grid-cols-2 gap-3">
                   {catResources.map((r) => {
                     const href = r.affiliate_url || r.url;
+                    const votes = voteCounts[r.id] || 0;
+
                     return (
                       <a
                         key={r.id}
                         href={href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="group block rounded-lg border border-gray-50 bg-brand-off-white/50 p-4 transition hover:border-brand-navy/20 hover:bg-white"
+                        className="group flex flex-col rounded-lg border border-gray-100 bg-brand-off-white/50 p-4 transition hover:border-brand-navy/20 hover:bg-white"
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-semibold text-gray-800 group-hover:text-brand-navy">
-                                {r.title}
-                              </h4>
-                              {r.s4k_favorite && (
-                                <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                              )}
-                              <ExternalLink className="h-3.5 w-3.5 text-gray-300 group-hover:text-brand-navy" />
-                            </div>
-                            <p className="mt-1 text-sm text-gray-500">
-                              {r.description}
-                            </p>
-                            {r.how_resource_helps && (
-                              <div className="mt-2 rounded-md bg-brand-navy/5 p-3 text-sm text-gray-600">
-                                <span className="font-medium text-brand-navy">
-                                  How this helps:
-                                </span>{" "}
-                                {r.how_resource_helps}
-                              </div>
-                            )}
-                          </div>
+                        <div className="flex items-center justify-between gap-2">
+                          <h4 className="text-sm font-semibold text-gray-800 group-hover:text-brand-navy">
+                            {r.title}
+                          </h4>
+                          <ExternalLink className="h-3.5 w-3.5 shrink-0 text-gray-300 group-hover:text-brand-navy" />
+                        </div>
+                        <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-gray-500">
+                          {r.description}
+                        </p>
+                        <div className="mt-auto flex items-center gap-2 pt-3">
                           <span
-                            className={`shrink-0 rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${typeBadgeColors[r.type] || typeBadgeColors.article}`}
+                            className={`rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${typeBadgeColors[r.type] || typeBadgeColors.article}`}
                           >
                             {r.type}
                           </span>
+                          {r.s4k_favorite && (
+                            <Star className="h-3 w-3 fill-amber-400 text-amber-400" />
+                          )}
+                          {votes > 0 && (
+                            <span className="ml-auto text-[10px] font-medium text-gray-400">
+                              {votes} {votes === 1 ? "vote" : "votes"}
+                            </span>
+                          )}
                         </div>
                       </a>
                     );

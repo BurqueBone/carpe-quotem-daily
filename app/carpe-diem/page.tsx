@@ -14,16 +14,26 @@ export const revalidate = 86400;
 export default async function CarpeDiemPage() {
   const supabase = createStaticClient();
 
-  const [{ data: categories }, { data: resources }] = await Promise.all([
-    supabase.from("categories").select("*").order("title"),
-    supabase
-      .from("resources")
-      .select(
-        "id, title, description, url, type, s4k_favorite, has_affiliate, affiliate_url, how_resource_helps, category_id"
-      )
-      .eq("ispublished", true)
-      .order("title"),
-  ]);
+  const [{ data: categories }, { data: resources }, { data: votes }] =
+    await Promise.all([
+      supabase.from("categories").select("*").order("title"),
+      supabase
+        .from("resources")
+        .select(
+          "id, title, description, url, type, s4k_favorite, has_affiliate, affiliate_url, category_id"
+        )
+        .eq("ispublished", true)
+        .order("title"),
+      supabase
+        .from("resource_upvotes")
+        .select("resource_id"),
+    ]);
+
+  // Count votes per resource
+  const voteCounts: Record<string, number> = {};
+  (votes || []).forEach((v: { resource_id: string }) => {
+    voteCounts[v.resource_id] = (voteCounts[v.resource_id] || 0) + 1;
+  });
 
   return (
     <div className="px-6 py-12">
@@ -57,6 +67,7 @@ export default async function CarpeDiemPage() {
           <CarpeDiemCategories
             categories={categories || []}
             resources={resources || []}
+            voteCounts={voteCounts}
           />
         </div>
       </div>
