@@ -26,39 +26,44 @@ const steps = [
   },
 ];
 
-export const revalidate = 3600; // revalidate every hour
+export const revalidate = 3600;
 
 export default function HomePage() {
   return (
     <>
-      {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-brand-purple via-brand-purple to-brand-light-purple px-6 py-24 text-center text-white md:py-36">
-        <div className="mx-auto max-w-3xl">
-          <p className="mb-4 text-sm font-medium uppercase tracking-widest text-brand-peach">
-            Your life in weeks
-          </p>
-          <h1 className="text-4xl font-bold leading-tight md:text-5xl lg:text-6xl">
-            You have 4,000 Sundays in your life.{" "}
-            <span className="text-brand-peach">Make them count.</span>
+      {/* Hero with painted sky background */}
+      <section className="relative overflow-hidden px-6 py-28 text-center md:py-40">
+        {/* Background gradient that simulates the painted sky feel */}
+        <div
+          className="absolute inset-0 bg-gradient-to-b from-[#4a3a6b] via-[#8b6b5a] to-[#d4a574]"
+          style={{
+            backgroundImage: `
+              radial-gradient(ellipse at 20% 50%, rgba(74, 58, 107, 0.8) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 30%, rgba(180, 140, 110, 0.6) 0%, transparent 50%),
+              radial-gradient(ellipse at 50% 80%, rgba(212, 165, 116, 0.7) 0%, transparent 40%),
+              linear-gradient(to bottom, #4a3a6b, #6b5a7a, #9b7a6a, #c4956a, #d4a574)
+            `,
+          }}
+        />
+        <div className="absolute inset-0 bg-black/15" />
+        <div className="relative mx-auto max-w-3xl">
+          <h1 className="text-4xl font-bold leading-tight text-white md:text-5xl lg:text-6xl">
+            You have
+            <br />
+            4,000 Sundays
+            <br />
+            in your life.
           </h1>
-          <p className="mx-auto mt-6 max-w-xl text-lg text-white/80">
-            Sunday4K helps you see your life clearly and plan your weeks
-            intentionally with curated resources for every area of your life.
+          <p className="mt-4 text-xl font-medium text-white/90 md:text-2xl">
+            Make them count.
           </p>
-          <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
-            <Link
-              href="/life-compass-calibration"
-              className="rounded-lg bg-white px-8 py-3 text-sm font-semibold text-brand-purple shadow-lg transition hover:bg-brand-cream"
-            >
-              Start Your Compass
-            </Link>
-            <Link
-              href="/blog"
-              className="rounded-lg border border-white/30 px-8 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
-            >
-              Read the Blog
-            </Link>
-          </div>
+          <Link
+            href="/life-compass-calibration"
+            className="mt-8 inline-flex items-center gap-2 rounded-full bg-brand-purple px-8 py-3.5 text-sm font-semibold text-white shadow-lg transition hover:bg-brand-purple/90"
+          >
+            <Compass className="h-4 w-4" />
+            Calibrate Your Compass
+          </Link>
         </div>
       </section>
 
@@ -95,7 +100,7 @@ export default function HomePage() {
           <div className="mt-12 text-center">
             <Link
               href="/life-compass-calibration"
-              className="inline-block rounded-lg bg-brand-purple px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-purple/90"
+              className="inline-block rounded-full bg-brand-purple px-8 py-3 text-sm font-semibold text-white transition hover:bg-brand-purple/90"
             >
               Start Your Compass
             </Link>
@@ -128,7 +133,7 @@ export default function HomePage() {
           </p>
           <Link
             href="/carpe-diem"
-            className="mt-8 inline-block rounded-lg border-2 border-brand-purple px-8 py-3 text-sm font-semibold text-brand-purple transition hover:bg-brand-purple hover:text-white"
+            className="mt-8 inline-block rounded-full border-2 border-brand-purple px-8 py-3 text-sm font-semibold text-brand-purple transition hover:bg-brand-purple hover:text-white"
           >
             Explore Resources
           </Link>

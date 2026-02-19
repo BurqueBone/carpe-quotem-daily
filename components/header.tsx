@@ -1,22 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 
-const navLinks = [
-  { href: "/", label: "Home" },
-  { href: "/blog", label: "Blog" },
+const carpeDiemLinks = [
   { href: "/carpe-diem", label: "Carpe Diem" },
+  { href: "/resource-collection", label: "Resource Collection" },
   { href: "/life-compass-calibration", label: "Life Compass" },
-  { href: "/about", label: "About" },
 ];
+
+const aboutLinks = [
+  { href: "/about", label: "About Sunday4K" },
+  { href: "/blog", label: "Blog" },
+];
+
+function Dropdown({
+  label,
+  links,
+}: {
+  label: string;
+  links: { href: string; label: string }[];
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1 text-sm font-medium text-gray-600 transition-colors hover:text-brand-purple"
+      >
+        {label}
+        <ChevronDown
+          className={`h-4 w-4 transition-transform ${open ? "rotate-180" : ""}`}
+        />
+      </button>
+
+      {open && (
+        <div className="absolute left-0 top-full z-50 mt-2 min-w-[200px] rounded-lg border border-gray-100 bg-white py-2 shadow-lg">
+          {links.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2.5 text-sm text-gray-700 transition-colors hover:bg-brand-off-white hover:text-brand-purple"
+            >
+              {link.label}
+            </Link>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [carpeDiemOpen, setCarpeDiemOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-brand-light-purple/30 bg-brand-off-white/90 backdrop-blur-md">
+    <header className="sticky top-0 z-50 border-b border-brand-light-purple/20 bg-brand-off-white/95 backdrop-blur-md">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="text-xl font-bold text-brand-purple">
           Sunday4K
@@ -24,20 +79,19 @@ export default function Header() {
 
         {/* Desktop nav */}
         <nav className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-gray-600 transition-colors hover:text-brand-purple"
-            >
-              {link.label}
-            </Link>
-          ))}
+          <Link
+            href="/blog"
+            className="text-sm font-medium text-gray-600 transition-colors hover:text-brand-purple"
+          >
+            Blog
+          </Link>
+          <Dropdown label="Carpe Diem" links={carpeDiemLinks} />
+          <Dropdown label="About" links={aboutLinks} />
           <Link
             href="/auth/login"
-            className="rounded-lg border border-brand-purple px-4 py-2 text-sm font-medium text-brand-purple transition-colors hover:bg-brand-purple hover:text-white"
+            className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-brand-purple hover:text-brand-purple"
           >
-            Sign In
+            Login
           </Link>
         </nav>
 
@@ -58,7 +112,7 @@ export default function Header() {
           onClick={() => setMobileOpen(false)}
         >
           <nav
-            className="absolute right-0 top-0 flex h-full w-72 flex-col bg-brand-off-white p-6 shadow-xl transition-transform duration-200 ease-out"
+            className="absolute right-0 top-0 flex h-full w-72 flex-col bg-brand-off-white p-6 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
@@ -69,23 +123,64 @@ export default function Header() {
               <X className="h-6 w-6" />
             </button>
 
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={() => setMobileOpen(false)}
-                className="flex min-h-[44px] items-center border-b border-gray-100 text-base font-medium text-gray-700 transition-colors hover:text-brand-purple"
-              >
-                {link.label}
-              </Link>
-            ))}
+            <Link
+              href="/blog"
+              onClick={() => setMobileOpen(false)}
+              className="flex min-h-[44px] items-center border-b border-gray-100 text-base font-medium text-gray-700 hover:text-brand-purple"
+            >
+              Blog
+            </Link>
+
+            {/* Carpe Diem accordion */}
+            <button
+              onClick={() => setCarpeDiemOpen(!carpeDiemOpen)}
+              className="flex min-h-[44px] items-center justify-between border-b border-gray-100 text-base font-medium text-gray-700"
+            >
+              Carpe Diem
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${carpeDiemOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {carpeDiemOpen &&
+              carpeDiemLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-h-[40px] items-center pl-4 text-sm text-gray-500 hover:text-brand-purple"
+                >
+                  {link.label}
+                </Link>
+              ))}
+
+            {/* About accordion */}
+            <button
+              onClick={() => setAboutOpen(!aboutOpen)}
+              className="flex min-h-[44px] items-center justify-between border-b border-gray-100 text-base font-medium text-gray-700"
+            >
+              About
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${aboutOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            {aboutOpen &&
+              aboutLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex min-h-[40px] items-center pl-4 text-sm text-gray-500 hover:text-brand-purple"
+                >
+                  {link.label}
+                </Link>
+              ))}
 
             <Link
               href="/auth/login"
               onClick={() => setMobileOpen(false)}
-              className="mt-8 rounded-lg bg-brand-purple px-4 py-3 text-center text-sm font-medium text-white transition-colors hover:bg-brand-purple/90"
+              className="mt-8 rounded-full border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:border-brand-purple hover:text-brand-purple"
             >
-              Sign In
+              Login
             </Link>
           </nav>
         </div>
