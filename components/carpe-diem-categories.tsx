@@ -25,11 +25,11 @@ interface Resource {
 }
 
 const categoryAccents = [
-  { icon: "bg-brand-navy/15 text-brand-navy", border: "border-brand-navy/20", iconGlow: "from-brand-navy/15 to-brand-navy/5" },
-  { icon: "bg-brand-gold/20 text-amber-700", border: "border-brand-gold/30", iconGlow: "from-brand-gold/20 to-brand-gold/5" },
-  { icon: "bg-brand-coral/15 text-brand-coral", border: "border-brand-coral/20", iconGlow: "from-brand-coral/15 to-brand-coral/5" },
-  { icon: "bg-brand-orange/15 text-brand-orange", border: "border-brand-orange/20", iconGlow: "from-brand-orange/15 to-brand-orange/5" },
-  { icon: "bg-brand-cream/40 text-brand-navy", border: "border-brand-cream/40", iconGlow: "from-brand-cream/30 to-brand-cream/10" },
+  { icon: "bg-brand-navy/15 text-brand-navy", border: "border-brand-navy/30", card: "bg-white border-brand-navy/15" },
+  { icon: "bg-brand-gold/25 text-amber-700", border: "border-brand-gold/40", card: "bg-white border-brand-gold/20" },
+  { icon: "bg-brand-coral/15 text-brand-coral", border: "border-brand-coral/30", card: "bg-white border-brand-coral/20" },
+  { icon: "bg-brand-orange/20 text-brand-orange", border: "border-brand-orange/30", card: "bg-white border-brand-orange/20" },
+  { icon: "bg-blue-100 text-blue-600", border: "border-blue-200", card: "bg-white border-blue-100" },
 ];
 
 const typeBadgeColors: Record<string, string> = {
@@ -86,7 +86,7 @@ export default function CarpeDiemCategories({
             className={`rounded-xl border transition-all ${
               isOpen
                 ? `col-span-1 ${accent.border} bg-white shadow-md sm:col-span-2`
-                : `border-gray-100 bg-gradient-to-br from-white to-brand-off-white hover:${accent.border} hover:shadow-sm`
+                : `${accent.card} shadow-sm hover:shadow-md`
             }`}
           >
             <button
