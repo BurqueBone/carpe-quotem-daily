@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
   Sparkles,
   SlidersHorizontal,
-  X,
 } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 import { getIcon } from "@/lib/icons";
 
 interface Category {
@@ -28,6 +28,7 @@ interface Resource {
   affiliate_url: string | null;
   how_resource_helps: string | null;
   category_id: string;
+  vote_count: number;
 }
 
 const typeBadgeColors: Record<string, string> = {
@@ -43,9 +44,11 @@ const typeBadgeColors: Record<string, string> = {
 export default function ResourceList({
   categories,
   resources,
+  featuredId,
 }: {
   categories: Category[];
   resources: Resource[];
+  featuredId: string | null;
 }) {
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -53,6 +56,79 @@ export default function ResourceList({
   const [selectedType, setSelectedType] = useState<string | null>(null);
   const [expandedResources, setExpandedResources] = useState<Set<string>>(
     new Set()
+  );
+  const [userId, setUserId] = useState<string | null>(null);
+  const [userVotes, setUserVotes] = useState<Set<string>>(new Set());
+  const [localVoteCounts, setLocalVoteCounts] = useState<Record<string, number>>(() => {
+    const map: Record<string, number> = {};
+    resources.forEach((r) => (map[r.id] = r.vote_count));
+    return map;
+  });
+  const [votingId, setVotingId] = useState<string | null>(null);
+
+  // Load user session and their existing votes
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) return;
+      setUserId(session.user.id);
+
+      supabase
+        .from("resource_upvotes")
+        .select("resource_id")
+        .eq("user_id", session.user.id)
+        .then(({ data }) => {
+          if (data) {
+            setUserVotes(new Set(data.map((v) => v.resource_id)));
+          }
+        });
+    });
+  }, []);
+
+  const handleVote = useCallback(
+    async (resourceId: string) => {
+      if (!userId) return;
+      setVotingId(resourceId);
+
+      const supabase = createClient();
+      const hasVoted = userVotes.has(resourceId);
+
+      if (hasVoted) {
+        const { error } = await supabase
+          .from("resource_upvotes")
+          .delete()
+          .eq("user_id", userId)
+          .eq("resource_id", resourceId);
+
+        if (!error) {
+          setUserVotes((prev) => {
+            const next = new Set(prev);
+            next.delete(resourceId);
+            return next;
+          });
+          setLocalVoteCounts((prev) => ({
+            ...prev,
+            [resourceId]: Math.max(0, (prev[resourceId] || 0) - 1),
+          }));
+        }
+      } else {
+        const { error } = await supabase
+          .from("resource_upvotes")
+          .insert({ user_id: userId, resource_id: resourceId });
+
+        if (!error) {
+          setUserVotes((prev) => new Set(prev).add(resourceId));
+          setLocalVoteCounts((prev) => ({
+            ...prev,
+            [resourceId]: (prev[resourceId] || 0) + 1,
+          }));
+        }
+      }
+
+      setVotingId(null);
+    },
+    [userId, userVotes]
   );
 
   const categoryMap = useMemo(() => {
@@ -67,7 +143,7 @@ export default function ResourceList({
   }, [resources]);
 
   const filtered = useMemo(() => {
-    return resources.filter((r) => {
+    const list = resources.filter((r) => {
       if (selectedCategory && r.category_id !== selectedCategory) return false;
       if (selectedType && r.type !== selectedType) return false;
       if (searchQuery) {
@@ -79,10 +155,18 @@ export default function ResourceList({
       }
       return true;
     });
-  }, [resources, selectedCategory, selectedType, searchQuery]);
 
-  // Pick a "featured" resource (s4k_favorite)
-  const featured = resources.find((r) => r.s4k_favorite);
+    // Sort by vote count descending, then alphabetically
+    return list.sort(
+      (a, b) =>
+        (localVoteCounts[b.id] || 0) - (localVoteCounts[a.id] || 0) ||
+        a.title.localeCompare(b.title)
+    );
+  }, [resources, selectedCategory, selectedType, searchQuery, localVoteCounts]);
+
+  const featured = featuredId
+    ? resources.find((r) => r.id === featuredId)
+    : null;
 
   function toggleExpand(id: string) {
     setExpandedResources((prev) => {
@@ -248,6 +332,9 @@ export default function ResourceList({
           const Icon = cat ? getIcon(cat.icon_name) : null;
           const isExpanded = expandedResources.has(r.id);
           const href = r.affiliate_url || r.url;
+          const votes = localVoteCounts[r.id] || 0;
+          const hasVoted = userVotes.has(r.id);
+          const isVoting = votingId === r.id;
 
           return (
             <div
@@ -319,12 +406,23 @@ export default function ResourceList({
                 </div>
 
                 {/* Vote button */}
-                <button className="flex shrink-0 flex-col items-center gap-0.5 rounded-lg border border-gray-200 px-3 py-2 transition hover:border-brand-navy hover:bg-brand-navy/5">
-                  <ChevronUp className="h-5 w-5 text-gray-400" />
-                  <span className="text-sm font-semibold text-gray-500">
-                    {r.s4k_favorite ? 1 : 0}
+                <button
+                  onClick={() => handleVote(r.id)}
+                  disabled={!userId || isVoting}
+                  title={userId ? (hasVoted ? "Remove vote" : "Upvote") : "Log in to vote"}
+                  className={`flex shrink-0 flex-col items-center gap-0.5 rounded-lg border px-3 py-2 transition ${
+                    hasVoted
+                      ? "border-brand-navy bg-brand-navy/5 text-brand-navy"
+                      : "border-gray-200 text-gray-400 hover:border-brand-navy hover:bg-brand-navy/5"
+                  } disabled:cursor-not-allowed disabled:opacity-50`}
+                >
+                  <ChevronUp className={`h-5 w-5 ${hasVoted ? "text-brand-navy" : ""}`} />
+                  <span className={`text-sm font-semibold ${hasVoted ? "text-brand-navy" : "text-gray-500"}`}>
+                    {votes}
                   </span>
-                  <span className="text-[10px] text-gray-400">votes</span>
+                  <span className="text-[10px] text-gray-400">
+                    {votes === 1 ? "vote" : "votes"}
+                  </span>
                 </button>
               </div>
             </div>

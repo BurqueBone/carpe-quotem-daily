@@ -14,16 +14,35 @@ export const revalidate = 86400;
 export default async function ResourceCollectionPage() {
   const supabase = createStaticClient();
 
-  const [{ data: categories }, { data: resources }] = await Promise.all([
-    supabase.from("categories").select("id, title, icon_name").order("title"),
-    supabase
-      .from("resources")
-      .select(
-        "id, title, description, url, type, s4k_favorite, has_affiliate, affiliate_url, how_resource_helps, category_id"
-      )
-      .eq("ispublished", true)
-      .order("title"),
-  ]);
+  const [{ data: categories }, { data: resources }, { data: voteCounts }] =
+    await Promise.all([
+      supabase.from("categories").select("id, title, icon_name").order("title"),
+      supabase
+        .from("resources")
+        .select(
+          "id, title, description, url, type, s4k_favorite, has_affiliate, affiliate_url, how_resource_helps, category_id"
+        )
+        .eq("ispublished", true),
+      supabase.rpc("get_resource_vote_counts"),
+    ]);
+
+  // Merge vote counts into resources and sort by votes desc
+  const voteMap: Record<string, number> = {};
+  (voteCounts || []).forEach(
+    (v: { resource_id: string; votes: number }) =>
+      (voteMap[v.resource_id] = v.votes)
+  );
+
+  const resourcesWithVotes = (resources || [])
+    .map((r) => ({ ...r, vote_count: voteMap[r.id] || 0 }))
+    .sort((a, b) => b.vote_count - a.vote_count || a.title.localeCompare(b.title));
+
+  // Rotate featured resource daily among s4k_favorites
+  const favorites = resourcesWithVotes.filter((r) => r.s4k_favorite);
+  const today = new Date();
+  const dayIndex = Math.floor(today.getTime() / 86400000);
+  const featuredIndex = favorites.length > 0 ? dayIndex % favorites.length : -1;
+  const featuredId = featuredIndex >= 0 ? favorites[featuredIndex].id : null;
 
   return (
     <div className="px-6 py-10">
@@ -53,7 +72,8 @@ export default async function ResourceCollectionPage() {
         <div className="mt-8">
           <ResourceList
             categories={categories || []}
-            resources={resources || []}
+            resources={resourcesWithVotes}
+            featuredId={featuredId}
           />
         </div>
       </div>
