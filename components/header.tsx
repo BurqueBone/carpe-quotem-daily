@@ -92,39 +92,41 @@ export default function Header() {
     : { href: "/auth/login", label: "Login", icon: false };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-off-white/70 backdrop-blur-md">
-      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-xl font-bold text-brand-navy">
-          Sunday4K
-        </Link>
-
-        {/* Desktop nav */}
-        <nav className="hidden items-center gap-8 md:flex">
-          <Dropdown label="Carpe Diem" links={carpeDiemLinks} />
-          <Dropdown label="About" links={aboutLinks} />
-          <Link
-            href={authLink.href}
-            className="flex items-center gap-2 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
-          >
-            {authLink.icon && <UserRound className="h-4 w-4" />}
-            {authLink.label}
+    <>
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-off-white/70 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+          <Link href="/" className="text-xl font-bold text-brand-navy">
+            Sunday4K
           </Link>
-        </nav>
 
-        {/* Mobile hamburger */}
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="text-gray-700 md:hidden"
-          aria-label="Open menu"
-        >
-          <Menu className="h-6 w-6" />
-        </button>
-      </div>
+          {/* Desktop nav */}
+          <nav className="hidden items-center gap-8 md:flex">
+            <Dropdown label="Carpe Diem" links={carpeDiemLinks} />
+            <Dropdown label="About" links={aboutLinks} />
+            <Link
+              href={authLink.href}
+              className="flex items-center gap-2 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
+            >
+              {authLink.icon && <UserRound className="h-4 w-4" />}
+              {authLink.label}
+            </Link>
+          </nav>
 
-      {/* Mobile overlay */}
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="text-gray-700 md:hidden"
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6" />
+          </button>
+        </div>
+      </header>
+
+      {/* Mobile overlay — rendered outside header to avoid sticky stacking context */}
       {mobileOpen && (
         <div
-          className="fixed inset-0 z-50 bg-black/20"
+          className="fixed inset-0 z-[60] bg-black/20"
           onClick={() => setMobileOpen(false)}
         >
           <nav
@@ -194,6 +196,6 @@ export default function Header() {
           </nav>
         </div>
       )}
-    </header>
+    </>
   );
 }
