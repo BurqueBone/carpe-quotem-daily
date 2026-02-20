@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart, Home, Heart as HeartIcon, Compass, BookOpen, User, Settings, LogIn } from "lucide-react";
+import { Heart, Home, Flame, Library, Compass, BookOpen, User, Settings, LogIn } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -31,13 +31,13 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/carpe-diem" className="inline-flex items-center gap-2 hover:text-brand-navy">
-                  <HeartIcon className="h-3.5 w-3.5" />
+                  <Flame className="h-3.5 w-3.5" />
                   Carpe Diem
                 </Link>
               </li>
               <li>
                 <Link href="/resource-collection" className="inline-flex items-center gap-2 hover:text-brand-navy">
-                  <HeartIcon className="h-3.5 w-3.5" />
+                  <Library className="h-3.5 w-3.5" />
                   Resource Collection
                 </Link>
               </li>
