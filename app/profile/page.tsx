@@ -27,7 +27,12 @@ export default async function Profile() {
         .select("enabled")
         .eq("user_id", user.id)
         .single(),
-      supabase.rpc("get_random_quote_and_track"),
+      supabase
+        .from("quotes")
+        .select("quote, author, source")
+        .eq("is_published", true)
+        .limit(1)
+        .single(),
     ]);
 
   return (
@@ -36,9 +41,7 @@ export default async function Profile() {
         email: user.email || "",
         birthdate: profile?.birthdate || null,
         notificationsEnabled: notifSettings?.enabled ?? true,
-        quote: quote
-          ? { quote: quote.quote, author: quote.author, source: quote.source }
-          : null,
+        quote: quote || null,
       }}
     />
   );

@@ -222,13 +222,13 @@ function NotificationSettings({
         </div>
         <button
           onClick={() => setEnabled(!enabled)}
-          className={`relative h-7 w-12 rounded-full transition-colors ${
+          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
             enabled ? "bg-brand-navy/70" : "bg-gray-300"
           }`}
         >
           <span
-            className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-transform ${
-              enabled ? "translate-x-5" : "translate-x-0.5"
+            className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+              enabled ? "translate-x-6" : "translate-x-1"
             }`}
           />
         </button>
