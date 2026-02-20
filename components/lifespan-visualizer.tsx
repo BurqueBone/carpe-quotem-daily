@@ -134,20 +134,16 @@ export default function LifespanVisualizer() {
                   className="rounded-lg border p-4"
                   style={{ backgroundColor: milestone.color }}
                 >
-                  <div className="flex items-start gap-4">
-                    <div className="w-28 shrink-0 md:w-36">
-                      <h3 className="text-sm font-semibold text-gray-900">
-                        {milestone.name}
-                      </h3>
-                      <p className="mt-0.5 text-xs text-gray-500">
-                        {Math.floor(milestone.startMonth / 12)}-{Math.floor(milestone.endMonth / 12)} years
-                      </p>
-                    </div>
-                    <div className="flex-1">
-                      <div className="grid grid-cols-[repeat(auto-fill,minmax(14px,1fr))] gap-1">
-                        {blocks}
-                      </div>
-                    </div>
+                  <div className="mb-2 flex items-baseline gap-2">
+                    <h3 className="text-sm font-semibold text-gray-900">
+                      {milestone.name}
+                    </h3>
+                    <p className="text-xs text-gray-500">
+                      {Math.floor(milestone.startMonth / 12)}-{Math.floor(milestone.endMonth / 12)} Years
+                    </p>
+                  </div>
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(14px,1fr))] gap-1">
+                    {blocks}
                   </div>
                   {milestone.startMonth <= FOUR_K_WEEKS_MARKER &&
                     milestone.endMonth > FOUR_K_WEEKS_MARKER && (
