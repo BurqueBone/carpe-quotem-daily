@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronDown, UserRound } from "lucide-react";
+import { Menu, X, ChevronDown, UserRound, Settings } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const carpeDiemLinks = [
@@ -73,17 +73,32 @@ export default function Header() {
   const [carpeDiemOpen, setCarpeDiemOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
+
+    async function checkAdmin(userId: string) {
+      const { data } = await supabase
+        .from("profiles")
+        .select("is_admin")
+        .eq("id", userId)
+        .single();
+      setIsAdmin(!!data?.is_admin);
+    }
+
     supabase.auth.getSession().then(({ data: { session } }) => {
       setLoggedIn(!!session);
+      if (session?.user?.id) checkAdmin(session.user.id);
+      else setIsAdmin(false);
     });
 
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((_event, session) => {
       setLoggedIn(!!session);
+      if (session?.user?.id) checkAdmin(session.user.id);
+      else setIsAdmin(false);
     });
 
     return () => subscription.unsubscribe();
@@ -105,6 +120,15 @@ export default function Header() {
           <nav className="hidden items-center gap-8 md:flex">
             <Dropdown label="Carpe Diem" links={carpeDiemLinks} />
             <Dropdown label="About" links={aboutLinks} />
+            {isAdmin && (
+              <Link
+                href="/admin"
+                className="flex items-center gap-1.5 text-sm font-medium text-gray-600 transition-colors hover:text-brand-navy"
+              >
+                <Settings className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
             <Link
               href={authLink.href}
               className="flex items-center gap-2 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
@@ -186,6 +210,17 @@ export default function Header() {
                   {link.label}
                 </Link>
               ))}
+
+            {isAdmin && (
+              <Link
+                href="/admin"
+                onClick={() => setMobileOpen(false)}
+                className="mt-6 flex min-h-[44px] items-center gap-2 border-b border-gray-100 text-base font-medium text-brand-navy"
+              >
+                <Settings className="h-4 w-4" />
+                Admin
+              </Link>
+            )}
 
             <Link
               href={authLink.href}
