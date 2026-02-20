@@ -10,13 +10,15 @@ const steps = [
     title: "See Your Weeks",
     description:
       "Visualize your life in weeks. See where you've been, where you are, and how many Sundays you have left to make count.",
+    bg: "/images/home/step-weeks.jpg",
   },
   {
     number: "02",
     icon: Compass,
     title: "Calibrate Your Compass",
     description:
-      "Rate where you are across 12 life areas — health, career, relationships, creativity, and more. Takes 5 minutes.",
+      "Rate where you are across 12 life areas: health, career, relationships, creativity, and more. Takes 5 minutes.",
+    bg: "/images/home/step-compass.jpg",
   },
   {
     number: "03",
@@ -24,6 +26,7 @@ const steps = [
     title: "Get Matched Resources",
     description:
       "Receive curated tools, books, and frameworks tailored to the life areas where you want to grow most.",
+    bg: "/images/home/step-resources.jpg",
   },
 ];
 
@@ -81,20 +84,37 @@ export default function HomePage() {
             {steps.map((step) => (
               <div
                 key={step.number}
-                className="group rounded-2xl border border-gray-100 bg-brand-off-white p-8 transition hover:-translate-y-1 hover:shadow-lg"
+                className="group relative overflow-hidden rounded-2xl border border-gray-100 shadow-sm transition hover:-translate-y-1 hover:shadow-lg"
               >
-                <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-brand-navy/10">
-                  <step.icon className="h-7 w-7 text-brand-navy" />
+                {/* Watercolor background */}
+                <div className="relative h-44">
+                  <Image
+                    src={step.bg}
+                    alt=""
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent" />
+                  <div className="absolute bottom-4 left-6">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/90 shadow-sm backdrop-blur-sm">
+                      <step.icon className="h-6 w-6 text-brand-navy" />
+                    </div>
+                  </div>
                 </div>
-                <span className="text-sm font-bold uppercase tracking-wider text-brand-navy/50">
-                  Step {step.number}
-                </span>
-                <h3 className="mt-2 text-xl font-bold text-gray-900">
-                  {step.title}
-                </h3>
-                <p className="mt-3 leading-relaxed text-gray-500">
-                  {step.description}
-                </p>
+
+                {/* Content */}
+                <div className="bg-white px-6 pb-6 pt-3">
+                  <span className="text-xs font-bold uppercase tracking-wider text-brand-navy/50">
+                    Step {step.number}
+                  </span>
+                  <h3 className="mt-1 text-xl font-bold text-gray-900">
+                    {step.title}
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                    {step.description}
+                  </p>
+                </div>
               </div>
             ))}
           </div>
