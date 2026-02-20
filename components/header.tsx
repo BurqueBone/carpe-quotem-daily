@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, UserRound } from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 
 const carpeDiemLinks = [
   { href: "/carpe-diem", label: "Carpe Diem" },
@@ -69,6 +70,26 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [carpeDiemOpen, setCarpeDiemOpen] = useState(false);
   const [aboutOpen, setAboutOpen] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setLoggedIn(!!session);
+    });
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      setLoggedIn(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const authLink = loggedIn
+    ? { href: "/profile", label: "Profile", icon: true }
+    : { href: "/auth/login", label: "Login", icon: false };
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-off-white/70 backdrop-blur-md">
@@ -82,10 +103,11 @@ export default function Header() {
           <Dropdown label="Carpe Diem" links={carpeDiemLinks} />
           <Dropdown label="About" links={aboutLinks} />
           <Link
-            href="/auth/login"
-            className="rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
+            href={authLink.href}
+            className="flex items-center gap-2 rounded-full border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
           >
-            Login
+            {authLink.icon && <UserRound className="h-4 w-4" />}
+            {authLink.label}
           </Link>
         </nav>
 
@@ -162,11 +184,12 @@ export default function Header() {
               ))}
 
             <Link
-              href="/auth/login"
+              href={authLink.href}
               onClick={() => setMobileOpen(false)}
-              className="mt-8 rounded-full border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
+              className="mt-8 flex items-center justify-center gap-2 rounded-full border border-gray-300 px-4 py-3 text-center text-sm font-medium text-gray-700 transition-colors hover:border-brand-navy hover:text-brand-navy"
             >
-              Login
+              {authLink.icon && <UserRound className="h-4 w-4" />}
+              {authLink.label}
             </Link>
           </nav>
         </div>
