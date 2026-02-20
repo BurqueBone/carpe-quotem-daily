@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Compass, CalendarDays, Lightbulb, Zap } from "lucide-react";
 import DailyQuote from "@/components/daily-quote";
 
@@ -32,13 +33,15 @@ export default function HomePage() {
   return (
     <>
       {/* Hero */}
-      <section className="relative overflow-hidden bg-brand-navy px-6 py-16 text-center md:py-24">
+      <section className="relative min-h-[400px] overflow-hidden bg-brand-navy px-6 py-16 text-center md:min-h-[500px] md:py-24">
         {/* Watercolor sky background */}
         <div className="absolute inset-0">
-          <img
+          <Image
             src="/hero-sky-background.png"
-            alt=""
-            className="h-full w-full object-cover"
+            alt="Watercolor sky background"
+            fill
+            priority
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-brand-navy/30" />
         </div>

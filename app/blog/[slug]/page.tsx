@@ -40,7 +40,7 @@ export async function generateMetadata({
   const supabase = createStaticClient();
   const { data: post } = await supabase
     .from("blog_posts")
-    .select("title, meta_title, meta_description, excerpt, featured_image_url")
+    .select("title, meta_title, meta_description, excerpt, featured_image_url, published_at, updated_at")
     .eq("slug", slug)
     .eq("is_published", true)
     .single();
@@ -60,6 +60,9 @@ export async function generateMetadata({
       title,
       description,
       type: "article",
+      publishedTime: post.published_at || undefined,
+      modifiedTime: post.updated_at || undefined,
+      authors: ["Sunday4K"],
       ...(post.featured_image_url && {
         images: [{ url: post.featured_image_url }],
       }),

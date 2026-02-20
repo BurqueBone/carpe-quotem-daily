@@ -40,6 +40,8 @@ function Dropdown({
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
+        aria-expanded={open}
+        aria-haspopup="menu"
         className="flex items-center gap-1 text-sm font-medium text-gray-600 transition-colors hover:text-brand-navy"
       >
         {label}
@@ -49,7 +51,7 @@ function Dropdown({
       </button>
 
       {open && (
-        <div className="absolute left-0 top-full z-50 mt-2 min-w-[200px] rounded-lg border border-gray-100 bg-white py-2 shadow-lg">
+        <div role="menu" className="absolute left-0 top-full z-50 mt-2 min-w-[200px] rounded-lg border border-gray-100 bg-white py-2 shadow-lg">
           {links.map((link) => (
             <Link
               key={link.href}

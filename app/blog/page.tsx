@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { Newspaper, ArrowRight } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase/static";
 import { formatDate } from "@/lib/utils";
@@ -89,11 +90,13 @@ export default async function BlogPage() {
                 >
                   {/* Featured image */}
                   {post.featured_image_url ? (
-                    <div className="aspect-[16/9] overflow-hidden bg-gray-100">
-                      <img
+                    <div className="relative aspect-[16/9] overflow-hidden bg-gray-100">
+                      <Image
                         src={post.featured_image_url}
-                        alt=""
-                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        alt={post.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
                   ) : (
