@@ -83,6 +83,8 @@ const lifeAreas: LifeArea[] = [
 ];
 
 const AREA_COUNT = lifeAreas.length; // 8
+const AREAS_PER_PAGE = 2;
+const TOTAL_PAGES = AREA_COUNT / AREAS_PER_PAGE; // 4
 
 interface PreviousAssessment {
   satisfaction_scores: Record<string, number>;
@@ -138,7 +140,7 @@ function RadarChart({
   return (
     <svg
       viewBox={`0 0 ${size} ${size}`}
-      className="mx-auto w-full max-w-[280px]"
+      className="mx-auto w-full max-w-[260px]"
     >
       {/* Grid circles */}
       {circles.map((r, i) => (
@@ -255,10 +257,7 @@ const quadrants: Quadrant[] = [
   },
 ];
 
-function getQuadrant(
-  satisfaction: number,
-  importance: number
-): string {
+function getQuadrant(satisfaction: number, importance: number): string {
   const highImp = importance > 5;
   const highSat = satisfaction > 5;
   if (highImp && !highSat) return "act_now";
@@ -290,8 +289,6 @@ function PriorityMatrix({
 
   return (
     <div className="grid grid-cols-2 gap-3">
-      {/* Top row: Act Now (high imp, low sat) | Maintain (high imp, high sat) */}
-      {/* Bottom row: Consider (low imp, low sat) | Rebalance (low imp, high sat) */}
       {quadrants.map((q) => (
         <div
           key={q.key}
@@ -328,44 +325,45 @@ function PriorityMatrix({
 }
 
 /* ------------------------------------------------------------------ */
-/*  Score Slider                                                       */
+/*  Tappable Score Input                                               */
 /* ------------------------------------------------------------------ */
 
-function ScoreSlider({
+function TappableScore({
   value,
   onChange,
   label,
   anchors,
-  accentClass,
+  selectedColor,
 }: {
   value: number | null;
   onChange: (v: number) => void;
   label: string;
   anchors: [string, string, string];
-  accentClass: string;
+  selectedColor: string;
 }) {
-  const isSet = value !== null;
-  const displayValue = value ?? 5;
-
   return (
-    <div className="space-y-1">
-      <div className="flex items-center justify-between">
-        <span className="text-xs font-medium text-gray-500">{label}</span>
-        <span
-          className={`min-w-[1.5rem] text-right text-sm font-bold ${isSet ? accentClass : "text-gray-300"}`}
-        >
-          {isSet ? displayValue : "?"}
-        </span>
+    <div>
+      <span className="text-xs font-medium text-gray-500">{label}</span>
+      <div className="mt-1.5 flex gap-[3px]">
+        {Array.from({ length: 10 }, (_, i) => i + 1).map((n) => {
+          const isSelected = value === n;
+          return (
+            <button
+              key={n}
+              type="button"
+              onClick={() => onChange(n)}
+              className={`flex h-9 flex-1 items-center justify-center rounded-lg text-xs font-semibold transition-all ${
+                isSelected
+                  ? `${selectedColor} text-white shadow-sm`
+                  : "bg-gray-100 text-gray-500 hover:bg-gray-200 active:bg-gray-300"
+              }`}
+            >
+              {n}
+            </button>
+          );
+        })}
       </div>
-      <input
-        type="range"
-        min={1}
-        max={10}
-        value={displayValue}
-        onChange={(e) => onChange(parseInt(e.target.value))}
-        className={`w-full transition-opacity ${isSet ? "accent-brand-navy opacity-100" : "accent-gray-300 opacity-40"}`}
-      />
-      <div className="flex justify-between text-[9px] text-gray-400">
+      <div className="mt-1 flex justify-between px-1 text-[9px] text-gray-400">
         <span>{anchors[0]}</span>
         <span>{anchors[1]}</span>
         <span>{anchors[2]}</span>
@@ -380,6 +378,7 @@ function ScoreSlider({
 
 export default function LifeCompassWizard() {
   const [step, setStep] = useState(1);
+  const [assessmentPage, setAssessmentPage] = useState(0); // 0-3 within step 1
   const [satisfactionScores, setSatisfactionScores] = useState<
     Record<string, number | null>
   >(Object.fromEntries(lifeAreas.map((a) => [a.key, null])));
@@ -408,7 +407,9 @@ export default function LifeCompassWizard() {
 
       const { data } = await supabase
         .from("life_assessments")
-        .select("satisfaction_scores, importance_scores, focus_areas, created_at")
+        .select(
+          "satisfaction_scores, importance_scores, focus_areas, created_at"
+        )
         .eq("user_id", user.id)
         .order("created_at", { ascending: false })
         .limit(1)
@@ -440,7 +441,20 @@ export default function LifeCompassWizard() {
     });
   }
 
-  // Validation: all scores must be set before proceeding
+  // Current page areas (2 at a time)
+  const pageStart = assessmentPage * AREAS_PER_PAGE;
+  const currentPageAreas = lifeAreas.slice(
+    pageStart,
+    pageStart + AREAS_PER_PAGE
+  );
+
+  // Check if current page is complete (both areas have both scores)
+  const currentPageComplete = currentPageAreas.every(
+    (a) =>
+      satisfactionScores[a.key] !== null && importanceScores[a.key] !== null
+  );
+
+  // Validation: all scores must be set before proceeding to step 2
   const allScoresSet = lifeAreas.every(
     (a) =>
       satisfactionScores[a.key] !== null && importanceScores[a.key] !== null
@@ -451,7 +465,6 @@ export default function LifeCompassWizard() {
   ).length;
 
   // Gap-based sorting for focus area suggestions
-  // Higher gap (importance - satisfaction) = more urgent
   const gapSorted = [...lifeAreas]
     .map((area) => ({
       ...area,
@@ -464,7 +477,6 @@ export default function LifeCompassWizard() {
     .sort((a, b) => b.gap - a.gap);
 
   const suggestedFocus = gapSorted.filter((a) => a.gap > 0).slice(0, 4);
-  // If fewer than 2 have a positive gap, show top 4 by gap anyway
   const displayedSuggestions =
     suggestedFocus.length >= 2 ? suggestedFocus : gapSorted.slice(0, 4);
 
@@ -512,6 +524,7 @@ export default function LifeCompassWizard() {
   // Reset
   function resetAssessment() {
     setStep(1);
+    setAssessmentPage(0);
     setSatisfactionScores(
       Object.fromEntries(lifeAreas.map((a) => [a.key, null]))
     );
@@ -522,6 +535,22 @@ export default function LifeCompassWizard() {
     setSaved(false);
   }
 
+  // Navigate assessment pages
+  function nextPage() {
+    if (assessmentPage < TOTAL_PAGES - 1) {
+      setAssessmentPage((p) => p + 1);
+    } else {
+      // All pages done, go to step 2
+      setStep(2);
+    }
+  }
+
+  function prevPage() {
+    if (assessmentPage > 0) {
+      setAssessmentPage((p) => p - 1);
+    }
+  }
+
   return (
     <div>
       {/* Step indicator */}
@@ -530,7 +559,9 @@ export default function LifeCompassWizard() {
           <div key={s} className="flex items-center gap-2">
             <button
               onClick={() => {
-                if (s === 1 || (s === 2 && allScoresSet) || (s === 3 && allScoresSet)) {
+                if (s === 1) {
+                  setStep(1);
+                } else if (s >= 2 && allScoresSet) {
                   setStep(s);
                 }
               }}
@@ -555,46 +586,61 @@ export default function LifeCompassWizard() {
       </div>
 
       {/* ============================================================ */}
-      {/*  Step 1: Dual-Axis Assessment                                 */}
+      {/*  Step 1: Dual-Axis Assessment (2 areas at a time)             */}
       {/* ============================================================ */}
       {step === 1 && (
-        <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:p-8">
+        <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm sm:p-6 md:p-8">
           <h2 className="text-center text-2xl font-bold text-gray-800">
             The Wheel of Life Assessment
           </h2>
-          <p className="mt-2 text-center text-gray-500">
+          <p className="mx-auto mt-2 max-w-lg text-center text-sm text-gray-500">
             For each life area, rate both how <strong>satisfied</strong> you are
-            today and how <strong>important</strong> it is to you. This reveals
-            where your priorities and reality are misaligned.
+            today and how <strong>important</strong> it is to you.
           </p>
 
-          {/* Progress indicator */}
-          <div className="mt-4 text-center">
-            <span className="text-sm text-gray-400">
-              {scoresSetCount} of {AREA_COUNT} areas rated
-            </span>
-            <div className="mx-auto mt-1 h-1.5 w-48 overflow-hidden rounded-full bg-gray-100">
-              <div
-                className="h-full rounded-full bg-brand-navy transition-all duration-300"
-                style={{
-                  width: `${(scoresSetCount / AREA_COUNT) * 100}%`,
-                }}
-              />
-            </div>
+          {/* Sub-page progress dots */}
+          <div className="mt-5 flex items-center justify-center gap-3">
+            {Array.from({ length: TOTAL_PAGES }, (_, i) => {
+              const pageAreas = lifeAreas.slice(
+                i * AREAS_PER_PAGE,
+                i * AREAS_PER_PAGE + AREAS_PER_PAGE
+              );
+              const pageComplete = pageAreas.every(
+                (a) =>
+                  satisfactionScores[a.key] !== null &&
+                  importanceScores[a.key] !== null
+              );
+              return (
+                <button
+                  key={i}
+                  onClick={() => setAssessmentPage(i)}
+                  className={`flex h-2.5 w-8 rounded-full transition-all ${
+                    i === assessmentPage
+                      ? "bg-brand-navy"
+                      : pageComplete
+                        ? "bg-brand-navy/30"
+                        : "bg-gray-200"
+                  }`}
+                />
+              );
+            })}
           </div>
+          <p className="mt-2 text-center text-xs text-gray-400">
+            {scoresSetCount} of {AREA_COUNT} areas rated
+          </p>
 
-          <div className="mt-8 grid gap-8 md:grid-cols-2">
-            {/* Radar chart */}
-            <div className="flex items-center justify-center">
+          <div className="mt-6 grid gap-6 md:grid-cols-[auto_1fr]">
+            {/* Radar chart (left on desktop, top on mobile) */}
+            <div className="flex items-start justify-center md:sticky md:top-4">
               <RadarChart
                 scores={satisfactionScores}
                 previousScores={previousAssessment?.satisfaction_scores}
               />
             </div>
 
-            {/* Dual sliders */}
+            {/* Current 2 areas */}
             <div className="space-y-6">
-              {lifeAreas.map((area) => {
+              {currentPageAreas.map((area) => {
                 const Icon = area.icon;
                 const satSet = satisfactionScores[area.key] !== null;
                 const impSet = importanceScores[area.key] !== null;
@@ -602,35 +648,37 @@ export default function LifeCompassWizard() {
                 return (
                   <div
                     key={area.key}
-                    className={`rounded-xl border p-4 transition ${
+                    className={`rounded-xl border p-4 transition sm:p-5 ${
                       bothSet
                         ? "border-brand-navy/20 bg-brand-navy/[0.02]"
                         : "border-gray-100 bg-white"
                     }`}
                   >
-                    <div className="mb-3 flex items-center gap-2">
-                      <Icon className="h-4 w-4 text-brand-navy" />
-                      <span className="text-sm font-semibold text-gray-800">
+                    <div className="mb-4 flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-navy/10">
+                        <Icon className="h-4 w-4 text-brand-navy" />
+                      </div>
+                      <span className="text-base font-semibold text-gray-800">
                         {area.label}
                       </span>
                       {bothSet && (
-                        <Check className="ml-auto h-4 w-4 text-green-500" />
+                        <Check className="ml-auto h-5 w-5 text-green-500" />
                       )}
                     </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <ScoreSlider
+                    <div className="space-y-4">
+                      <TappableScore
                         value={satisfactionScores[area.key]}
                         onChange={(v) => handleSatisfaction(area.key, v)}
-                        label="How satisfied?"
+                        label="How satisfied are you?"
                         anchors={["Struggling", "Okay", "Thriving"]}
-                        accentClass="text-brand-navy"
+                        selectedColor="bg-brand-navy"
                       />
-                      <ScoreSlider
+                      <TappableScore
                         value={importanceScores[area.key]}
                         onChange={(v) => handleImportance(area.key, v)}
-                        label="How important?"
+                        label="How important is this to you?"
                         anchors={["Not important", "Somewhat", "Essential"]}
-                        accentClass="text-brand-orange"
+                        selectedColor="bg-brand-orange"
                       />
                     </div>
                   </div>
@@ -639,37 +687,47 @@ export default function LifeCompassWizard() {
             </div>
           </div>
 
-          {previousAssessment && (
-            <div className="mt-6 rounded-lg bg-brand-off-white p-4 text-center">
-              <p className="text-sm text-gray-500">
-                Your previous assessment is shown as the dashed outline on the
-                chart. Taken on{" "}
+          {previousAssessment && assessmentPage === 0 && (
+            <div className="mt-6 rounded-lg bg-brand-off-white p-3 text-center">
+              <p className="text-xs text-gray-500">
+                Dashed outline on chart = your previous assessment from{" "}
                 {new Date(previousAssessment.created_at).toLocaleDateString(
                   "en-US",
                   { month: "long", day: "numeric", year: "numeric" }
                 )}
-                .
               </p>
             </div>
           )}
 
-          <div className="mt-6 text-center">
+          {/* Navigation */}
+          <div className="mt-6 flex items-center justify-between">
             <button
-              onClick={() => setStep(2)}
-              disabled={!allScoresSet}
-              className={`rounded-full px-8 py-3 text-sm font-semibold text-white transition ${
-                allScoresSet
+              onClick={prevPage}
+              disabled={assessmentPage === 0}
+              className={`inline-flex items-center gap-1 text-sm font-medium transition ${
+                assessmentPage === 0
+                  ? "cursor-not-allowed text-gray-300"
+                  : "text-gray-500 hover:text-gray-800"
+              }`}
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Previous
+            </button>
+            <span className="text-xs text-gray-400">
+              {assessmentPage + 1} / {TOTAL_PAGES}
+            </span>
+            <button
+              onClick={nextPage}
+              disabled={!currentPageComplete}
+              className={`inline-flex items-center gap-1 rounded-full px-6 py-2.5 text-sm font-semibold text-white transition ${
+                currentPageComplete
                   ? "bg-brand-navy hover:bg-brand-navy/90"
                   : "cursor-not-allowed bg-gray-300"
               }`}
             >
-              Choose Priority Areas &rarr;
+              {assessmentPage < TOTAL_PAGES - 1 ? "Next" : "Choose Priorities"}
+              <ArrowRight className="h-4 w-4" />
             </button>
-            {!allScoresSet && (
-              <p className="mt-2 text-xs text-gray-400">
-                Rate all {AREA_COUNT} areas to continue
-              </p>
-            )}
           </div>
         </div>
       )}
@@ -709,13 +767,9 @@ export default function LifeCompassWizard() {
                     <span className="font-semibold text-gray-800">
                       {area.label}
                     </span>
-                    <div className="mt-0.5 flex gap-3 text-sm text-gray-400">
-                      <span>
-                        Satisfaction: {area.satisfaction}/10
-                      </span>
-                      <span>
-                        Importance: {area.importance}/10
-                      </span>
+                    <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-gray-400">
+                      <span>Satisfaction: {area.satisfaction}/10</span>
+                      <span>Importance: {area.importance}/10</span>
                       <span className="font-medium text-brand-coral">
                         Gap: {area.gap > 0 ? "+" : ""}
                         {area.gap}
@@ -723,7 +777,7 @@ export default function LifeCompassWizard() {
                     </div>
                   </div>
                   <div
-                    className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition ${
+                    className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition ${
                       selected
                         ? "border-brand-navy bg-brand-navy"
                         : "border-gray-300"
@@ -769,13 +823,11 @@ export default function LifeCompassWizard() {
                             <span className="font-semibold text-gray-800">
                               {area.label}
                             </span>
-                            <div className="mt-0.5 flex gap-3 text-sm text-gray-400">
+                            <div className="mt-0.5 flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-gray-400">
                               <span>
                                 Satisfaction: {area.satisfaction}/10
                               </span>
-                              <span>
-                                Importance: {area.importance}/10
-                              </span>
+                              <span>Importance: {area.importance}/10</span>
                               <span
                                 className={`font-medium ${area.gap > 0 ? "text-brand-coral" : "text-green-600"}`}
                               >
@@ -785,7 +837,7 @@ export default function LifeCompassWizard() {
                             </div>
                           </div>
                           <div
-                            className={`flex h-6 w-6 items-center justify-center rounded-full border-2 transition ${
+                            className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 transition ${
                               selected
                                 ? "border-brand-navy bg-brand-navy"
                                 : "border-gray-300"
@@ -960,7 +1012,7 @@ export default function LifeCompassWizard() {
                         <span className="font-medium text-gray-800">
                           {area.label}
                         </span>
-                        <div className="flex flex-wrap gap-1.5 mt-1">
+                        <div className="mt-1 flex flex-wrap gap-1.5">
                           {area.resourceCategoryTitles.map((cat) => (
                             <Link
                               key={cat}
