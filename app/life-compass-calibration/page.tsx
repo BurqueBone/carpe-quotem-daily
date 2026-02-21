@@ -73,8 +73,8 @@ export default function LifeCompassPage() {
                   Wheel of Life Assessment
                 </h3>
                 <p className="mt-1 text-sm text-gray-500">
-                  Assess your life balance across 12 key areas and design your
-                  ideal week
+                  Rate satisfaction and importance across 8 life areas to
+                  uncover your biggest growth opportunities
                 </p>
               </div>
               <ChevronRight className="h-5 w-5 shrink-0 text-gray-400 transition group-hover:text-brand-navy" />

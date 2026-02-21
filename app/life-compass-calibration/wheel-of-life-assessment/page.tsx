@@ -4,7 +4,7 @@ import LifeCompassWizard from "@/components/life-compass-wizard";
 export const metadata: Metadata = {
   title: "Wheel of Life Assessment — Sunday4K",
   description:
-    "Assess your current life balance across 12 key areas and design an ideal week that aligns with your true priorities.",
+    "Rate your satisfaction and importance across 8 life areas. Discover where your priorities and reality are misaligned, then find resources to close the gap.",
 };
 
 export default function WheelOfLifePage() {
@@ -16,8 +16,9 @@ export default function WheelOfLifePage() {
             Wheel of Life Assessment
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-gray-500">
-            Assess your current life balance across 12 key areas and design an
-            ideal week that aligns with your true priorities.
+            Rate your satisfaction and importance across 8 life areas. Discover
+            where your priorities and reality are misaligned, then find
+            resources to close the gap.
           </p>
         </div>
         <LifeCompassWizard />
