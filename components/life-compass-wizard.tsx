@@ -83,8 +83,8 @@ const lifeAreas: LifeArea[] = [
 ];
 
 const AREA_COUNT = lifeAreas.length; // 8
-const AREAS_PER_PAGE = 2;
-const TOTAL_PAGES = AREA_COUNT / AREAS_PER_PAGE; // 4
+const AREAS_PER_PAGE = 1;
+const TOTAL_PAGES = AREA_COUNT / AREAS_PER_PAGE; // 8
 
 interface PreviousAssessment {
   satisfaction_scores: Record<string, number>;
@@ -648,10 +648,10 @@ export default function LifeCompassWizard() {
                 return (
                   <div
                     key={area.key}
-                    className={`rounded-xl border p-4 transition sm:p-5 ${
+                    className={`rounded-2xl border-2 p-5 shadow-md transition sm:p-6 ${
                       bothSet
-                        ? "border-brand-navy/20 bg-brand-navy/[0.02]"
-                        : "border-gray-100 bg-white"
+                        ? "border-brand-navy/30 bg-brand-navy/[0.02] shadow-brand-navy/10"
+                        : "border-brand-navy/15 bg-white"
                     }`}
                   >
                     <div className="mb-4 flex items-center gap-2">
