@@ -16,6 +16,7 @@ import {
   ArrowRight,
   ArrowLeft,
   Check,
+  ExternalLink,
   type LucideIcon,
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -92,6 +93,25 @@ interface PreviousAssessment {
   focus_areas: string[];
   created_at: string;
 }
+
+interface FocusResource {
+  id: string;
+  title: string;
+  url: string;
+  type: string;
+  affiliate_url: string | null;
+  category_id: string;
+}
+
+const typeBadgeColors: Record<string, string> = {
+  book: "bg-amber-100 text-amber-700",
+  app: "bg-blue-100 text-blue-700",
+  course: "bg-green-100 text-green-700",
+  service: "bg-purple-100 text-purple-700",
+  article: "bg-gray-100 text-gray-700",
+  product: "bg-pink-100 text-pink-700",
+  video: "bg-red-100 text-red-700",
+};
 
 /* ------------------------------------------------------------------ */
 /*  Radar Chart                                                        */
@@ -393,6 +413,9 @@ export default function LifeCompassWizard() {
     useState<PreviousAssessment | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [focusResources, setFocusResources] = useState<
+    Record<string, FocusResource[]>
+  >({});
 
   // Check auth and load previous assessment
   useEffect(() => {
@@ -422,6 +445,70 @@ export default function LifeCompassWizard() {
 
     loadUserData();
   }, []);
+
+  // Fetch top resources for focus areas on results step
+  useEffect(() => {
+    if (step !== 3 || focusAreas.size === 0) return;
+
+    const supabase = createClient();
+
+    async function fetchResources() {
+      const { data: cats } = await supabase
+        .from("categories")
+        .select("id, title");
+      if (!cats) return;
+
+      const titleToId: Record<string, string> = {};
+      cats.forEach((c: { id: string; title: string }) => {
+        titleToId[c.title] = c.id;
+      });
+
+      const selectedAreas = lifeAreas.filter((a) => focusAreas.has(a.key));
+      const allCategoryIds = new Set<string>();
+      selectedAreas.forEach((area) => {
+        area.resourceCategoryTitles.forEach((title) => {
+          const id = titleToId[title];
+          if (id) allCategoryIds.add(id);
+        });
+      });
+
+      if (allCategoryIds.size === 0) return;
+
+      const [{ data: resources }, { data: voteCounts }] = await Promise.all([
+        supabase
+          .from("resources")
+          .select("id, title, url, type, affiliate_url, category_id")
+          .eq("ispublished", true)
+          .in("category_id", Array.from(allCategoryIds)),
+        supabase.rpc("get_resource_vote_counts"),
+      ]);
+
+      const voteMap: Record<string, number> = {};
+      (voteCounts || []).forEach(
+        (v: { resource_id: string; votes: number }) => {
+          voteMap[v.resource_id] = v.votes;
+        }
+      );
+
+      const result: Record<string, FocusResource[]> = {};
+      selectedAreas.forEach((area) => {
+        const catIds = area.resourceCategoryTitles
+          .map((t) => titleToId[t])
+          .filter(Boolean);
+
+        const areaResources = (resources || [])
+          .filter((r) => catIds.includes(r.category_id))
+          .sort((a, b) => (voteMap[b.id] || 0) - (voteMap[a.id] || 0))
+          .slice(0, 4);
+
+        result[area.key] = areaResources;
+      });
+
+      setFocusResources(result);
+    }
+
+    fetchResources();
+  }, [step, focusAreas]);
 
   // Score setters
   function handleSatisfaction(key: string, value: number) {
@@ -991,39 +1078,69 @@ export default function LifeCompassWizard() {
               })}
           </div>
 
-          {/* Focus areas with resource links */}
+          {/* Focus areas with top resources */}
           {focusAreas.size > 0 && (
             <div className="mt-8 rounded-xl border border-brand-navy/10 bg-brand-navy/5 p-5">
               <h3 className="font-semibold text-gray-800">
                 Your Priority Focus Areas
               </h3>
-              <div className="mt-3 space-y-2">
+              <div className="mt-3 space-y-4">
                 {Array.from(focusAreas).map((key) => {
                   const area = lifeAreas.find((a) => a.key === key);
                   if (!area) return null;
                   const Icon = area.icon;
+                  const resources = focusResources[key] || [];
                   return (
-                    <div
-                      key={key}
-                      className="flex items-center gap-3 rounded-lg bg-white p-3"
-                    >
-                      <Icon className="h-5 w-5 text-brand-navy" />
-                      <div className="flex-1">
+                    <div key={key} className="rounded-lg bg-white p-4">
+                      <div className="flex items-center gap-2">
+                        <Icon className="h-5 w-5 text-brand-navy" />
                         <span className="font-medium text-gray-800">
                           {area.label}
                         </span>
-                        <div className="mt-1 flex flex-wrap gap-1.5">
-                          {area.resourceCategoryTitles.map((cat) => (
-                            <Link
-                              key={cat}
-                              href="/carpe-diem"
-                              className="inline-flex items-center gap-1 rounded-full bg-brand-navy/10 px-2.5 py-0.5 text-[11px] font-medium text-brand-navy transition hover:bg-brand-navy/20"
+                      </div>
+                      {resources.length > 0 ? (
+                        <div className="mt-3 space-y-2">
+                          {resources.map((r) => (
+                            <a
+                              key={r.id}
+                              href={r.affiliate_url || r.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 rounded-md border border-gray-100 px-3 py-2 text-sm transition hover:border-brand-navy/20 hover:bg-brand-navy/[0.02]"
                             >
-                              {cat} resources
-                              <ArrowRight className="h-3 w-3" />
-                            </Link>
+                              <span className="flex-1 font-medium text-gray-700">
+                                {r.title}
+                              </span>
+                              <span
+                                className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium capitalize ${typeBadgeColors[r.type] || "bg-gray-100 text-gray-700"}`}
+                              >
+                                {r.type}
+                              </span>
+                              <ExternalLink className="h-3 w-3 shrink-0 text-gray-300" />
+                            </a>
                           ))}
                         </div>
+                      ) : (
+                        <div className="mt-3 flex gap-2">
+                          {[1, 2, 3].map((n) => (
+                            <div
+                              key={n}
+                              className="h-8 flex-1 animate-pulse rounded-md bg-gray-100"
+                            />
+                          ))}
+                        </div>
+                      )}
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        {area.resourceCategoryTitles.map((cat) => (
+                          <Link
+                            key={cat}
+                            href={`/resource-collection?category=${encodeURIComponent(cat)}`}
+                            className="inline-flex items-center gap-1 text-[11px] font-medium text-brand-navy transition hover:text-brand-navy/70"
+                          >
+                            See all {cat} resources
+                            <ArrowRight className="h-3 w-3" />
+                          </Link>
+                        ))}
                       </div>
                     </div>
                   );

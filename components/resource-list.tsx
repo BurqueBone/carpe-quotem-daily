@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useCallback, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   ChevronDown,
   ChevronUp,
@@ -85,6 +86,21 @@ export default function ResourceList({
         });
     });
   }, []);
+
+  // Pre-select category from URL param
+  const searchParams = useSearchParams();
+  useEffect(() => {
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      const match = categories.find(
+        (c) => c.title.toLowerCase() === categoryParam.toLowerCase()
+      );
+      if (match) {
+        setSelectedCategory(match.id);
+        setFiltersOpen(true);
+      }
+    }
+  }, [searchParams, categories]);
 
   const handleVote = useCallback(
     async (resourceId: string) => {

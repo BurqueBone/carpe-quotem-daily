@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { Metadata } from "next";
 import { Library } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase/static";
@@ -70,11 +71,13 @@ export default async function ResourceCollectionPage() {
         </div>
 
         <div className="mt-8">
-          <ResourceList
-            categories={categories || []}
-            resources={resourcesWithVotes}
-            featuredId={featuredId}
-          />
+          <Suspense fallback={null}>
+            <ResourceList
+              categories={categories || []}
+              resources={resourcesWithVotes}
+              featuredId={featuredId}
+            />
+          </Suspense>
         </div>
       </div>
     </div>
