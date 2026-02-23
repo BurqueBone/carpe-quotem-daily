@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Heart, Home, Flame, Library, Compass, BookOpen, User, Settings, LogIn } from "lucide-react";
+import { Home, Flame, Library, Compass, BookOpen, User, Settings, LogIn } from "lucide-react";
 
 export default function Footer() {
   return (
@@ -9,7 +10,13 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center gap-2">
-              <Heart className="h-5 w-5 fill-brand-navy text-brand-navy" />
+              <Image
+                src="/images/logo-mark-header.png"
+                alt="Sunday4K logo"
+                width={40}
+                height={40}
+                className="h-6 w-6"
+              />
               <span className="text-lg font-bold text-gray-800">Sunday4K</span>
             </div>
             <p className="mt-2 text-sm text-gray-500">
