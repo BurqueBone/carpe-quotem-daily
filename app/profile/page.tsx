@@ -19,21 +19,30 @@ export default async function Profile() {
     redirect("/auth/login?next=/profile");
   }
 
-  const [{ data: profile }, { data: notifSettings }, { data: quote }] =
-    await Promise.all([
-      supabase.from("profiles").select("birthdate").eq("id", user.id).single(),
-      supabase
-        .from("notification_settings")
-        .select("enabled")
-        .eq("user_id", user.id)
-        .single(),
-      supabase
-        .from("quotes")
-        .select("quote, author, source")
-        .eq("is_published", true)
-        .limit(1)
-        .single(),
-    ]);
+  const [
+    { data: profile },
+    { data: notifSettings },
+    { data: emailSub },
+    { data: quote },
+  ] = await Promise.all([
+    supabase.from("profiles").select("birthdate").eq("id", user.id).single(),
+    supabase
+      .from("notification_settings")
+      .select("enabled")
+      .eq("user_id", user.id)
+      .single(),
+    supabase
+      .from("email_subscribers")
+      .select("daily_enabled, weekly_enabled")
+      .eq("user_id", user.id)
+      .maybeSingle(),
+    supabase
+      .from("quotes")
+      .select("quote, author, source")
+      .eq("is_published", true)
+      .limit(1)
+      .single(),
+  ]);
 
   return (
     <ProfilePage
@@ -41,6 +50,7 @@ export default async function Profile() {
         email: user.email || "",
         birthdate: profile?.birthdate || null,
         notificationsEnabled: notifSettings?.enabled ?? true,
+        emailSubscription: emailSub || null,
         quote: quote || null,
       }}
     />

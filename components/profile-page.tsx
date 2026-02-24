@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  Bell,
   Heart,
   CalendarDays,
   UserRound,
@@ -16,10 +15,16 @@ import {
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
+interface EmailSubscription {
+  daily_enabled: boolean;
+  weekly_enabled: boolean;
+}
+
 interface ProfileData {
   email: string;
   birthdate: string | null;
   notificationsEnabled: boolean;
+  emailSubscription: EmailSubscription | null;
   quote: { quote: string; author: string; source: string | null } | null;
 }
 
@@ -172,12 +177,15 @@ function SundayCounter({ birthdate }: { birthdate: string | null }) {
   );
 }
 
-function NotificationSettings({
-  initialEnabled,
+function EmailPreferences({
+  initialSubscription,
 }: {
-  initialEnabled: boolean;
+  initialSubscription: EmailSubscription | null;
 }) {
-  const [enabled, setEnabled] = useState(initialEnabled);
+  const [daily, setDaily] = useState(initialSubscription?.daily_enabled ?? true);
+  const [weekly, setWeekly] = useState(
+    initialSubscription?.weekly_enabled ?? true
+  );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -189,9 +197,33 @@ function NotificationSettings({
       data: { user },
     } = await supabase.auth.getUser();
     if (user) {
+      // Upsert into email_subscribers (the single source of truth)
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("email")
+        .eq("id", user.id)
+        .single();
+
+      if (profile?.email) {
+        await supabase.from("email_subscribers").upsert(
+          {
+            email: profile.email,
+            user_id: user.id,
+            daily_enabled: daily,
+            weekly_enabled: weekly,
+            is_active: daily || weekly,
+          },
+          { onConflict: "email" }
+        );
+      }
+
+      // Keep notification_settings in sync for backward compat
       await supabase
         .from("notification_settings")
-        .upsert({ user_id: user.id, enabled }, { onConflict: "user_id" });
+        .upsert(
+          { user_id: user.id, enabled: daily },
+          { onConflict: "user_id" }
+        );
     }
     setSaving(false);
     setSaved(true);
@@ -201,52 +233,70 @@ function NotificationSettings({
   return (
     <section className="rounded-xl border border-gray-100 bg-white p-6">
       <div className="flex items-center gap-3">
-        <Bell className="h-5 w-5 text-brand-navy/60" />
-        <h2 className="text-xl font-bold text-gray-900">
-          Notification Settings
-        </h2>
+        <Mail className="h-5 w-5 text-brand-navy/60" />
+        <h2 className="text-xl font-bold text-gray-900">Email Preferences</h2>
       </div>
       <p className="mt-1 text-sm text-gray-500">
-        Configure how often you&apos;d like to receive gentle reminders about
-        life&apos;s preciousness
+        Choose which emails you&apos;d like to receive from Sunday4K
       </p>
 
-      <div className="mt-5 flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-gray-700">
-            Enable Notifications
-          </p>
-          <p className="text-xs text-gray-400">
-            Receive daily inspiration and gentle reminders
-          </p>
-        </div>
-        <button
-          onClick={() => setEnabled(!enabled)}
-          className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
-            enabled ? "bg-brand-navy/70" : "bg-gray-300"
-          }`}
-        >
-          <span
-            className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
-              enabled ? "translate-x-6" : "translate-x-1"
+      <div className="mt-5 space-y-4">
+        {/* Daily Inspiration Toggle */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-700">
+              Daily Inspiration
+            </p>
+            <p className="text-xs text-gray-400">
+              Quote + curated resource, Mon through Sat
+            </p>
+          </div>
+          <button
+            onClick={() => setDaily(!daily)}
+            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+              daily ? "bg-brand-navy/70" : "bg-gray-300"
             }`}
-          />
-        </button>
-      </div>
+          >
+            <span
+              className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                daily ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
 
-      {enabled && (
-        <p className="mt-3 text-sm text-gray-500">
-          You&apos;ll receive one inspiring quote each morning to start your day
-          with purpose.
-        </p>
-      )}
+        {/* Sunday Newsletter Toggle */}
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-gray-700">
+              The Sunday Reset
+            </p>
+            <p className="text-xs text-gray-400">
+              Weekly newsletter with blog post, compass check, and
+              your Sunday counter
+            </p>
+          </div>
+          <button
+            onClick={() => setWeekly(!weekly)}
+            className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors ${
+              weekly ? "bg-brand-navy/70" : "bg-gray-300"
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 rounded-full bg-white shadow-sm transition-transform ${
+                weekly ? "translate-x-6" : "translate-x-1"
+              }`}
+            />
+          </button>
+        </div>
+      </div>
 
       <button
         onClick={handleSave}
         disabled={saving}
-        className="mt-4 w-full rounded-lg bg-brand-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90 disabled:opacity-50"
+        className="mt-5 w-full rounded-lg bg-brand-navy px-4 py-3 text-sm font-semibold text-white transition hover:bg-brand-navy/90 disabled:opacity-50"
       >
-        {saving ? "Saving..." : saved ? "Saved!" : "Save Settings"}
+        {saving ? "Saving..." : saved ? "Saved!" : "Save Preferences"}
       </button>
     </section>
   );
@@ -419,8 +469,8 @@ export default function ProfilePage({ initialData }: { initialData: ProfileData 
 
         {/* Sections */}
         <div className="mt-8 space-y-6">
-          <NotificationSettings
-            initialEnabled={initialData.notificationsEnabled}
+          <EmailPreferences
+            initialSubscription={initialData.emailSubscription}
           />
           <ShareQuote quote={initialData.quote} />
           <SundayCounter birthdate={initialData.birthdate} />

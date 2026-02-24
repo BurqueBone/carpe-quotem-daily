@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Newspaper, ArrowRight } from "lucide-react";
 import { createStaticClient } from "@/lib/supabase/static";
 import { formatDate } from "@/lib/utils";
+import NewsletterSignup from "@/components/newsletter-signup";
 
 export const metadata: Metadata = {
   title: "Blog",
@@ -140,6 +141,11 @@ export default async function BlogPage() {
               No posts published yet.
             </p>
           )}
+        </div>
+
+        {/* Newsletter Signup */}
+        <div className="mt-12">
+          <NewsletterSignup variant="inline" />
         </div>
       </div>
     </div>

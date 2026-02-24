@@ -4,6 +4,7 @@ import Link from "next/link";
 import { createStaticClient } from "@/lib/supabase/static";
 import { formatDate } from "@/lib/utils";
 import MarkdownContent from "@/components/markdown-content";
+import NewsletterSignup from "@/components/newsletter-signup";
 
 interface BlogPost {
   id: string;
@@ -145,6 +146,11 @@ export default async function BlogPostPage({
           </header>
 
           <MarkdownContent content={post.content} />
+
+          {/* Newsletter Signup */}
+          <div className="mt-12">
+            <NewsletterSignup variant="inline" />
+          </div>
         </div>
       </article>
     </>

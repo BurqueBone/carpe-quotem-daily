@@ -2,6 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Compass, CalendarDays, Lightbulb, Zap } from "lucide-react";
 import DailyQuote from "@/components/daily-quote";
+import NewsletterSignup from "@/components/newsletter-signup";
 
 const steps = [
   {
@@ -130,6 +131,9 @@ export default function HomePage() {
           <DailyQuote />
         </div>
       </section>
+
+      {/* Newsletter Signup */}
+      <NewsletterSignup />
 
       {/* Carpe Diem Teaser */}
       <section className="bg-white px-6 py-12 md:py-16">
