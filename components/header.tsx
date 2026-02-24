@@ -113,13 +113,13 @@ export default function Header() {
     <>
       <header className="sticky top-0 z-50 border-b border-white/10 bg-brand-off-white/70 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link href="/" className="flex items-center gap-2 text-xl font-bold text-brand-navy">
+          <Link href="/" className="flex items-center gap-1.5 text-xl font-bold text-brand-navy">
             <Image
               src="/images/logo-mark-header.png"
               alt="Sunday4K logo"
               width={40}
               height={40}
-              className="h-8 w-8"
+              className="h-7 w-7"
             />
             Sunday4K
           </Link>
