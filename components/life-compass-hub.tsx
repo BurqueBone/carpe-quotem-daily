@@ -60,20 +60,20 @@ export default function LifeCompassHub() {
         {birthdateReady && (
           <Link
             href="/life-compass-calibration/wheel-of-life-assessment"
-            className="group flex items-center gap-4 rounded-xl bg-brand-navy p-5 text-white shadow-md transition hover:bg-brand-navy/90 hover:shadow-lg"
+            className="group flex items-center gap-4 rounded-xl border border-brand-gold/30 bg-gradient-to-r from-brand-gold/10 to-brand-orange/10 p-5 shadow-sm transition hover:shadow-md"
           >
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-white/10">
-              <Compass className="h-6 w-6 text-brand-gold" />
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-gold/20">
+              <Compass className="h-6 w-6 text-brand-orange" />
             </div>
             <div className="flex-1">
-              <h3 className="font-bold">
+              <h3 className="font-bold text-gray-900">
                 Take the Wheel of Life Assessment
               </h3>
-              <p className="mt-0.5 text-sm text-white/70">
+              <p className="mt-0.5 text-sm text-gray-500">
                 Rate 8 life areas and discover where to focus your energy
               </p>
             </div>
-            <ChevronRight className="h-5 w-5 shrink-0 text-white/50 transition group-hover:text-white" />
+            <ChevronRight className="h-5 w-5 shrink-0 text-gray-400 transition group-hover:text-brand-navy" />
           </Link>
         )}
 
