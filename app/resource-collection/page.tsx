@@ -21,7 +21,7 @@ export default async function ResourceCollectionPage() {
       supabase
         .from("resources")
         .select(
-          "id, title, description, url, type, s4k_favorite, has_affiliate, affiliate_url, how_resource_helps, category_id"
+          "id, title, description, url, type, s4k_favorite, has_affiliate, affiliate_url, how_resource_helps, category_id, created_at"
         )
         .eq("ispublished", true),
       supabase.rpc("get_resource_vote_counts"),

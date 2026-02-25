@@ -25,34 +25,54 @@ function differenceInWeeks(a: Date, b: Date) {
   return Math.floor((a.getTime() - b.getTime()) / (7 * 24 * 60 * 60 * 1000));
 }
 
-export default function LifespanVisualizer() {
+interface LifespanVisualizerProps {
+  initialBirthdate?: string | null;
+  onBirthdateSet?: () => void;
+}
+
+export default function LifespanVisualizer({
+  initialBirthdate,
+  onBirthdateSet,
+}: LifespanVisualizerProps) {
   const [selMonth, setSelMonth] = useState("");
   const [selDay, setSelDay] = useState("");
   const [selYear, setSelYear] = useState("");
   const [birthdate, setBirthdate] = useState<Date | null>(null);
 
+  // Initialize from prop or localStorage
   useEffect(() => {
+    if (initialBirthdate) {
+      const parts = initialBirthdate.split("-").map(Number);
+      if (parts.length === 3) {
+        const [y, m, d] = parts;
+        setSelMonth((m - 1).toString());
+        setSelDay(d.toString());
+        setSelYear(y.toString());
+        return;
+      }
+    }
     const saved = localStorage.getItem("sunday4k_lifespan_dob");
     if (saved) {
       const d = new Date(saved);
       if (!isNaN(d.getTime())) {
-        setBirthdate(d);
         setSelMonth(d.getMonth().toString());
         setSelDay(d.getDate().toString());
         setSelYear(d.getFullYear().toString());
       }
     }
-  }, []);
+  }, [initialBirthdate]);
 
+  // Derive birthdate from dropdowns, save to localStorage, notify parent
   useEffect(() => {
     if (selDay && selMonth && selYear) {
       const d = new Date(parseInt(selYear), parseInt(selMonth), parseInt(selDay));
       if (!isNaN(d.getTime())) {
         setBirthdate(d);
         localStorage.setItem("sunday4k_lifespan_dob", d.toISOString().split("T")[0]);
+        onBirthdateSet?.();
       }
     }
-  }, [selDay, selMonth, selYear]);
+  }, [selDay, selMonth, selYear, onBirthdateSet]);
 
   const lifeData = birthdate ? calculateLife(birthdate) : null;
 
