@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PROTECTED_ROUTES = ["/resource-collection", "/profile", "/admin"];
+const PROTECTED_ROUTES = ["/resource-collection", "/profile", "/admin", "/life-compass-calibration/results"];
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
