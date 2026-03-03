@@ -81,11 +81,12 @@ export const AREA_COUNT = lifeAreas.length; // 8
 export function RadarChart({
   scores,
   previousScores,
+  size = 300,
 }: {
   scores: Record<string, number | null>;
   previousScores?: Record<string, number> | null;
+  size?: number;
 }) {
-  const size = 300;
   const center = size / 2;
   const maxRadius = center - 40;
 
